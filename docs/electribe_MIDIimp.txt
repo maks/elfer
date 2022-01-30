@@ -1,0 +1,852 @@
+KORG electribe MIDI Implementation     Revision 1.00 (Jan. 9 2015)
+
+
+1.TRANSMITTED DATA
+
+1-1 CHANNEL MESSAGES            [H]:Hex,  [D]:Decimal
+
++--------+----------+------------+-----------------------------------------------------------+-----+
+| Status |  Second  |   Third    |      Description                 (Transmitted by ... )    | ENA |
+|  [Hex] | [H]  [D] | [H]   [D]  |                                                           |     |
++--------+----------+------------+-----------------------------------------------------------+-----+
+|   8n   | kk  (kk) | 40    (64) | Note Off                         (Note Off)             *1|  S  |
+|   9n   | kk  (kk) | vv    (vv) | Note On  vv=1~127                (Note On)                |  S  |
+|   Bn   | 00  (00) | mm    (mm) | Bank Select (MSB)                (Pattern Change)       *2|  P  |
+|   Bn   | 07  (07) | vv    (vv) | Amp Level                        (P.C.)               *3-1|  S  |
+|   Bn   | 0A  (10) | vv    (vv) | Amp Pan                          (P.C.)               *3-2|  S  |
+|   Bn   | 20  (32) | bb    (bb) | Bank Select(LSB)                 (Pattern Change)       *2|  P  |
+|   Bn   | 47  (71) | vv    (vv) | Filter Resonance                 (P.C.)               *3-1|  S  |
+|   Bn   | 48  (72) | vv    (vv) | EG Decay/Release                 (P.C.)               *3-1|  S  |
+|   Bn   | 49  (73) | vv    (vv) | EG Attack                        (P.C.)               *3-1|  S  |
+|   Bn   | 4A  (74) | vv    (vv) | Filter Cutoff                    (P.C.)               *3-1|  S  |
+|   Bn   | 50  (80) | vv    (vv) | Osc Pitch                        (P.C.)               *3-3|  S  |
+|   Bn   | 51  (81) | vv    (vv) | Osc Glide                        (P.C.)               *3-1|  S  |
+|   Bn   | 52  (82) | vv    (vv) | Osc Edit                         (P.C.)               *3-1|  S  |
+|   Bn   | 53  (83) | vv    (vv) | Filter EG Int.                   (P.C.)               *3-3|  S  |
+|   Bn   | 55  (85) | vv    (vv) | Modulation Depth                 (P.C.)               *3-1|  S  |
+|   Bn   | 56  (86) | vv    (vv) | Modulation Speed                 (P.C.)               *3-1|  S  |
+|   Bn   | 57  (87) | vv    (vv) | Insert Fx Edit                   (P.C.)               *3-1|  S  |
+|   Bn   | 66 (102) | vv    (vv) | Master Fx X                      (P.C.)               *3-1|  S  |
+|   Bn   | 67 (103) | vv    (vv) | Master Fx Y                      (P.C.)               *3-1|  S  |
+|   Bn   | 68 (104) | vv    (vv) | Insert Fx Off/On                 (P.C.)               *3-4|  S  |
+|   Bn   | 69 (105) | vv    (vv) | MFX Send Off/On                  (P.C.)               *3-4|  S  |
+|   Bn   | 6A (106) | vv    (vv) | Master Fx Off/On                 (P.C.)               *3-4|  S  |
+|   Cn   | pp  (pp) | --    (--) | Program Change                   (Pattern Change)       *2|  P  |
++--------+----------+------------+-----------------------------------------------------------+-----+
+
+ n  : MIDI Channel = 0 ~ F
+ vv : Value
+ P.C.: Panel Control
+
+ ENA =  S : Enabled When Global MIDI RECEIVE/SEND FILTER is "Off".
+        P : Enabled when Global MIDI RECEIVE/SEND FILTER is "Off" or "Short".
+
+ *1 : kk =  0 ~ 127
+ *2 : Pattern              MIDI Out    [Hex]           [Dec]
+      Pattern 001 - 127    mm,bb,pp  : 00,00,01~7F  /  00,00,001~127
+      Pattern 128 - 250                00,01,01~79  /  00,01,001~121
+
+ *3-1 : 00~7F : 00~127
+
+ *3-2 : 00,01~40~7F : L63,L63~Center~R63
+              00~07 : L63,L63,L62,L61,L60,L59,L58,L57
+              08~0F : L56,L55,L54,L53,L52,L51,L50,L49
+              10~17 : L48,L47,L46,L45,L44,L43,L42,L41
+              18~1F : L40,L39,L38,L37,L36,L35,L34,L33
+              20~27 : L32,L31,L30,L29,L28,L27,L26,L25
+              28~2F : L24,L23,L22,L21,L20,L19,L18,L17
+              30~37 : L16,L15,L14,L13,L12,L11,L10,L09
+              38~3F : L08,L07,L06,L05,L04,L03,L02,L01
+              40~47 : Center,R01,R02,R03,R04,R05,R06,R07
+              48~4F : R08,R09,R10,R11,R12,R13,R14,R15
+              50~57 : R16,R17,R18,R19,R20,R21,R22,R23
+              58~5F : R24,R25,R26,R27,R28,R29,R30,R31
+              60~67 : R32,R33,R34,R35,R36,R37,R38,R39
+              68~6F : R40,R41,R42,R43,R44,R45,R46,R47
+              70~77 : R48,R49,R50,R51,R52,R53,R54,R55
+              78~7F : R56,R57,R58,R59,R60,R61,R62,R63
+
+ *3-3 : 00,01~7F : -63,-63~+63
+              00~07 : -63,-63,-62,-61,-60,-59,-58,-57
+              08~0F : -56,-55,-54,-53,-52,-51,-50,-49
+              10~17 : -48,-47,-46,-45,-44,-43,-42,-41
+              18~1F : -40,-39,-38,-37,-36,-35,-34,-33
+              20~27 : -32,-31,-30,-29,-28,-27,-26,-25
+              28~2F : -24,-23,-22,-21,-20,-19,-18,-17
+              30~37 : -16,-15,-14,-13,-12,-11,-10,- 9
+              38~3F : - 8,- 7,- 6,- 5,- 4,- 3,- 2,- 1
+              40~47 :   0,+ 1,+ 2,+ 3,+ 4,+ 5,+ 6,+ 7
+              48~4F : + 8,+ 9,+10,+11,+12,+13,+14,+15
+              50~57 : +16,+17,+18,+19,+20,+21,+22,+23
+              58~5F : +24,+25,+26,+27,+28,+29,+30,+31
+              60~67 : +32,+33,+34,+35,+36,+37,+38,+39
+              68~6F : +40,+41,+42,+43,+44,+45,+46,+47
+              70~77 : +48,+49,+50,+51,+52,+53,+54,+55
+              78~7F : +56,+57,+58,+59,+60,+61,+62,+63
+
+ *3-4 : 00,7F : Off,On
+
+1-2 SYSTEM REALTIME MESSAGES
+
++-----------+----------------------------------------------+
+| Status[H] | Description                                  |
++-----------+----------------------------------------------+
+|    F8     | Timing Clock                               *4|
+|    FA     | Start                                        |
+|    FB     | Continue                                     |
+|    FC     | Stop                                         |
+|    FE     | Active Sensing                               |
++-----------+----------------------------------------------+
+
+ *4 : This message is transmitted when the Global "CLOCK MODE" is set to "Internal".
+ 
+1-3 UNIVERSAL SYSTEM EXCLUSIVE MESSAGES
+
+ DEVICE INQUIRY REPLY
++---------+------------------------------------------------+
+| Byte[H] |                Description                     |
++---------+------------------------------------------------+
+|   F0    | Exclusive Status                               |
+|   7E    | Non Realtime Message                           |
+|   0g    | Global MIDI Channel  ( Device ID )             |
+|   06    | General Information                            |
+|   02    | Identity Reply                                 |
+|   42    | KORG ID              ( Manufacturers ID )      |
+|   23    | electribe ID         ( Family ID   (LSB))      |
+|   01    |                      ( Family ID   (MSB))      |
+|   00    |                      ( Member ID   (LSB))      |
+|   00    |                      ( Member ID   (MSB))      |
+|   xx    |                      ( Major Ver.       )      |
+|   xx    |                      ( Minor Ver.       )      |
+|   xx    |                      ( Release Ver.     )      |
+|   xx    |                      ( reserved         )      |
+|   F7    | End Of Exclusive                               |
++---------+------------------------------------------------+
+
+ This message is transmitted whenever a INQUIRY MESSAGE REQUEST is received.
+
+1-4 SYSTEM EXCLUSIVE MESSAGES
+
++-------------+-------------------------------------+------+
+| Function ID |    Description/Function             |      |
+|    [Hex]    |                                     | *5   |
++-------------+-------------------------------------+------+
+|     40      | CURRENT PATTERN DATA DUMP           | R    |
+|     4C      | PATTERN DATA DUMP (1 PATTERN)       | R    |
+|     51      | GLOBAL DATA DUMP                    | R    |
+|     26      | DATA FORMAT ERROR                   | E    |
+|     23      | DATA LOAD COMPLETED                 | E    |
+|     24      | DATA LOAD ERROR                     | E    |
+|     21      | WRITE COMPLETED                     | E    |
+|     22      | WRITE ERROR                         | E    |
++-------------+-------------------------------------+------+
+
+ *5 : Transmitted when
+      R  : Request message is received.
+      E  : Exclusive message is received.
+ 
+1-5 SEARCH DEVICE REPLY
+
++------------+----------------------------------------------+
+| Byte[H]    |                Description                   |
++------------+----------------------------------------------+
+|     F0     | Exclusive Status                             |
+|     42     | KORG ID              ( Manufacturers ID )    |
+|     50     | Search Device                                |
+|     01     | Reply                                        |
+| (0000gggg) | gggg:MIDI Global Channel  ( Device ID )      |
+|     dd     | Echo Back ID                                 |
+|     23     | electribe ID         ( Family ID   (LSB))    |
+|     01     |                      ( Family ID   (MSB))    |
+|     01     |                      ( Member ID   (LSB))    |
+|     00     |                      ( Member ID   (MSB))    |
+|     xx     |                      ( Major Ver.       )    |
+|     xx     |                      ( Minor Ver.       )    |
+|     xx     |                      ( Release Ver.     )    |
+|     xx     |                      ( reserved         )    |
+|     F7     | END OF EXCLUSIVE                             |
++------------+----------------------------------------------+
+
+ g : MIDI Channel = 0~F :Global Channel
+ dd : Echo Back ID = copy from SEARCH DEVICE REQUEST message.
+
+ This message is transmitted whenever a SEARCH DEVICE REQUEST is received.
+
+
+2.RECOGNIZED RECEIVE DATA
+
+2-1 CHANNEL MESSAGES
+
++--------+----------+-------------+------------------------------------------+-----+
+| Status |  Second  |   Third     |      Description                         | ENA |
+|  [Hex] | [H]  [D] |  [H]   [D]  |                                          |     |
++--------+----------+-------------+------------------------------------------+-----+
+|   8n   | kk  (kk) | 40    (64)  | Note Off                                 |  S  |
+|   9n   | kk  (kk) | vv    (vv)  | Note On  vv=1~127                        |  S  |
+|   Bn   | 00  (00) | mm    (mm)  | Bank Select (MSB)                      *6|  P  |
+|   Bn   | 07  (07) | vv    (vv)  | Amp Level                            *7-1|  S  |
+|   Bn   | 0A  (10) | vv    (vv)  | Amp Pan                              *7-2|  S  |
+|   Bn   | 20  (32) | bb    (vv)  | Bank Select(LSB)                       *6|  P  |
+|   Bn   | 47  (71) | vv    (vv)  | Filter Resonance                     *7-1|  S  |
+|   Bn   | 48  (72) | vv    (vv)  | EG Decay/Release                     *7-1|  S  |
+|   Bn   | 49  (73) | vv    (vv)  | EG Attack                            *7-1|  S  |
+|   Bn   | 4A  (74) | vv    (vv)  | Filter Cutoff                        *7-1|  S  |
+|   Bn   | 50  (80) | vv    (bb)  | Osc Pitch                            *7-3|  S  |
+|   Bn   | 51  (81) | vv    (vv)  | Osc Glide                            *7-1|  S  |
+|   Bn   | 52  (82) | vv    (vv)  | Osc Edit                             *7-1|  S  |
+|   Bn   | 53  (83) | vv    (vv)  | Filter EG Int.                       *7-3|  S  |
+|   Bn   | 55  (85) | vv    (vv)  | Modulation Depth                     *7-1|  S  |
+|   Bn   | 56  (86) | vv    (vv)  | Modulation Speed                     *7-1|  S  |
+|   Bn   | 57  (87) | vv    (vv)  | Insert Fx Edit                       *7-1|  S  |
+|   Bn   | 66 (102) | vv    (vv)  | Master Fx X                          *7-1|  S  |
+|   Bn   | 67 (103) | vv    (vv)  | Master Fx Y                          *7-1|  S  |
+|   Bn   | 68 (104) | vv    (vv)  | Insert Fx Off/On                     *7-4|  S  |
+|   Bn   | 69 (105) | vv    (vv)  | MFX Send Off/On                      *7-4|  S  |
+|   Bn   | 6A (106) | vv    (vv)  | Master Fx Off/On                     *7-4|  S  |
+|   Bn   | 78 (120) | vv    (vv)  | All Sound Off                            |  A  |
+|   Bn   | 79 (121) | vv    (vv)  | Reset All Controllers                    |  A  |
+|   Bn   | 7B (123) | vv    (vv)  | All Note Off                             |  A  |
+|   Cn   | pp  (pp) | --    (--)  | Program Change                         *6|  P  |
++--------+----------+-------------+------------------------------------------+-----+
+
+ n  : MIDI Channel = 0 ~ F
+ vv : Value
+
+ ENA =  A :Always Enabled
+        S : Enabled When Global MIDI RECEIVE/SEND FILTER is "Off".
+        P : Enabled when Global MIDI RECEIVE/SEND FILTER is "Off" or "Short".
+
+ *6 : Pattern              MIDI Out    [Hex]           [Dec]
+      Pattern 001 - 127    mm,bb,pp  : 00,00,01~7F  /  00,00,001~127
+      Pattern 128 - 250                00,01,01~79  /  00,01,001~121
+
+ *7-1 : 00~7F : 00~127
+ 
+ *7-2 : 00,01~40~7F : L63,L63~Center~R63
+              00~07 : L63,L63,L62,L61,L60,L59,L58,L57
+              08~0F : L56,L55,L54,L53,L52,L51,L50,L49
+              10~17 : L48,L47,L46,L45,L44,L43,L42,L41
+              18~1F : L40,L39,L38,L37,L36,L35,L34,L33
+              20~27 : L32,L31,L30,L29,L28,L27,L26,L25
+              28~2F : L24,L23,L22,L21,L20,L19,L18,L17
+              30~37 : L16,L15,L14,L13,L12,L11,L10,L09
+              38~3F : L08,L07,L06,L05,L04,L03,L02,L01
+              40~47 : Center,R01,R02,R03,R04,R05,R06,R07
+              48~4F : R08,R09,R10,R11,R12,R13,R14,R15
+              50~57 : R16,R17,R18,R19,R20,R21,R22,R23
+              58~5F : R24,R25,R26,R27,R28,R29,R30,R31
+              60~67 : R32,R33,R34,R35,R36,R37,R38,R39
+              68~6F : R40,R41,R42,R43,R44,R45,R46,R47
+              70~77 : R48,R49,R50,R51,R52,R53,R54,R55
+              78~7F : R56,R57,R58,R59,R60,R61,R62,R63
+
+ *7-3 : 00,01~7F : -63,-63~+63
+              00~07 : -63,-63,-62,-61,-60,-59,-58,-57
+              08~0F : -56,-55,-54,-53,-52,-51,-50,-49
+              10~17 : -48,-47,-46,-45,-44,-43,-42,-41
+              18~1F : -40,-39,-38,-37,-36,-35,-34,-33
+              20~27 : -32,-31,-30,-29,-28,-27,-26,-25
+              28~2F : -24,-23,-22,-21,-20,-19,-18,-17
+              30~37 : -16,-15,-14,-13,-12,-11,-10,- 9
+              38~3F : - 8,- 7,- 6,- 5,- 4,- 3,- 2,- 1
+              40~47 :   0,+ 1,+ 2,+ 3,+ 4,+ 5,+ 6,+ 7
+              48~4F : + 8,+ 9,+10,+11,+12,+13,+14,+15
+              50~57 : +16,+17,+18,+19,+20,+21,+22,+23
+              58~5F : +24,+25,+26,+27,+28,+29,+30,+31
+              60~67 : +32,+33,+34,+35,+36,+37,+38,+39
+              68~6F : +40,+41,+42,+43,+44,+45,+46,+47
+              70~77 : +48,+49,+50,+51,+52,+53,+54,+55
+              78~7F : +56,+57,+58,+59,+60,+61,+62,+63
+
+ *7-4 : 00,01~7F : Off,On
+
+
+ 
+2-2 SYSTEM REALTIME MESSAGES
+
++-----------+----------------------------------------------+
+| Status[H] | Description                                  |
++-----------+----------------------------------------------+
+|    F8     | Timing Clock                                 |
+|    FA     | Start                                        |
+|    FB     | Continue                                     |
+|    FC     | Stop                                         |
+|    FE     | Active Sensing                               |
++-----------+----------------------------------------------+
+
+2-3 UNIVERSAL SYSTEM EXCLUSIVE MESSAGE ( NON REALTIME )
+
+ DEVICE INQUIRY MESSAGE REQUEST
++---------+------------------------------------------------+
+| Byte[H] |    Description                                 |
++---------+------------------------------------------------+
+|   F0    | Exclusive Status                               |
+|   7E    | Non Realtime Message                           |
+|   nn    | MIDI Channel (Device ID)                       |
+|   06    | General Information                            |
+|   01    | Identity Request                               |
+|   F7    | END OF EXCLUSIVE                               |
++---------+------------------------------------------------+
+
+ nn : MIDI Channel = 0 ~ F : Global Channel
+                   = 7F    : Any Channel
+
+
+2-4 UNIVERSAL SYSTEM EXCLUSIVE MESSAGE ( REALTIME )
+
+Not applicable
+
+2-5 SYSTEM EXCLUSIVE MESSAGE
+
++-------------+--------------------------------------------+
+| Function ID |               Function                     |
+|    [Hex]    |                                            |
++-------------+--------------------------------------------+
+|     10      | CURRENT PATTERN DATA DUMP REQUEST          |
+|     1C      | PATTERN DATA DUMP REQUEST (1 Pattern)      |
+|     0E      | GLOBAL DATA DUMP REQUEST                   |
+|     11      | PATTERN WRITE REQUEST                      |
+|             |                                            |
+|     40      | CURRENT PATTERN DATA DUMP                  |
+|     4C      | PATTERN DATA DUMP (1 Pattern)              |
+|     51      | GLOBAL DATA DUMP                           |
++-------------+--------------------------------------------+
+
+2-6 SEARCH DEVICE REQUEST
+
++---------+------------------------------------------------+
+| Byte[H] |                Description                     |
++---------+------------------------------------------------+
+|   F0    | Exclusive Status                               |
+|   42    | KORG ID  ( Manufacturers ID )                  |
+|   50    | Search Device                                  |
+|   00    | Request                                        |
+|   dd    | Echo Back ID                                   |
+|   F7    | END OF EXCLUSIVE                               |
++---------+------------------------------------------------+
+
+ Receive this message, and transmits SEARCH DEVICE REPLY message
+ including copied Echo Back ID.
+ 
+MIDI Exclusive Format [R:Receive, T:Transmit]
+
+(1) CURRENT PATTERN DATA DUMP REQUEST                               R
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0001 0000 (10) | CURRENT PATTERN DATA DUMP REQUEST      10H       |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ Receive this message, and transmits Func=40 or Func=24 message.
+
+(2) PATTERN DATA DUMP REQUEST (1 PATTERN)                           R
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0001 1100 (1C) | PATTERN DATA DUMP REQUEST              1CH       |
+| 0ppp pppp (pp) | Source Pattern No.(LSB bit  6~0)                 |
+| 0ppp pppp (PP) | Source Pattern No.(MSB bit 13~7)                 |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ PPpp : 0~FA = Pattern No. 001-250
+ Receive this message, and transmits Func=4C or Func=24 message.
+
+
+(3) GLOBAL DATA DUMP REQUEST                                        R
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0001 1110 (1E) | GLOBAL DATA DUMP REQUEST               1EH       |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ Receive this message, and transmits Func=51 or Func=24 message.
+
+
+
+(4) PATTERN WRITE REQUEST                                           R
++----------------+--------------------------------------------------+
+|     Byte       |            Description                           |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0001 0001 (11) | PATTERN WRITE REQUEST                  11H       |
+| 0ppp pppp (pp) | Destination Pattern No.(LSB bit  6~0)            |
+| 0ppp pppp (PP) | Destination Pattern No.(MSB bit 13~7)            |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ PPpp : 0~FA = Pattern No. 001-250
+
+ Receive this message, and transmits Func=21 or Func=22 message.
+
+ 
+
+(5) CURRENT PATTERN DATA DUMP                                     R/T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0100 0000 (40) | CURRENT PATTERN DATA DUMP              40H       |
+| 0ddd dddd (dd) | Data                         (TABLE 1, NOTE 1,3) |
+|     :          |  :                                               |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ Receive this message & data, save them to Edit Buffer and transmits Func=23 or Func=24 message.
+ Receive Func=10 message, and transmits this message & data from Edit Buffer.
+
+
+(6) PATTERN DATA DUMP (1 PATTERN)                                 R/T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0100 1100 (4C) | CURRNT PATTERN DATA DUMP               4CH       |
+| 0ppp pppp (pp) | Pattern No.(LSB bit  6~0)                        |
+| 0ppp pppp (PP) | Pattern No.(MSB bit 13~7)                        |
+| 0ddd dddd (dd) | Data                         (TABLE 1, NOTE 1,3) |
+|     :          |  :                                               |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ PPpp : 0~FA = Pattern No. 001-250
+
+ Receive this message & data, save them to Internal Memory and transmits Func=23 or Func=24 message.
+ Receive Func=1C message, and transmits this message & data from Internal Memory.
+ When DATA DUMP is executed, transmit this message & data from Internal Memory.
+
+(7) GLOBAL DATA DUMP                                              R/T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0101 0001 (51) | GLOBAL DATA DUMP                       51H       |
+| 0ddd dddd (dd) | Data                         (TABLE 7, NOTE 1,3) |
+|     :          |  :                                               |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ Receive this message & data, save them to Internal Memory and transmits Func=23 or Func=24 message.
+ Receive Func=0E message, and transmits this message & data from Edit Buffer.
+ When DATA DUMP is executed, transmit this message & data from Edit Buffer.
+
+
+(8) RECEIVE DATA FORMAT ERROR                                       T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0010 0110 (26) | DATA FORMAT ERROR                      26H       |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ When found an error in the received message (e.g. data length), transmits this message.
+
+(9) DATA LOAD COMPLETED (ACK)                                      T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0010 0011 (23) | DATA LOAD COMPLETED                    23H       |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ When DATA LOAD,PROCESSING have been completed, transmits this message.
+
+
+(10) DATA LOAD ERROR (NAK)                                          T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0010 0100 (24) | DATA LOAD ERROR                        24H       |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ When DATA LOAD,PROCESSING have not been completed, transmits this message.
+
+
+(11) WRITE COMPLETED                                                T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0010 0001 (21) | WRITE COMPLETED                        21H       |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ When DATA WRITE MIDI has been completed, transmits this message.
+
+
+(12) WRITE ERROR                                                    T
++----------------+--------------------------------------------------+
+|     Byte       |             Description                          |
++----------------+--------------------------------------------------+
+| F0,42,3g,      | EXCLUSIVE HEADER                                 |
+| 00,01,23,      | ProductID (electribe)                            |
+| 0010 0010 (22) | WRITE ERROR                            22H       |
+| 1111 0111 (F7) | EOX                                              |
++----------------+--------------------------------------------------+
+
+ When DATA WRITE MIDI has not been completed, transmits this message.
+
+NOTE 1 : Current Patttern Data Dump Format  & Pattern Data Dump
+         16384Bytes       = 7 * 2340 + 4    -> 8 * 2340 + (4+1)   = 18725Bytes
+
+NOTE 2 : GLOBAL DATA (IN INTERNAL MEMORY) DUMP FORMAT
+           256Bytes       = 7 *   36 + 4    -> 8 *   36 + (4+1)   =   293Bytes
+          
+NOTE 3 : The dump data conversion
+
+   DATA ( 1set = 8bit x 7Byte )
+   b7     ~      b0   b7     ~      b0   b7   ~~    b0   b7     ~      b0
+   +-+-+-+-+-+-+-+-+  +-+-+-+-+-+-+-+-+  +-+-+-~~-+-+-+  +-+-+-+-+-+-+-+-+
+   | | | | | | | | |  | | | | | | | | |  | | |    | | |  | | | | | | | | |
+   +-+-+-+-+-+-+-+-+  +-+-+-+-+-+-+-+-+  +-+-+-~~-+-+-+  +-+-+-+-+-+-+-+-+
+         7n+0               7n+1          7n+2 ~~ 7n+5         7n+6
+
+    MIDI DATA ( 1set = 7bit x 8Byte )
+      b7b7b7b7b7b7b7     b6    ~     b0     b6 ~~    b0     b6    ~     b0
+   +-+-+-+-+-+-+-+-+  +-+-+-+-+-+-+-+-+  +-+-+-~~-+-+-+  +-+-+-+-+-+-+-+-+
+   |0| | | | | | | |  |0| | | | | | | |  |0| |    | | |  |0| | | | | | | |
+   +-+-+-+-+-+-+-+-+  +-+-+-+-+-+-+-+-+  +-+-+-~~-+-+-+  +-+-+-+-+-+-+-+-+
+   7n+6,5,4,3,2,1,0         7n+0          7n+1 ~~ 7n+5         7n+6
+
+
+ TABLE 1 : Pattern Parameter ( 1 Pattern, Current Pattern )
+  No. : No. in the Pattern dump data.
++-------------+-------------------+--------------------------------------+
+|  No.        |    PARAMETER      | VALUE/DESCRIPTION                    |
++-------------+-------------------+--------------------------------------+
+| 0~3         | Header            | 'PTST' = 54535450[HEX]               |
++-------------+-------------------+--------------------------------------+
+| 4~7         | Size              |                                      |
++-------------+-------------------+--------------------------------------+
+| 8~11        | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| Pattern Version (TABLE 2)                                              |
++-------------+-------------------+--------------------------------------+
+| 16~33       | Pattern Name      | null terminated                      |
++-------------+-------------------+--------------------------------------+
+| 34~35       | Tempo             | 200~3000 = 20.0 ~ 300.0              |
++-------------+-------------------+--------------------------------------+
+| 36          | Swing             | -48 ~ 48                             |
++-------------+-------------------+--------------------------------------+
+| 37          | Length            | 0~3 = 1~4bar(s)                      |
++-------------+-------------------+--------------------------------------+
+| 38          | Beat              | 0, 1, 2, 3 = 16,32,8 Tri, 16 Tri     |
++-------------+-------------------+--------------------------------------+
+| 39          | Key               | 0~11 = C~B                           |
++-------------+-------------------+--------------------------------------+
+| 40          | Scale             | 0~35                                 |
++-------------+-------------------+--------------------------------------+
+| 41          | Chordset          | 0~4                                  |
++-------------+-------------------+--------------------------------------+
+| 42          | Play Level        | 127 ~ 0 = 0 ~ 127                    |
++-------------+-------------------+--------------------------------------+
+| 43          | (reserved)                                               |
++-------------+-------------------+--------------------------------------+
+|  TouchScale Parameter (TABLE 3)                                        |
++-------------+-------------------+--------------------------------------+
+|  Master Fx Paramter (TABLE 4)                                          |
++-------------+-------------------+--------------------------------------+
+| 68          | Alternate 13-14   | 0~1=OFF,ON                           |
++-------------+-------------------+--------------------------------------+
+| 69          | Alternate 15-16   | 0~1=OFF,ON                           |
++-------------+----------------------------------------------------------+
+| 70~77       | (reserved)                                               |
++-------------+----------------------------------------------------------+
+| 78~255      | (reserved)                                               |
++-------------+----------------------------------------------------------+
+|  Motion Sequence Parameter (TABLE 5)                                   |
++-------------+-------------------+--------------------------------------+
+| 1840~2047   | (reserved)                                               |
++-------------+-------------------+--------------------------------------+
+| 2048~2863   | Part 1 Parameter (TABLE 6)                               |
++-------------+-------------------+--------------------------------------+
+| .           |                                                          |
+| .           |                                                          |
+| .           |                                                          |
++-------------+-------------------+--------------------------------------+
+| 14288~15103 | Part 16 Parameter (TABLE 6)                              |
++-------------+-------------------+--------------------------------------+
+| 15104~15355 | (reserved)                                               |
++-------------+-------------------+--------------------------------------+
+| 15356~15359 | Footer            | 'PTED' = 44455450[HEX]               |
++-------------+-------------------+--------------------------------------+
+| 15360~16383 | (reserved)                                               |
++-------------+-------------------+--------------------------------------+
+
+ TABLE 2 : Pattern Version
+  OFFSET : Offset in the Pattern Parameter
++-------------+-------------------+--------------------------------------+
+|  OFFSET     |    PARAMETER      | VALUE/DESCRIPTION                    |
++-------------+-------------------+--------------------------------------+
+| 0           | Major version     |                                      |
++-------------+-------------------+--------------------------------------+
+| 1           | Minor version     |                                      |
++-------------+-------------------+--------------------------------------+
+| 2~3         | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+
+
+ TABLE 3 : TouchScale Parameter
+  OFFSET : Offset in the Pattern Parameter
++-------------+-------------------+--------------------------------------+
+|  OFFSET     |    PARAMETER      | VALUE/DESCRIPTION                    |
++-------------+-------------------+--------------------------------------+
+| 0~4         | (reseved)         |                                      |
++-------------+-------------------+--------------------------------------+
+| 5           | Gate Arp Pattern  | 0~49                                 |
++-------------+-------------------+--------------------------------------+
+| 6           | Gate Arp Speed    | 0~127                                |
++-------------+-------------------+--------------------------------------+
+| 7           | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 8~9         | Gate Arp Time     | -100 ~ 100                           |
++-------------+-------------------+--------------------------------------+
+| 10~15       | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+
+ TABLE 4 : Master Fx Paramter
+  OFFSET : Offset in the Pattern Parameter
++-------------+-------------------+--------------------------------------+
+|  OFFSET     |    PARAMETER      | VALUE/DESCRIPTION                    |
++-------------+-------------------+--------------------------------------+
+| 0           | (reseved)         |                                      |
++-------------+-------------------+--------------------------------------+
+| 1           | Type              | 0~31                                 |
++-------------+-------------------+--------------------------------------+
+| 2           | XY Pad X          | 0~127                                |
++-------------+-------------------+--------------------------------------+
+| 3           | XY Pad Y          | 0~127                                |
++-------------+-------------------+--------------------------------------+
+| 4           | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 5           | MFX Hold          | 0,1~127 = OFF,ON                     |
++-------------+-------------------+--------------------------------------+
+| 6~7         | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+
+
+TABLE 5 :Motion Sequence Parameter
+ OFFSET : Offset in the Pattern Parameter
++-------------+--------------------------+--------------------------------------+
+|  OFFSET     |    PARAMETER             | VALUE/DESCRIPTION                    |
++-------------+--------------------------+--------------------------------------+
+| 0~23        | Part Slot                | 0,1~16,17=Off,Part1~16,Master FX     |
++-------------+--------------------------+--------------------------------------+
+| 24~48       | Destination              | *T5-1                                |
++-------------+--------------------------+--------------------------------------+
+| 49~112      | Slot 1 Motion Sequence   | 0~127 for each                       |
++-------------+--------------------------+--------------------------------------+
+| .           |                                                                 |
+| .           |                                                                 |
+| .           |                                                                 |
++-------------+--------------------------+--------------------------------------+
+| 1519~1583   | Slot 24 Motion Sequence  | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+
+ *T5-1 : Desttination List
+         0 : Off
+         1 : (Reserved)
+         2 : Oscillator Pitch
+         3 : Oscillator Glide
+         4 : Oscillator Edit
+         5 : Filter Cutoff
+         6 : Filter Resonance
+         7 : Filter EG Int.
+         8 : Modulation Depth
+         9 : Modulation Speed
+        10 : Amp Level
+        11 : Amp Pan
+        12 : EG Attack
+        13 : EG Decay/Release
+        14 : IFX Edit
+        15 : Master Fx X
+        16 : Master Fx Y
+        17 : IFX On/Off
+        18 : MFX Send On/Off
+        19 : MFX XY Pad On/Off
+
+TABLE 6 :Part Parameter
+ OFFSET : Offset in the Pattern Parameter
++-------------+--------------------------+--------------------------------------+
+|  OFFSET     |    PARAMETER             | VALUE/DESCRIPTION                    |
++-------------+--------------------------+--------------------------------------+
+| 0           | Last Step                | 0,1~15=16,1~15                       |
++-------------+--------------------------+--------------------------------------+
+| 1           | Mute                     | 0,1=OFF,ON                           |
++-------------+--------------------------+--------------------------------------+
+| 2           | Voice Assign             | 0,1,2,3=Mono1, Mono2, Poly1, Poly2   |
++-------------+--------------------------+--------------------------------------+
+| 3           | Motion Sequence          | 0,1,2=Off, Smooth, TriggerHold       |
++-------------+--------------------------+--------------------------------------+
+| 4           | Trig.Pad Velocity        | 0,1=Off,On                           |
++-------------+--------------------------+--------------------------------------+
+| 5           | Scale Mode               | 0,1=Off,On                           |
++-------------+--------------------------+--------------------------------------+
+| 6           | Part Priority            | 0,1=Normal,High                      |
++-------------+--------------------------+--------------------------------------+
+| 7           | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 8~9         | Oscillator Type          | 0~500                                |
++-------------+--------------------------+--------------------------------------+
+| 10          | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 11          | Oscillator Edit          | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 12          | Filter Type              | 0~16                                 |
++-------------+--------------------------+--------------------------------------+
+| 13          | Filter Cutoff            | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 14          | Filter Resonance         | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 15          | Filter EG Int.           | -63~63                               |
++-------------+--------------------------+--------------------------------------+
+| 16          | Modulation Type          | 0~71                                 |
++-------------+--------------------------+--------------------------------------+
+| 17          | Modulation Speed         | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 18          | Modulation Depth         | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 19          | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 20          | EG Attack                | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 21          | EG Decay/Release         | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 22~23       | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 24          | Amp Level                | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 25          | Amp Pan                  | -63~0~64=L63~center~R63              |
++-------------+--------------------------+--------------------------------------+
+| 26          | EG On/Off                | 0,1=Off,On                           |
++-------------+--------------------------+--------------------------------------+
+| 27          | MFX Send On/Off          | 0,1=Off,On                           |
++-------------+--------------------------+--------------------------------------+
+| 28          | Groove Type              | 0~24                                 |
++-------------+--------------------------+--------------------------------------+
+| 29          | Groove Depth             | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 30~31       | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 32          | IFX On/Off               | 0,1=Off,On                           |
++-------------+--------------------------+--------------------------------------+
+| 33          | IFX Type                 | 0~37                                 |
++-------------+--------------------------+--------------------------------------+
+| 34          | IFX Edit                 | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 35          | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 36          | Oscillator Pitch         | -63~+63                              |
++-------------+--------------------------+--------------------------------------+
+| 37          | Oscillator Glide         | 0~127                                |
++-------------+--------------------------+--------------------------------------+
+| 38~47       | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 48~59       | Step1 Step Data          |                                      |
+| (48)        | Step1 On/Off             | 0,1=Off,On                           |
+| (49)        | Step1 Gate Time          | 0~96,127=0~96,TIE                    |
+| (50)        | Step1 Velocity           | 1~127                                |
+| (51)        | Step1 Trigger On/Off     | 0,1=Off,On                           |
+| (52)        | Step1 Note Slot 1        | 0,1~128=Off,Note No 0~127            |
+| (53)        | Step1 Note Slot 2        | (same as Slot 1)                     |
+| (54)        | Step1 Note Slot 3        | (same as Slot 1)                     |
+| (55)        | Step1 Note Slot 4        | (same as Slot 1)                     |
+| (56~59)     | (reserved)               |                                      |
++-------------+--------------------------+--------------------------------------+
+| 60~71       | Step2 Step Data          | (same as Step1 Step Data)            |
++-------------+--------------------------+--------------------------------------+
+| .           |                                                                 |
+| .           |                                                                 |
+| .           |                                                                 |
++-------------+--------------------------+--------------------------------------+
+| 741~752     | Step64 Step Data         | (same as Step1 Step Data)            |
++-------------+--------------------------+--------------------------------------+
+
+ TABLE 7 : Global Parameter
+  No. : No. in the Pattern dump data.
++-------------+-------------------+--------------------------------------+
+|  No.        |    PARAMETER      | VALUE/DESCRIPTION                    |
++-------------+-------------------+--------------------------------------+
+| 0~3         | Header            | 'GLST' = 54534C47[HEX]               |
++-------------+-------------------+--------------------------------------+
+| 4~7         | Size              |                                      |
++-------------+-------------------+--------------------------------------+
+| 8~15        | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 16          | Metronome         | 0,1,2,3,4=Off, Rec0, Rec1, Rec2, On  |
++-------------+-------------------+--------------------------------------+
+| 17          | Sync Polarity     | 0,1=Hi,Low                           |
++-------------+-------------------+--------------------------------------+
+| 18          | Sync Resolution   | 0,1=1step,2steps                     |
++-------------+-------------------+--------------------------------------+
+| 19          | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 20          | Audio In Thru     | 0,1=Off,On                           |
++-------------+-------------------+--------------------------------------+
+| 21~26       | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 27          | Velocity Curve    | 0,1,2,3=Heavy, Normal, Light, Const96|
++-------------+-------------------+--------------------------------------+
+| 28          | Knob Mode         | 0,1,2=Jump, Catch, Value Scale       |
++-------------+-------------------+--------------------------------------+
+| 29          | Trigger Mode      | 0,1,2=Normal, Seq 1st, Seq Play      |
++-------------+-------------------+--------------------------------------+
+| 30          | LCD Contrast      | 0~24=1~25                            |
++-------------+-------------------+--------------------------------------+
+| 31          | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 32          | Battery Mode      | 0,1=Ni-MH,Alkali                     |
++-------------+-------------------+--------------------------------------+
+| 33          | Auto Power Off    | 0,1=Disable,4 hours                  |
++-------------+-------------------+--------------------------------------+
+| 34~35       | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 36          | Tempo Lock        |                                      |
++-------------+-------------------+--------------------------------------+
+| 37          | Power Save        | 0,1,2=Disable,Auto,Enable            |
++-------------+-------------------+--------------------------------------+
+| 38          | Touch Scale Range | 0~3=1~4 Oct                          |
++-------------+-------------------+--------------------------------------+
+| 39          | (reserved)        |                                      |
++-------------+-------------------+--------------------------------------+
+| 40          | Clock Mode        | *T7-1                                |
++-------------+-------------------+--------------------------------------+
+| 41          | Global Channel    | 0~15=1~16                            |
++-------------+-------------------+--------------------------------------+
+| 42          | RECEIVE FILTER    | *T7-2                                |
++-------------+-------------------+--------------------------------------+
+| 43          | SEND FILTER       | *T7-2                                |
++-------------+-------------------+--------------------------------------+
+
+ *T7-1 : Clock Mode
+         0 : Internal
+         1 : Auto
+         2 : External USB
+         3 : External MIDI
+         4 : External Sync
+
+ *T7-2 : Filter Parameter
+         0 : Off
+         1 : Short
+         2 : Short + Program
+
