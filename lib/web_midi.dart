@@ -5,15 +5,18 @@ library webmidi;
 
 import 'package:js/js.dart';
 // import 'dart:js_util' as js;
-// import 'dart:html';
 
 // Calls invoke JavaScript `getMidi(callback)`.
 @JS('getMidi')
 external void _getMidi(Function callback);
 
-void dartMidiInit() {
+MidiDispatcher? _midiControl;
+
+// init web midi, get dispatcher for first device
+Future<void> dartMidiInit() async {
   _getMidi(allowInterop((MidiDispatcher dispatcher) {
     print('got midi dispatcher from js: $dispatcher');
+    _midiControl = dispatcher;
     dispatcher.addInputListener(allowInterop(_rxMidi));
   }));
 }
@@ -24,6 +27,11 @@ void _rxMidi(List<int> mesg) {
     return;
   }
   print('FLUTTER midi data: $mesg');
+}
+
+// send midi data to first device
+void send(List<int> data) {
+  _midiControl?.send(data);
 }
 
 @JS()
