@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'fire_midi.dart';
-import 'web_midi.dart';
+import 'midi/fire_midi.dart';
+import 'midi/web_midi.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,14 +10,16 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  static const title = 'E2 Editor';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: title,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: title),
     );
   }
 }
@@ -42,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('E2 Editor'),
             MaterialButton(
                 child: const Text('Fire: All Off'),
                 onPressed: () {

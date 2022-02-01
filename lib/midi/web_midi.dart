@@ -8,13 +8,13 @@ import 'package:js/js.dart';
 
 // Calls invoke JavaScript `getMidi(callback)`.
 @JS('getMidi')
-external void _getMidi(Function callback);
+external void _getMidi(String deviceNamePrefix, Function callback);
 
 MidiDispatcher? _midiControl;
 
 // init web midi, get dispatcher for first device
 Future<void> dartMidiInit() async {
-  _getMidi(allowInterop((MidiDispatcher dispatcher) {
+  _getMidi("FL STUDIO", allowInterop((MidiDispatcher dispatcher) {
     print('got midi dispatcher from js: $dispatcher');
     _midiControl = dispatcher;
     dispatcher.addInputListener(allowInterop(_rxMidi));
@@ -42,5 +42,8 @@ class MidiDispatcher {
   external send(dynamic data);
 }
 
+// this is just to workaround not being able to use MIDIMessageEvent definition
+// from dart:html due to bugs in dart:html Webmidi implementation
+// see: https://github.com/dart-lang/sdk/issues/33248
 @JS()
 class AMIDIMessageEvent {}

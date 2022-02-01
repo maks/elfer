@@ -1,4 +1,4 @@
-import 'package:e2_edit/web_midi.dart';
+import 'web_midi.dart';
 
 void fireAllOff(int r, int g, int b) {
   const sysexHeader = [

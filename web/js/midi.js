@@ -1,6 +1,6 @@
 let midiOutput;
 
-function getMidi(midiReadyCallback) {
+function getMidi(deviceNamePrefix, midiReadyCallback) {
   navigator.requestMIDIAccess({ sysex: true })
     .then(function (midiAccess) {
       console.log("MIDI Access Ready, getting input, outputs...")
@@ -10,13 +10,19 @@ function getMidi(midiReadyCallback) {
       console.log(outputs);
       for (const output of outputs) {
         console.log(output);
-        midiOutput = output;
+        if (output.name.startsWith(deviceNamePrefix)) {
+          midiOutput = output;
+          console.log("using MidiOut:" + output.name);
+        }
       }
       console.log(inputs);
       let midiInput;
       for (const input of inputs) {
         console.log(input);
-        midiInput = input;
+        if (input.name.startsWith(deviceNamePrefix)) {
+          midiInput = input;
+          console.log("using MidiOut:" + input.name);
+        }
       }
       midiOutput.onstatechange = (state) => {
         console.log("state change:", state);
