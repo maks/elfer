@@ -1,10 +1,20 @@
+import 'package:e2_edit/editor/part_widget.dart';
 import 'package:flutter/material.dart';
 
-class Pattern extends StatelessWidget {
-  const Pattern({Key? key}) : super(key: key);
+import 'pattern.dart';
+
+class PatternWidget extends StatelessWidget {
+  final E2Pattern pattern;
+  const PatternWidget({Key? key, required this.pattern}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row();
+    return Column(
+      children: pattern.parts
+          .map(
+            (p) => PartWidget(part: p),
+          )
+          .toList(),
+    );
   }
 }

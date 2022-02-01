@@ -1,5 +1,7 @@
+import 'package:e2_edit/editor/pattern_widget.dart';
 import 'package:flutter/material.dart';
 
+import 'editor/pattern.dart';
 import 'midi/fire_midi.dart';
 import 'midi/web_midi.dart';
 
@@ -44,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            PatternWidget(pattern: E2Pattern.empty()),
             MaterialButton(
                 child: const Text('Fire: All Off'),
                 onPressed: () {
