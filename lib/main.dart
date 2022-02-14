@@ -1,68 +1,92 @@
-import 'package:e2_edit/editor/pattern_widget.dart';
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 
-import 'editor/pattern.dart';
-import 'midi/fire_midi.dart';
-import 'midi/web_midi.dart';
+import 'package:flutter_midi_command/flutter_midi_command.dart';
+import 'package:ninja_hex/ninja_hex.dart';
+import 'midi/e2_device.dart';
+import 'midi/e2_midi.dart';
 
 void main() {
+  Log.init();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static const title = 'E2 Editor';
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final MidiCommand _midiCommand = MidiCommand();
+  late final E2Device _e2Device;
+  StreamSubscription? _e2Subscription;
+
+  Uint8List? lastMidiMesg;
+
+  @override
+  void initState() {
+    super.initState();
+    _e2Device = E2Device(_midiCommand);
+    _subscribeE2Events();
+  }
+
+  @override
+  void dispose() {
+    _e2Subscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: title,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: title),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            PatternWidget(pattern: E2Pattern.empty()),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('ML-1'),
+        ),
+        body: Column(
+          children: [
+            Row(
+              children: [
+                MaterialButton(
+                  child: const Text('Disconnect'),
+                  onPressed: () async {
+                    _e2Device.disconnect();
+                    log('device disconnected');
+                  },
+                ),
+                MaterialButton(
+                  child: const Text('Connect'),
+                  onPressed: () async {
+                    _e2Device.connectDevice();
+                    _subscribeE2Events();
+                    log('device connected');
+                  },
+                ),
+              ],
+            ),
             MaterialButton(
-                child: const Text('Fire: All Off'),
-                onPressed: () {
-                  fireAllOff(0, 0, 0);
-                }),
+              child: const Text('SEND'),
+              onPressed: () async {
+                final mesg = searchDevice;
+                _e2Device.send(mesg);
+                log('sent mesg: ${hexView(0, mesg)}');
+              },
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          print('trying Web Midi Init...');
-          dartMidiInit();
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+
+  void _subscribeE2Events() {
+    _e2Subscription = _e2Device.e2Events.listen((packet) {
+      log('received packet: $packet');
+    });
+    log('subscribed to E2 events');
   }
 }
