@@ -5,9 +5,7 @@ import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_midi_command/flutter_midi_command.dart';
-import 'package:ninja_hex/ninja_hex.dart';
 import 'midi/e2_device.dart';
-import 'midi/e2_midi.dart';
 
 void main() {
   Log.init();
@@ -70,11 +68,9 @@ class _MyAppState extends State<MyApp> {
               ],
             ),
             MaterialButton(
-              child: const Text('SEND'),
+              child: const Text('Get pattern'),
               onPressed: () async {
-                final mesg = searchDevice;
-                _e2Device.send(mesg);
-                log('sent mesg: ${hexView(0, mesg)}');
+                _e2Device.getPattern(1);
               },
             ),
           ],
