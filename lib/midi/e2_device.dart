@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:ffi' as ffi;
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
+import 'package:ffi/ffi.dart';
 import 'package:ninja_hex/ninja_hex.dart';
+import '../elecmidi_generated.dart';
 import 'e2_data.dart';
 import 'e2_midi.dart' as e2;
 import 'package:flutter_midi_command/flutter_midi_command.dart';
@@ -34,7 +39,7 @@ class E2Device {
       _device = device;
       log('connected device:${_device?.name}');
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 250));
       log('Search for E2 Device...');
       send(e2.searchDeviceMessage);
     } else {
@@ -83,11 +88,24 @@ class E2Device {
           if (isPatternReply(packet.data, _e2ProductId!)) {
             final decoded =
                 decodeMidiData(packet.data.sublist(headerOffSet, packet.data.length - 1));
-            log('decode check..');
-            checkData(decoded);
-            final pattern = patternFromData(decoded);
-            log('pattern name: ${pattern.name}');
-            log('pattern tempo: ${pattern.tempo}');
+
+            if (decoded.length != 18725) {
+              throw Exception('Invalid pattern data size:${decoded.length}');
+            }
+
+            final ffi.Pointer<ffi.Uint8> p = calloc(decoded.length);
+            final buf = p.asTypedList(decoded.length);
+            for (var i = 0; i < decoded.length; i++) {
+              buf[i] = decoded[i];
+            }
+
+            final Pointer<PatternType> patternData = Pointer.fromAddress(p.address);
+            final patName = patternData.ref.name;
+            print('name: ${patName.getDartString(18)}');
+
+            log('decode check...');
+            checkData(patternData);
+            log("decode ✔️");
           } else {
             log('not a pattern data message');
           }
@@ -114,4 +132,23 @@ class E2InputEvent {
   final Uint8List data;
 
   E2InputEvent(this.data);
+}
+
+/// thank you @Sunbreak!
+/// https://github.com/timsneath/win32/issues/142#issuecomment-829846260
+extension CharArray on Array<Uint8> {
+  String getDartString(int maxLength) {
+    var list = <int>[];
+    for (var i = 0; i < maxLength; i++) {
+      if (this[i] != 0) list.add(this[i]);
+    }
+    return utf8.decode(list);
+  }
+
+  void setDartString(String s, int maxLength) {
+    var list = utf8.encode(s);
+    for (var i = 0; i < maxLength; i++) {
+      this[i] = i < list.length ? list[i] : 0;
+    }
+  }
 }

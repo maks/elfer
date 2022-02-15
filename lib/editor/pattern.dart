@@ -9,6 +9,7 @@ class E2Pattern {
   final int chordset;
   final int playLevel;
   final List<E2Part> parts;
+  final List<int> size;
 
   E2Pattern({
     required this.name,
@@ -21,6 +22,7 @@ class E2Pattern {
     required this.chordset,
     required this.playLevel,
     required this.parts,
+    required this.size,
   });
 
   factory E2Pattern.empty() {
@@ -35,6 +37,7 @@ class E2Pattern {
       chordset: 0,
       playLevel: 100,
       parts: List.filled(1, E2Part.empty()),
+      size: List.filled(4, 0),
     );
   }
 }

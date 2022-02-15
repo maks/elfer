@@ -4,10 +4,10 @@
 /// by "@rafamj" on Github, licensed under GPLv3
 library e2_data;
 
-import 'dart:convert';
+import 'dart:ffi';
 import 'dart:typed_data';
 
-import '../editor/pattern.dart';
+import '../elecmidi_generated.dart';
 
 /// This converts "7 bit" 8 byte "sets" of midi data as sent/recieved
 /// from an E2 to "normal" 8bits per byte format
@@ -33,64 +33,34 @@ Uint8List decodeMidiData(Uint8List midiData) {
   return Uint8List.fromList(outputBuffer);
 }
 
-// returns 0 on success, -1 for invalid header, -2 invalid footer
-void checkData(Uint8List patternData) {
-  if (patternData.length != 18725) {
-    throw Exception('Invalid pattern data size:${patternData.length}');
+Uint8List encodeMidiData(Uint8List data) {
+  List<int> outputBuffer = List.filled(data.length, 0);
+  int byte7 = 0;
+  int o = 0;
+  for (var i = 0; i < data.length; i++) {
+    outputBuffer[o] = data[i] & 0x7F;
+    if ((data[i] & 0x80) > 0) {
+      byte7 = byte7 | 0x80;
+      byte7 = byte7 >> 1;
+    }
+    if ((i % 7) == 6) {
+      outputBuffer[o - 7] = byte7;
+      byte7 = 0;
+      o++;
+    }
+    o++;
   }
-  // check header
-  if (patternData[0] != 0x50) {
-    throw Exception('invalid header: [${patternData.sublist(0, 4)}]');
-  }
-  //check footer
-  if (patternData[footer] != 0x50) {
-    throw Exception('invalid footer: [${patternData.sublist(footer, footer + 4)}]');
-  }
+  return Uint8List.fromList(outputBuffer);
 }
 
-const stepTypeSize = (4 * 1) + (2 * 4);
-const partTypeSize = (5 * 1) + 5 + 38 + (stepTypeSize * 64);
-
-const header = 0;
-const size = header + 4;
-const fill1 = size + 4;
-const fill2 = fill1 + 4;
-const name = fill2 + 4;
-const tempo1 = name + 18;
-const tempo2 = tempo1 + 1;
-const swing = tempo2 + 1;
-const length = swing + 1;
-const beat = length + 1;
-const key = beat + 1;
-const scale = key + 1;
-const chordset = scale + 1;
-const playlevel = chordset + 1;
-const fill3 = playlevel + 1;
-const touchScale = fill3 + 1;
-const masterFX = touchScale + 16;
-const alternate1314 = masterFX + 8;
-const alternate1516 = alternate1314 + 1;
-const fill4 = alternate1516 + 1;
-const fill5 = fill4 + 8;
-const motionSequence = fill5 + 178;
-const fill6 = motionSequence + 1584;
-const part = fill6 + 208;
-const fill7 = part + (partTypeSize * 16);
-const footer = fill7 + 252;
-const fill8 = footer + 4;
-
-// parse midi data into Pattern object
-E2Pattern patternFromData(List<int> patternData) {
-  return E2Pattern(
-    beat: 0,
-    chordset: 0,
-    key: 0,
-    length: 0,
-    name: utf8.decode(patternData.sublist(name, name + 18)),
-    parts: [],
-    playLevel: 0,
-    scale: 0,
-    swing: 0,
-    tempo: ((patternData[tempo1] + (256 * patternData[tempo2])) / 10),
-  );
+// returns 0 on success, -1 for invalid header, -2 invalid footer
+void checkData(Pointer<PatternType> patternData) {
+  // check header
+  if (patternData.ref.header[0] != 0x50) {
+    throw Exception('invalid header: [${patternData.ref.header[0]}]');
+  }
+  //check footer
+  if (patternData.ref.footer[0] != 0x50) {
+    throw Exception('invalid footer: [${patternData.ref.footer[0]}]');
+  }
 }

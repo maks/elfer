@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:collection/collection.dart';
 
@@ -64,3 +65,20 @@ List<int> _sysexHeader(int globalChannel, int e2Id) => [
     ];
 
 List<int> intToMidi(int n) => [n % 128, n ~/ 128];
+
+/// throws RangeError if string is too long for paddedSize
+List<int> nullTerminatedStringPadded(int paddedSize, String text) {
+  final List<int> textBuffer = ascii.encode(text);
+  if (textBuffer.length > (paddedSize - 1)) {
+    throw RangeError('text too long for padded size');
+  }
+  final padding = paddedSize - 1 - textBuffer.length;
+  return [...textBuffer, 0, ...List.filled(padding, 0)];
+}
+
+/// returns the tempo encoded as 2 bytes as expected by the E2:
+/// 200~3000 = 20.0 ~ 300.0
+List<int> e2EncodedTempo(double tempo) {
+  final result = [0, 0];
+  return result;
+}
