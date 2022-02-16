@@ -11,8 +11,8 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 
-import '../editor/pattern.dart';
 import '../elecmidi_generated.dart';
+import '../tracker/e2_pattern.dart';
 import 'e2_data.dart';
 import 'e2_midi.dart' as e2;
 

@@ -5,9 +5,9 @@ import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 
-import 'editor/pattern.dart';
-import 'editor/pattern_widget.dart';
 import 'midi/e2_device.dart';
+import 'tracker/e2_pattern.dart';
+import 'tracker/pattern_widget.dart';
 
 void main() {
   Log.init();

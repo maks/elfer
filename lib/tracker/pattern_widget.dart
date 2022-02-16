@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'e2_pattern.dart';
 import 'part_widget.dart';
-import 'pattern.dart';
 
 class PatternWidget extends StatelessWidget {
   final E2Pattern pattern;
@@ -13,7 +13,7 @@ class PatternWidget extends StatelessWidget {
       Text('Pattern: ${pattern.name}'),
       ...pattern.parts
           .map(
-            (p) => PartWidget(part: p),
+            (p) => PartView(part: p),
           )
           .toList(),
     ]);
