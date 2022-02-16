@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
-import 'package:e2_edit/editor/pattern.dart';
-import 'package:e2_edit/editor/pattern_widget.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_midi_command/flutter_midi_command.dart';
+
+import 'editor/pattern.dart';
+import 'editor/pattern_widget.dart';
 import 'midi/e2_device.dart';
 
 void main() {

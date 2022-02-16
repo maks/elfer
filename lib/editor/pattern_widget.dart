@@ -1,6 +1,6 @@
-import 'package:e2_edit/editor/part_widget.dart';
 import 'package:flutter/material.dart';
 
+import 'part_widget.dart';
 import 'pattern.dart';
 
 class PatternWidget extends StatelessWidget {

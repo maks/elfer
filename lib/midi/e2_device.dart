@@ -6,16 +6,15 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
-import 'package:e2_edit/editor/pattern.dart';
+import 'package:collection/collection.dart';
 import 'package:ffi/ffi.dart';
+import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:ninja_hex/ninja_hex.dart';
+
+import '../editor/pattern.dart';
 import '../elecmidi_generated.dart';
 import 'e2_data.dart';
 import 'e2_midi.dart' as e2;
-import 'package:flutter_midi_command/flutter_midi_command.dart';
-import 'package:collection/collection.dart';
-
-import 'e2_midi.dart';
 
 class E2Device {
   final MidiCommand _midi;
@@ -64,7 +63,7 @@ class E2Device {
 
   Future<void> getPattern(int patternNumber) async {
     if (_globalChannel != null && _e2ProductId != null) {
-      send(getPatternMessage(patternNumber, _globalChannel!, _e2ProductId!));
+      send(e2.getPatternMessage(patternNumber, _globalChannel!, _e2ProductId!));
     } else {
       Log.e('cannot get Pattern not initialised');
     }
@@ -91,7 +90,7 @@ class E2Device {
               ' ${hexView(0, packet.data.sublist(0, 39))}');
 
           const headerOffSet = 9;
-          if (isPatternReply(packet.data, _e2ProductId!)) {
+          if (e2.isPatternReply(packet.data, _e2ProductId!)) {
             final decoded =
                 decodeMidiData(packet.data.sublist(headerOffSet, packet.data.length - 1));
 
@@ -106,7 +105,7 @@ class E2Device {
             }
             final Pointer<PatternType> patternData = Pointer.fromAddress(p.address);
             final patName = patternData.ref.name;
-            print('name: ${patName.getDartString(18)}');
+            log('name: ${patName.getDartString(18)}');
 
             log('decode check...');
             checkData(patternData);
@@ -121,8 +120,8 @@ class E2Device {
       }
 
       // process the incoming midi message
-      if (isSysex(packet.data)) {
-        if (isSearchDevicereply(packet.data)) {
+      if (e2.isSysex(packet.data)) {
+        if (e2.isSearchDevicereply(packet.data)) {
           _globalChannel = packet.data[4];
           _e2ProductId = packet.data[6];
           log('got global channel:$_globalChannel e2Id:$_e2ProductId');
