@@ -16,7 +16,14 @@ class PartView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('${part.name}:'),
+          Text(
+            int.parse(part.name).toRadixString(16).toUpperCase(),
+            textAlign: TextAlign.center,
+            style: Theme.of(context)
+                .textTheme
+                .headline6
+                ?.copyWith(color: int.parse(part.name) % 2 == 0 ? Colors.amber : Colors.white),
+          ),
           ...part.steps
               .map(
                 (s) => StepView(step: s),

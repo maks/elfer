@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'midi/e2_device.dart';
 import 'tracker/e2_pattern.dart';
@@ -44,6 +45,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        textTheme: GoogleFonts.pressStart2pTextTheme().apply(
+          bodyColor: Colors.white,
+        ),
+      ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Elfer'),

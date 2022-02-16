@@ -14,9 +14,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_midi_command:
-    git: 
+    git:
       url: https://github.com/maks/FlutterMidiCommand
       ref: dart-ffi-linux-platform
+  google_fonts: ^2.3.1
   ninja_hex: ^2.0.0
   tonic: ^0.2.4
   window_size:
