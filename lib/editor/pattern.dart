@@ -1,98 +1,71 @@
+import 'dart:ffi';
+
+import 'package:e2_edit/elecmidi_generated.dart';
+import 'package:e2_edit/midi/e2_device.dart';
+
 class E2Pattern {
-  final String name;
-  final double tempo;
-  final int swing;
-  final int length;
-  final int beat;
-  final int key;
-  final int scale;
-  final int chordset;
-  final int playLevel;
-  final List<E2Part> parts;
-  final List<int> size;
+  final Pointer<PatternType> _patternData;
 
-  E2Pattern({
-    required this.name,
-    required this.tempo,
-    required this.swing,
-    required this.length,
-    required this.beat,
-    required this.key,
-    required this.scale,
-    required this.chordset,
-    required this.playLevel,
-    required this.parts,
-    required this.size,
-  });
+  E2Pattern(this._patternData);
 
-  factory E2Pattern.empty() {
-    return E2Pattern(
-      name: 'Pattern 1',
-      tempo: 120,
-      swing: 0,
-      length: 16,
-      beat: 0,
-      key: 0,
-      scale: 0,
-      chordset: 0,
-      playLevel: 100,
-      parts: List.filled(1, E2Part.empty()),
-      size: List.filled(4, 0),
-    );
+  String get name => _patternData.ref.name.getDartString(18);
+
+  List<E2Part> get parts {
+    final result = <E2Part>[];
+    for (var i = 0; i < 16; i++) {
+      result.add(E2Part(_patternData.ref.part1[i], '$i'));
+    }
+
+    return result;
   }
 }
 
 class E2Part {
-  final String name;
-  final int lastStep;
-  final int voiceAssign;
-  final int oscType;
-  final List<E2Step> steps;
+  // final String name;
+  // final int lastStep;
+  // final int voiceAssign;
+  // final int oscType;
+  // final List<E2Step> steps;
+
+  final PartType _partData;
+  final String _name;
+
+  String get name => _name;
+  int get lastStep => _partData.lastStep;
+  List<E2Step> get steps {
+    final List<E2Step> result = [];
+    for (var i = 0; i < 16; i++) {
+      result.add(E2Step(_partData.step[i]));
+    }
+    return result;
+  }
 
   E2Part(
-    this.name,
-    this.lastStep,
-    this.voiceAssign,
-    this.oscType,
-    this.steps,
+    this._partData,
+    this._name,
   );
-
-  factory E2Part.empty() {
-    return E2Part('Sample', 16, 0, 0, List.filled(16, E2Step.empty()));
-  }
 }
 
 class E2Step {
-  final int note1;
-  final int note2;
-  final int note3;
-  final int note4;
-  final bool stepOn;
-  final int velocity;
-  final bool trigger;
-  final int gateTime;
+  // final int note1;
+  // final int note2;
+  // final int note3;
+  // final int note4;
+  // final bool stepOn;
+  // final int velocity;
+  // final bool trigger;
+  // final int gateTime;
+  final StepType _stepData;
 
-  E2Step({
-    required this.note1,
-    required this.note2,
-    required this.note3,
-    required this.note4,
-    required this.stepOn,
-    required this.velocity,
-    required this.trigger,
-    required this.gateTime,
-  });
+  ///  0,1~128=Off,Note No 0~127
+  List<int> get notes => [
+        _stepData.note[0],
+        _stepData.note[1],
+        _stepData.note[2],
+        _stepData.note[3],
+      ];
 
-  factory E2Step.empty() {
-    return E2Step(
-      note1: 60,
-      note2: 0,
-      note3: 0,
-      note4: 0,
-      stepOn: true,
-      velocity: 127,
-      trigger: true,
-      gateTime: 96,
-    );
-  }
+  bool get stepOn => _stepData.onOff == 1;
+
+  E2Step(this._stepData);
 }

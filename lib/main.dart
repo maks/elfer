@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
+import 'package:e2_edit/editor/pattern.dart';
+import 'package:e2_edit/editor/pattern_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_midi_command/flutter_midi_command.dart';
@@ -70,7 +72,21 @@ class _MyAppState extends State<MyApp> {
             MaterialButton(
               child: const Text('Get pattern'),
               onPressed: () async {
-                _e2Device.getPattern(1);
+                _e2Device.getPattern(0);
+              },
+            ),
+            StreamBuilder<E2Pattern>(
+              stream: _e2Device.currentPattern,
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) {
+                  return const CircularProgressIndicator();
+                } else {
+                  final pattern = snapshot.data;
+                  if (pattern == null) {
+                    return const Text('no pattern');
+                  }
+                  return PatternWidget(pattern: pattern);
+                }
               },
             ),
           ],

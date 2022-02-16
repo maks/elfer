@@ -9,12 +9,13 @@ class PatternWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: pattern.parts
+    return Column(children: [
+      Text('Pattern: ${pattern.name}'),
+      ...pattern.parts
           .map(
             (p) => PartWidget(part: p),
           )
           .toList(),
-    );
+    ]);
   }
 }

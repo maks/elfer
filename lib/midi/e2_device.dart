@@ -6,6 +6,7 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
+import 'package:e2_edit/editor/pattern.dart';
 import 'package:ffi/ffi.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 import '../elecmidi_generated.dart';
@@ -24,7 +25,12 @@ class E2Device {
   StreamSubscription<MidiPacket>? _rxSubscription;
   final _inputStreamController = StreamController<E2InputEvent>();
 
+  final _currentPatternStreamController = StreamController<E2Pattern>();
+
   late Stream e2Events = _inputStreamController.stream.asBroadcastStream();
+
+  late Stream<E2Pattern> currentPattern =
+      _currentPatternStreamController.stream.asBroadcastStream();
 
   E2Device(this._midi);
 
@@ -98,7 +104,6 @@ class E2Device {
             for (var i = 0; i < decoded.length; i++) {
               buf[i] = decoded[i];
             }
-
             final Pointer<PatternType> patternData = Pointer.fromAddress(p.address);
             final patName = patternData.ref.name;
             print('name: ${patName.getDartString(18)}');
@@ -106,6 +111,7 @@ class E2Device {
             log('decode check...');
             checkData(patternData);
             log("decode ✔️");
+            _currentPatternStreamController.add(E2Pattern(patternData));
           } else {
             log('not a pattern data message');
           }

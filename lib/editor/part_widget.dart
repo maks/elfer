@@ -34,7 +34,7 @@ class StepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Pitch.fromMidiNumber(step.note1);
+    final p = Pitch.fromMidiNumber(step.notes[0] - 1);
     return Container(
       margin: const EdgeInsets.all(8.0),
       padding: const EdgeInsets.all(4.0),
