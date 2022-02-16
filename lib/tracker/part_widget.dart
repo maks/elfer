@@ -13,7 +13,7 @@ class PartView extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(color: Colors.blueAccent),
       ),
-      child: Row(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('${part.name}:'),

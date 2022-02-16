@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('ML-1'),
+          title: const Text('Elfer'),
         ),
         body: Column(
           children: [
@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
               ],
             ),
             MaterialButton(
-              child: const Text('Get pattern'),
+              child: const Text('ReSync pattern'),
               onPressed: () async {
                 _e2Device.getPattern();
               },
