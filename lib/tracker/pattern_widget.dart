@@ -17,7 +17,20 @@ class PatternWidget extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text('Pattern: $patternNumberFormatted ${pattern.name}'),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Pattern:'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    patternNumberFormatted,
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.amber),
+                  ),
+                ),
+                Text(pattern.name),
+              ],
+            ),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,

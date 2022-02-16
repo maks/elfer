@@ -76,12 +76,13 @@ class _MyAppState extends State<MyApp> {
                 ),
               ],
             ),
-            MaterialButton(
-              child: const Text('ReSync pattern'),
-              onPressed: () async {
-                _e2Device.getPattern();
-              },
-            ),
+            // For debugging only:
+            // MaterialButton(
+            //   child: const Text('ReSync pattern'),
+            //   onPressed: () async {
+            //     _e2Device.getPattern();
+            //   },
+            // ),
             StreamBuilder<E2Pattern>(
               stream: _e2Device.currentPattern,
               builder: (_, snapshot) {
