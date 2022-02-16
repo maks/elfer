@@ -6,6 +6,8 @@ A pattern editor, in the "style" of a Tracker, for the Korg Electribe 2's (synth
 
 This is very much a WORK-IN-PROGRESS, not too much works right now, except for reading a pattern in from the E2.
 
+![screenshot](docs/screenshot-1.png)
+
 ### Features
 
 * Display partial pattern in tracker UI
