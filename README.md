@@ -1,12 +1,36 @@
-# e2_edit
+# elfer
 
-A pattern editor for korg electribe 2's.
+A pattern editor, in the "style" of a Tracker, for the Korg Electribe 2's (synth, sampler, hacktribe).
+
+## Status
+
+This is very much a WORK-IN-PROGRESS, not too much works right now, except for reading a pattern in from the E2.
+
+### Features
+
+* Display partial pattern in tracker UI
+* Display full pattern (all 64 steps) 
+* Switch patterns in tracker UI using 
+* Edit pattern notes in tracker UI using E2 controls
+* Send edited pattern back to E2
+* Edit pattern parts, osc, ifx etc in Tracker UI
+* Edit instrument patchs (samples?) in Tracker UI
+* Playback pattern(s) from Tracker state (without sending to E2)
+* more?
+
 
 ## Getting Started
 
-Initially runs only on web. Will add android/linux support shortly.
+I'm currently developing with Flutter master channel.
+
+It works on Linux, should also work on Web. 
+
+Android support coming soon.
+
+### Running on Web
 
 Run in non-Chrome browser, ie. Firefox using: `flutter run -d web-server`
+
 
 ## Debugging
 
@@ -23,6 +47,7 @@ Port    Client name                      Port name
  14:0    Midi Through                     Midi Through Port-0
  32:0    electribe2 sampler               electribe2 sampler electribe2 s
 ```
+
 To see incoming messages (using above port number):
 ```
 aseqdump -p 32:0
