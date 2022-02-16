@@ -10,7 +10,13 @@ class StepView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = Pitch.fromMidiNumber(step.notes[0] - 1);
-    return StepContainer(text: '$p');
+    // use normal ascii hash instead of unicode sharp to get nicer looking monofont layout
+    final accidentalOrDash =
+        p.accidentalsString.isNotEmpty ? p.accidentalsString.replaceAll('♯', '#') : ('-');
+    final pitchText = '${p.letterName}$accidentalOrDash${p.octave}';
+    //TODO: need to find way to display when more than 1 note, show chord names maybe?
+    final String noteText = step.notes[0] == 0 ? '---' : pitchText;
+    return StepContainer(text: noteText);
   }
 }
 
