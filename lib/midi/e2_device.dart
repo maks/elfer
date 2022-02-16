@@ -121,7 +121,7 @@ class E2Device {
             log('not a pattern data message');
           }
         } else {
-          log('received packet: ${hexView(0, packet.data)}');
+          //log('received packet: ${hexView(0, packet.data)}');
           if (e2.isBankSelect(packet.data) && packet.data[1] == 0x20) {
             // the 3rd byte of the bankselect tells us if the following Prog Change mesg
             // is for 001-127 or 128-250 pattern range

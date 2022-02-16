@@ -5,6 +5,7 @@ import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ninja_hex/ninja_hex.dart';
 
 import 'midi/e2_device.dart';
 import 'tracker/e2_pattern.dart';
@@ -106,7 +107,7 @@ class _MyAppState extends State<MyApp> {
   void _subscribeE2Events() {
     if (_e2Subscription == null) {
       _e2Subscription = _e2Device.e2Events.listen((packet) {
-        log('received packet: $packet');
+        log('received packet: ${hexView(0, packet.data)}');
       });
       log('subscribed to E2 events');
     }
