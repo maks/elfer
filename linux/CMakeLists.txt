@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "e2_edit")
-set(APPLICATION_ID "com.example.e2_edit")
+set(BINARY_NAME "elfer")
+set(APPLICATION_ID "com.example.elfer")
 
 cmake_policy(SET CMP0063 NEW)
 

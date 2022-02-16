@@ -1,4 +1,4 @@
-package com.example.e2_edit
+package com.example.elfer
 
 import io.flutter.embedding.android.FlutterActivity
 
