@@ -6,8 +6,9 @@ import 'e2_part.dart';
 
 class E2Pattern {
   final Pointer<PatternType> _patternData;
+  final int indexNumber;
 
-  E2Pattern(this._patternData);
+  E2Pattern(this._patternData, this.indexNumber);
 
   String get name => _patternData.ref.name.getDartString(18);
 

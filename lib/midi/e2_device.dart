@@ -21,6 +21,10 @@ class E2Device {
   MidiDevice? _device;
   int? _globalChannel;
   int? _e2ProductId;
+
+  int _currentPatternIndex = 0;
+  int _pendingBankSelect = 0;
+
   StreamSubscription<MidiPacket>? _rxSubscription;
   final _inputStreamController = StreamController<E2InputEvent>();
 
@@ -44,6 +48,8 @@ class E2Device {
       _device = device;
       log('connected device:${_device?.name}');
 
+      // not sure why need small delay before being able to send search device mesg,
+      // maybe time it takes for Alsa midi connection to setup?
       await Future.delayed(const Duration(milliseconds: 250));
       log('Search for E2 Device...');
       send(e2.searchDeviceMessage);
@@ -61,9 +67,9 @@ class E2Device {
     }
   }
 
-  Future<void> getPattern(int patternNumber) async {
+  Future<void> getPattern() async {
     if (_globalChannel != null && _e2ProductId != null) {
-      send(e2.getPatternMessage(patternNumber, _globalChannel!, _e2ProductId!));
+      send(e2.getPatternMessage(_currentPatternIndex, _globalChannel!, _e2ProductId!));
     } else {
       Log.e('cannot get Pattern not initialised');
     }
@@ -83,8 +89,8 @@ class E2Device {
     if (packet.data.length == 1 && packet.data[0] == 0xF8) {
       // skip clock mesgs
     } else {
+      // don't debug log Midi clock mesgs
       if (packet.data[0] != 0xF8) {
-        // don't debug log Midi clock mesgs
         if (packet.data.length > 80) {
           log('received BIG packet [${packet.data.length}] first 40bytes:'
               ' ${hexView(0, packet.data.sublist(0, 39))}');
@@ -110,12 +116,23 @@ class E2Device {
             log('decode check...');
             checkData(patternData);
             log("decode ✔️");
-            _currentPatternStreamController.add(E2Pattern(patternData));
+            _currentPatternStreamController.add(E2Pattern(patternData, _currentPatternIndex));
           } else {
             log('not a pattern data message');
           }
         } else {
           log('received packet: ${hexView(0, packet.data)}');
+          if (e2.isBankSelect(packet.data) && packet.data[1] == 0x20) {
+            // the 3rd byte of the bankselect tells us if the following Prog Change mesg
+            // is for 001-127 or 128-250 pattern range
+            _pendingBankSelect = packet.data[2];
+            log('pending bank:$_pendingBankSelect');
+          }
+          if (e2.isProgramChange(packet.data)) {
+            _currentPatternIndex = (_pendingBankSelect * 128) + packet.data[1];
+            log('select pattern:$_currentPatternIndex');
+            getPattern();
+          }
         }
       }
 
@@ -125,6 +142,9 @@ class E2Device {
           _globalChannel = packet.data[4];
           _e2ProductId = packet.data[6];
           log('got global channel:$_globalChannel e2Id:$_e2ProductId');
+
+          // now can request initial current pattern data
+          getPattern();
         }
       } else {
         _inputStreamController.add(E2InputEvent(packet.data));

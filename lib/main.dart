@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
             MaterialButton(
               child: const Text('Get pattern'),
               onPressed: () async {
-                _e2Device.getPattern(0);
+                _e2Device.getPattern();
               },
             ),
             StreamBuilder<E2Pattern>(
@@ -96,9 +96,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _subscribeE2Events() {
-    _e2Subscription = _e2Device.e2Events.listen((packet) {
-      log('received packet: $packet');
-    });
-    log('subscribed to E2 events');
+    if (_e2Subscription == null) {
+      _e2Subscription = _e2Device.e2Events.listen((packet) {
+        log('received packet: $packet');
+      });
+      log('subscribed to E2 events');
+    }
   }
 }
