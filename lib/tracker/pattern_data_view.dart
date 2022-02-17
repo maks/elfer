@@ -23,13 +23,13 @@ class PatternDataView extends StatelessWidget {
           '$beat',
           style: body1Amber(context),
         ),
-        Spacer(),
+        const Spacer(),
         const Text('Swing:'),
         Text(
           '$swing',
           style: body1Amber(context),
         ),
-        Spacer(),
+        const Spacer(),
         const Text('Scale:'),
         Text(
           scale,

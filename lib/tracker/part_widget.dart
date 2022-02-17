@@ -24,6 +24,7 @@ class PartView extends StatelessWidget {
                 .headline6
                 ?.copyWith(color: int.parse(part.name) % 2 == 0 ? Colors.amber : Colors.white),
           ),
+          Text('${part.oscillator}'),
           ...part.steps
               .map(
                 (s) => StepView(step: s),

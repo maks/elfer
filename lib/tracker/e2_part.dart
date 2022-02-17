@@ -15,7 +15,14 @@ class E2Part {
   final String _name;
 
   String get name => _name;
+
   int get lastStep => _partData.lastStep;
+
+  int get oscillator {
+    print('hi: ${_partData.oscTypeh} li:${_partData.oscTypel}');
+    return (_partData.oscTypeh * 256) + (_partData.oscTypel) + 1; //osc are start at 1 on E2 display
+  }
+
   List<E2Step> get steps {
     final List<E2Step> result = [];
     for (var i = 0; i < 16; i++) {

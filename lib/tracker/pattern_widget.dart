@@ -50,7 +50,7 @@ class PatternWidget extends StatelessWidget {
               Column(
                 children: [
                   Container(
-                    height: 24,
+                    height: 34,
                   ),
                   ...List.generate(16, (i) => i)
                       .map(
