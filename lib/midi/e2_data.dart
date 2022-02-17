@@ -64,3 +64,42 @@ void checkData(Pointer<PatternType> patternData) {
     throw Exception('invalid footer: [${patternData.ref.footer[0]}]');
   }
 }
+
+// TODO: these are factory, add new array for Hacktribe ones
+const factoryScales = [
+  "Chromatic",
+  "Ionian",
+  "Dorian",
+  "Phrygian",
+  "Lydian",
+  "Mixolidian",
+  "Aeolian",
+  "Locrian",
+  "Harm minor",
+  "Melo minor",
+  "Major Blues",
+  "minor Blues",
+  "Diminished",
+  "Com.Dim",
+  "Major Penta",
+  "minor Penta",
+  "Raga 1",
+  "Raga 2",
+  "Raga 3",
+  "Arabic",
+  "Spanish",
+  "Gypsy",
+  "Egyptian",
+  "Hawaiian",
+  "Pelog",
+  "Japanese",
+  "Ryuku",
+  "Chinese",
+  "Bass Line",
+  "Whole Tone",
+  "minor 3rd",
+  "Major 3rd",
+  "4th Interval",
+  "5th Interval",
+  "Octave"
+];

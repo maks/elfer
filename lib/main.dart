@@ -57,6 +57,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Elfer'),
         ),
         body: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [

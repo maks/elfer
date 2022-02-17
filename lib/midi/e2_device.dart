@@ -126,7 +126,6 @@ class E2Device {
             // the 3rd byte of the bankselect tells us if the following Prog Change mesg
             // is for 001-127 or 128-250 pattern range
             _pendingBankSelect = packet.data[2];
-            log('pending bank:$_pendingBankSelect');
           }
           if (e2.isProgramChange(packet.data)) {
             _currentPatternIndex = (_pendingBankSelect * 128) + packet.data[1];
