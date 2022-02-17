@@ -23,7 +23,7 @@ This is very much a WORK-IN-PROGRESS, not too much works right now, except for r
 
 ## Getting Started
 
-I'm currently developing with Flutter master channel.
+I'm currently developing with Flutter beta channel.
 
 It works on Linux, should also work on Web. 
 
