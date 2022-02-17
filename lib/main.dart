@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 
@@ -13,7 +14,11 @@ import 'tracker/pattern_widget.dart';
 
 void main() {
   Log.init();
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {

@@ -21,7 +21,7 @@ class E2Pattern {
 
   List<E2Part> get parts {
     final result = <E2Part>[];
-    for (var i = 0; i < 16; i++) {
+    for (var i = 0; i < E2Part.stepsPerPage; i++) {
       result.add(E2Part(_patternData.ref.part1[i], '$i'));
     }
 

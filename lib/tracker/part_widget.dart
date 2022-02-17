@@ -5,10 +5,17 @@ import 'step_view.dart';
 
 class PartView extends StatelessWidget {
   final E2Part part;
-  const PartView({Key? key, required this.part}) : super(key: key);
+  final int firstStep;
+
+  const PartView({
+    Key? key,
+    required this.part,
+    required this.firstStep,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    print('steps: ${part.steps.length}');
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.blueAccent),
@@ -26,6 +33,7 @@ class PartView extends StatelessWidget {
           ),
           Text('${part.oscillator}'),
           ...part.steps
+              .getRange(firstStep, firstStep + E2Part.stepsPerPage)
               .map(
                 (s) => StepView(step: s),
               )
