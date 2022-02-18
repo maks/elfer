@@ -1,4 +1,5 @@
 import 'package:bonsai/bonsai.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,7 +37,7 @@ class PartView extends ConsumerWidget {
                     int.parse(part.name).toRadixString(16).toUpperCase(),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headline6?.copyWith(
-                          color: _getHeaderTextColor(state, part),
+                          color: _getHeaderTextColor(_isSelected(state, part)),
                         ),
                   ),
                   Text('${part.oscillator}'),
@@ -48,8 +49,11 @@ class PartView extends ConsumerWidget {
               }),
           ...part.steps
               .getRange(firstStep, firstStep + E2Part.stepsPerPage)
-              .map(
-                (s) => StepView(step: s),
+              .mapIndexed(
+                (i, s) => StepView(
+                  step: s,
+                  color: _getStepColor(i == state.selectedStepIndex && _isSelected(state, part)),
+                ),
               )
               .toList()
         ],
@@ -57,10 +61,13 @@ class PartView extends ConsumerWidget {
     );
   }
 
-  Color _getHeaderTextColor(TrackerState state, E2Part part) {
-    if (state.selectedPart?.name == part.name) {
-      return Colors.lightBlue;
-    }
-    return int.parse(part.name) % 2 == 0 ? Colors.amber : Colors.white;
-  }
+  bool _isSelected(TrackerState state, E2Part part) => state.selectedPart?.name == part.name;
+
+  Color _getHeaderTextColor(bool isSelected) => isSelected
+      ? Colors.lightBlue
+      : int.parse(part.name) % 2 == 0
+          ? Colors.amber
+          : Colors.white;
+
+  Color _getStepColor(bool selected) => selected ? Colors.lightBlue : Colors.white;
 }

@@ -16,6 +16,8 @@ import '../tracker/e2_pattern.dart';
 import 'e2_data.dart';
 import 'e2_midi.dart' as e2;
 
+const _delayHACK = 500; //ms
+
 class E2Device {
   final MidiCommand _midi;
   MidiDevice? _device;
@@ -50,7 +52,7 @@ class E2Device {
 
       // not sure why need small delay before being able to send search device mesg,
       // maybe time it takes for Alsa midi connection to setup?
-      await Future.delayed(const Duration(milliseconds: 250));
+      await Future.delayed(const Duration(milliseconds: _delayHACK));
       log('Search for E2 Device...');
       send(e2.searchDeviceMessage);
     } else {

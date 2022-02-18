@@ -11,6 +11,7 @@ import 'midi/e2_device.dart';
 import 'tracker/e2_pattern.dart';
 import 'tracker/pattern_widget.dart';
 import 'tracker/providers.dart';
+import 'tracker/tracker_viewmodel.dart';
 
 void main() {
   Log.init();
@@ -38,7 +39,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     _e2Device = ref.read(e2DeviceProvider);
-    _subscribeE2Events();
+    final vm = ref.read(trackerViewModelProvider.notifier);
+    _subscribeE2Events(vm);
   }
 
   @override
@@ -76,7 +78,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                   child: const Text('Connect'),
                   onPressed: () async {
                     _e2Device.connectDevice();
-                    _subscribeE2Events();
+                    _subscribeE2Events(ref.watch(trackerViewModelProvider.notifier));
                     log('device connected');
                   },
                 ),
@@ -109,10 +111,18 @@ class _MyAppState extends ConsumerState<MyApp> {
     );
   }
 
-  void _subscribeE2Events() {
+  void _subscribeE2Events(TrackerViewModel viewModel) {
     if (_e2Subscription == null) {
       _e2Subscription = _e2Device.e2Events.listen((packet) {
         log('received packet: ${hexView(0, packet.data)}');
+        final d = packet.data;
+
+        // pad down in Trigger mode
+        if (d[1] == 0x3C && d[2] == 0x60) {
+          final int pad = d[0] & 0x0F;
+          log('pad:$pad');
+          viewModel.selectStepIndex(pad);
+        }
       });
       log('subscribed to E2 events');
     }

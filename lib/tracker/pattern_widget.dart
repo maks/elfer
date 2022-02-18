@@ -8,6 +8,7 @@ import 'pattern_data_view.dart';
 import 'providers.dart';
 import 'step_view.dart';
 import 'theme.dart';
+import 'tracker_state.dart';
 
 class PatternWidget extends ConsumerWidget {
   final E2Pattern pattern;
@@ -17,6 +18,7 @@ class PatternWidget extends ConsumerWidget {
   Widget build(context, ref) {
     final patternNumberFormatted = (pattern.indexNumber + 1).toString().padLeft(3, '0');
     final firstStep = ref.watch(trackerViewModelProvider).stepPage * 16;
+    final state = ref.watch(trackerViewModelProvider);
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -68,9 +70,9 @@ class PatternWidget extends ConsumerWidget {
                   ...List.generate(E2Part.maxSteps, (i) => i)
                       .getRange(firstStep, firstStep + 16)
                       .map(
-                        (e) => StepContainer(
-                          text: e.toRadixString(16).padLeft(2, '0').toUpperCase(),
-                          color: e % 4 == 0 ? Colors.amber : Colors.white,
+                        (idx) => StepContainer(
+                          text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),
+                          color: _getStepTextColor(state, idx),
                         ),
                       )
                       .toList()
@@ -86,5 +88,12 @@ class PatternWidget extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Color _getStepTextColor(TrackerState state, int stepIndex) {
+    if (state.selectedStepIndex == stepIndex) {
+      return Colors.lightBlue;
+    }
+    return stepIndex % 4 == 0 ? Colors.amber : Colors.white;
   }
 }

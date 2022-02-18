@@ -22,12 +22,12 @@ class _$TrackerStateTearOff {
       {required int stepPage,
       E2Pattern? pattern,
       E2Part? selectedPart,
-      E2Step? selectedStep}) {
+      int? selectedStepIndex}) {
     return _TrackerState(
       stepPage: stepPage,
       pattern: pattern,
       selectedPart: selectedPart,
-      selectedStep: selectedStep,
+      selectedStepIndex: selectedStepIndex,
     );
   }
 }
@@ -40,7 +40,7 @@ mixin _$TrackerState {
   int get stepPage => throw _privateConstructorUsedError;
   E2Pattern? get pattern => throw _privateConstructorUsedError;
   E2Part? get selectedPart => throw _privateConstructorUsedError;
-  E2Step? get selectedStep => throw _privateConstructorUsedError;
+  int? get selectedStepIndex => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TrackerStateCopyWith<TrackerState> get copyWith =>
@@ -56,7 +56,7 @@ abstract class $TrackerStateCopyWith<$Res> {
       {int stepPage,
       E2Pattern? pattern,
       E2Part? selectedPart,
-      E2Step? selectedStep});
+      int? selectedStepIndex});
 }
 
 /// @nodoc
@@ -72,7 +72,7 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
     Object? stepPage = freezed,
     Object? pattern = freezed,
     Object? selectedPart = freezed,
-    Object? selectedStep = freezed,
+    Object? selectedStepIndex = freezed,
   }) {
     return _then(_value.copyWith(
       stepPage: stepPage == freezed
@@ -87,10 +87,10 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
           ? _value.selectedPart
           : selectedPart // ignore: cast_nullable_to_non_nullable
               as E2Part?,
-      selectedStep: selectedStep == freezed
-          ? _value.selectedStep
-          : selectedStep // ignore: cast_nullable_to_non_nullable
-              as E2Step?,
+      selectedStepIndex: selectedStepIndex == freezed
+          ? _value.selectedStepIndex
+          : selectedStepIndex // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -106,7 +106,7 @@ abstract class _$TrackerStateCopyWith<$Res>
       {int stepPage,
       E2Pattern? pattern,
       E2Part? selectedPart,
-      E2Step? selectedStep});
+      int? selectedStepIndex});
 }
 
 /// @nodoc
@@ -124,7 +124,7 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
     Object? stepPage = freezed,
     Object? pattern = freezed,
     Object? selectedPart = freezed,
-    Object? selectedStep = freezed,
+    Object? selectedStepIndex = freezed,
   }) {
     return _then(_TrackerState(
       stepPage: stepPage == freezed
@@ -139,10 +139,10 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
           ? _value.selectedPart
           : selectedPart // ignore: cast_nullable_to_non_nullable
               as E2Part?,
-      selectedStep: selectedStep == freezed
-          ? _value.selectedStep
-          : selectedStep // ignore: cast_nullable_to_non_nullable
-              as E2Step?,
+      selectedStepIndex: selectedStepIndex == freezed
+          ? _value.selectedStepIndex
+          : selectedStepIndex // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -154,7 +154,7 @@ class _$_TrackerState implements _TrackerState {
       {required this.stepPage,
       this.pattern,
       this.selectedPart,
-      this.selectedStep});
+      this.selectedStepIndex});
 
   @override
   final int stepPage;
@@ -163,11 +163,11 @@ class _$_TrackerState implements _TrackerState {
   @override
   final E2Part? selectedPart;
   @override
-  final E2Step? selectedStep;
+  final int? selectedStepIndex;
 
   @override
   String toString() {
-    return 'TrackerState(stepPage: $stepPage, pattern: $pattern, selectedPart: $selectedPart, selectedStep: $selectedStep)';
+    return 'TrackerState(stepPage: $stepPage, pattern: $pattern, selectedPart: $selectedPart, selectedStepIndex: $selectedStepIndex)';
   }
 
   @override
@@ -180,7 +180,7 @@ class _$_TrackerState implements _TrackerState {
             const DeepCollectionEquality()
                 .equals(other.selectedPart, selectedPart) &&
             const DeepCollectionEquality()
-                .equals(other.selectedStep, selectedStep));
+                .equals(other.selectedStepIndex, selectedStepIndex));
   }
 
   @override
@@ -189,7 +189,7 @@ class _$_TrackerState implements _TrackerState {
       const DeepCollectionEquality().hash(stepPage),
       const DeepCollectionEquality().hash(pattern),
       const DeepCollectionEquality().hash(selectedPart),
-      const DeepCollectionEquality().hash(selectedStep));
+      const DeepCollectionEquality().hash(selectedStepIndex));
 
   @JsonKey(ignore: true)
   @override
@@ -202,7 +202,7 @@ abstract class _TrackerState implements TrackerState {
       {required int stepPage,
       E2Pattern? pattern,
       E2Part? selectedPart,
-      E2Step? selectedStep}) = _$_TrackerState;
+      int? selectedStepIndex}) = _$_TrackerState;
 
   @override
   int get stepPage;
@@ -211,7 +211,7 @@ abstract class _TrackerState implements TrackerState {
   @override
   E2Part? get selectedPart;
   @override
-  E2Step? get selectedStep;
+  int? get selectedStepIndex;
   @override
   @JsonKey(ignore: true)
   _$TrackerStateCopyWith<_TrackerState> get copyWith =>

@@ -1,9 +1,9 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tonic/tonic.dart';
 
 import 'e2_part.dart';
 import 'e2_pattern.dart';
-import 'e2_step.dart';
 import 'tracker_state.dart';
 
 class TrackerViewModel extends StateNotifier<TrackerState> {
@@ -22,9 +22,14 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
       state = state.copyWith(stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1));
 
   void setNote(int index, int note) {
-    final step = state.selectedStep;
-    if (step == null) {
+    final stepIndex = state.selectedStepIndex;
+    if (stepIndex == null) {
       log('NO selected step to set note');
+      return;
+    }
+    final step = state.selectedPart?.steps[stepIndex];
+    if (step == null) {
+      log('NO selected Part to set note');
       return;
     }
     step.notes[index] = note;
@@ -35,7 +40,8 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     state = state.copyWith(selectedPart: part);
   }
 
-  void selectStep(E2Step step) {
-    state = state.copyWith(selectedStep: step);
+  void selectStepIndex(int index) {
+    state = state.copyWith(selectedStepIndex: index);
+    log('sel step: ${Pitch.fromMidiNumber((state.selectedPart?.steps[index].notes[0] ?? 0) - 1)}');
   }
 }
