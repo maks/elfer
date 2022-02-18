@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ninja_hex/ninja_hex.dart';
@@ -11,6 +10,7 @@ import 'package:ninja_hex/ninja_hex.dart';
 import 'midi/e2_device.dart';
 import 'tracker/e2_pattern.dart';
 import 'tracker/pattern_widget.dart';
+import 'tracker/providers.dart';
 
 void main() {
   Log.init();
@@ -21,15 +21,14 @@ void main() {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  final MidiCommand _midiCommand = MidiCommand();
+class _MyAppState extends ConsumerState<MyApp> {
   late final E2Device _e2Device;
   StreamSubscription? _e2Subscription;
 
@@ -38,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _e2Device = E2Device(_midiCommand);
+    _e2Device = ref.read(e2DeviceProvider);
     _subscribeE2Events();
   }
 
@@ -91,7 +90,7 @@ class _MyAppState extends State<MyApp> {
             //   },
             // ),
             StreamBuilder<E2Pattern>(
-              stream: _e2Device.currentPattern,
+              stream: _e2Device.currentPatternStream,
               builder: (_, snapshot) {
                 if (!snapshot.hasData) {
                   return const CircularProgressIndicator();

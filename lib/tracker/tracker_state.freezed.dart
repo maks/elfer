@@ -18,8 +18,9 @@ final _privateConstructorUsedError = UnsupportedError(
 class _$TrackerStateTearOff {
   const _$TrackerStateTearOff();
 
-  _TrackerState call({required int stepPage}) {
+  _TrackerState call({E2Pattern? pattern, required int stepPage}) {
     return _TrackerState(
+      pattern: pattern,
       stepPage: stepPage,
     );
   }
@@ -30,6 +31,7 @@ const $TrackerState = _$TrackerStateTearOff();
 
 /// @nodoc
 mixin _$TrackerState {
+  E2Pattern? get pattern => throw _privateConstructorUsedError;
   int get stepPage => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -42,7 +44,7 @@ abstract class $TrackerStateCopyWith<$Res> {
   factory $TrackerStateCopyWith(
           TrackerState value, $Res Function(TrackerState) then) =
       _$TrackerStateCopyWithImpl<$Res>;
-  $Res call({int stepPage});
+  $Res call({E2Pattern? pattern, int stepPage});
 }
 
 /// @nodoc
@@ -55,9 +57,14 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
 
   @override
   $Res call({
+    Object? pattern = freezed,
     Object? stepPage = freezed,
   }) {
     return _then(_value.copyWith(
+      pattern: pattern == freezed
+          ? _value.pattern
+          : pattern // ignore: cast_nullable_to_non_nullable
+              as E2Pattern?,
       stepPage: stepPage == freezed
           ? _value.stepPage
           : stepPage // ignore: cast_nullable_to_non_nullable
@@ -73,7 +80,7 @@ abstract class _$TrackerStateCopyWith<$Res>
           _TrackerState value, $Res Function(_TrackerState) then) =
       __$TrackerStateCopyWithImpl<$Res>;
   @override
-  $Res call({int stepPage});
+  $Res call({E2Pattern? pattern, int stepPage});
 }
 
 /// @nodoc
@@ -88,9 +95,14 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
 
   @override
   $Res call({
+    Object? pattern = freezed,
     Object? stepPage = freezed,
   }) {
     return _then(_TrackerState(
+      pattern: pattern == freezed
+          ? _value.pattern
+          : pattern // ignore: cast_nullable_to_non_nullable
+              as E2Pattern?,
       stepPage: stepPage == freezed
           ? _value.stepPage
           : stepPage // ignore: cast_nullable_to_non_nullable
@@ -102,14 +114,16 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_TrackerState implements _TrackerState {
-  const _$_TrackerState({required this.stepPage});
+  const _$_TrackerState({this.pattern, required this.stepPage});
 
+  @override
+  final E2Pattern? pattern;
   @override
   final int stepPage;
 
   @override
   String toString() {
-    return 'TrackerState(stepPage: $stepPage)';
+    return 'TrackerState(pattern: $pattern, stepPage: $stepPage)';
   }
 
   @override
@@ -117,12 +131,15 @@ class _$_TrackerState implements _TrackerState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _TrackerState &&
+            const DeepCollectionEquality().equals(other.pattern, pattern) &&
             const DeepCollectionEquality().equals(other.stepPage, stepPage));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(stepPage));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(pattern),
+      const DeepCollectionEquality().hash(stepPage));
 
   @JsonKey(ignore: true)
   @override
@@ -131,8 +148,11 @@ class _$_TrackerState implements _TrackerState {
 }
 
 abstract class _TrackerState implements TrackerState {
-  const factory _TrackerState({required int stepPage}) = _$_TrackerState;
+  const factory _TrackerState({E2Pattern? pattern, required int stepPage}) =
+      _$_TrackerState;
 
+  @override
+  E2Pattern? get pattern;
   @override
   int get stepPage;
   @override

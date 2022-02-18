@@ -4,14 +4,6 @@ import 'dart:ffi' as ffi;
 import '../elecmidi_generated.dart';
 
 class E2Step {
-  // final int note1;
-  // final int note2;
-  // final int note3;
-  // final int note4;
-  // final bool stepOn;
-  // final int velocity;
-  // final bool trigger;
-  // final int gateTime;
   final StepType _stepData;
 
   ///  0,1~128=Off,Note No 0~127
@@ -23,6 +15,17 @@ class E2Step {
       ];
 
   bool get stepOn => _stepData.onOff == 1;
+
+  bool get trigger => _stepData.triggerOnOff == 1;
+
+  int get velocity => _stepData.velocity;
+
+  int get gateTime => _stepData.gateTime;
+
+  void setNote(index, value) {
+    RangeError.checkValueInInterval(index, 0, 3);
+    _stepData.note[index] = value;
+  }
 
   E2Step(this._stepData);
 }

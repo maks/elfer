@@ -32,7 +32,7 @@ class E2Device {
 
   late Stream e2Events = _inputStreamController.stream.asBroadcastStream();
 
-  late Stream<E2Pattern> currentPattern =
+  late Stream<E2Pattern> currentPatternStream =
       _currentPatternStreamController.stream.asBroadcastStream();
 
   E2Device(this._midi);

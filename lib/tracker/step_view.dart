@@ -14,7 +14,7 @@ class StepView extends StatelessWidget {
     final accidentalOrDash =
         p.accidentalsString.isNotEmpty ? p.accidentalsString.replaceAll('♯', '#') : ('-');
     final pitchText = '${p.letterName}$accidentalOrDash${p.octave}';
-    //TODO: need to find way to display when more than 1 note, show chord names maybe?
+    // TODO: need to find way to display when more than 1 note, show chord names maybe?
     final String noteText = step.notes[0] == 0 ? '---' : pitchText;
     return StepContainer(text: noteText);
   }

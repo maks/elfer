@@ -24,7 +24,6 @@ class E2Pattern {
     for (var i = 0; i < E2Part.stepsPerPage; i++) {
       result.add(E2Part(_patternData.ref.part1[i], '$i'));
     }
-
     return result;
   }
 }
