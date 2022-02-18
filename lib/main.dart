@@ -130,10 +130,15 @@ class _MyAppState extends ConsumerState<MyApp> {
         final d = packet.data;
 
         // pad down in Trigger mode
-        if (d[1] == 0x3C && d[2] == 0x60) {
+        if (d[1] == 0x3C) {
           final int pad = d[0] & 0x0F;
+          final int pressDir = d[0] & 0xF0;
           log('pad:$pad');
-          viewModel.selectStepIndex(pad);
+          if (pressDir == 0x90) {
+            viewModel.selectStepIndex(pad);
+          } else {
+            viewModel.clearSelectedStepIndex();
+          }
         }
       });
       log('subscribed to E2 events');

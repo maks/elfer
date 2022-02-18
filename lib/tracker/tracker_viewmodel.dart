@@ -53,6 +53,10 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     log('sel step: ${Pitch.fromMidiNumber((state.selectedPart?.steps[index].notes[0] ?? 0) - 1)}');
   }
 
+  void clearSelectedStepIndex() {
+    state = state.copyWith(selectedStepIndex: null);
+  }
+
   void editNote({bool? down}) {
     final stepIndex = state.selectedStepIndex;
     if (stepIndex == null) {
