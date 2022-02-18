@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ninja_hex/ninja_hex.dart';
@@ -34,18 +35,23 @@ class _MyAppState extends ConsumerState<MyApp> {
   StreamSubscription? _e2Subscription;
 
   Uint8List? lastMidiMesg;
+  late final TrackerViewModel viewModel;
+
+  // for keybd input
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _e2Device = ref.read(e2DeviceProvider);
-    final vm = ref.read(trackerViewModelProvider.notifier);
-    _subscribeE2Events(vm);
+    viewModel = ref.read(trackerViewModelProvider.notifier);
+    _subscribeE2Events(viewModel);
   }
 
   @override
   void dispose() {
     _e2Subscription?.cancel();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -62,50 +68,56 @@ class _MyAppState extends ConsumerState<MyApp> {
         appBar: AppBar(
           title: const Text('Elfer'),
         ),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                MaterialButton(
-                  child: const Text('Disconnect'),
-                  onPressed: () async {
-                    _e2Device.disconnect();
-                    log('device disconnected');
-                  },
-                ),
-                MaterialButton(
-                  child: const Text('Connect'),
-                  onPressed: () async {
-                    _e2Device.connectDevice();
-                    _subscribeE2Events(ref.watch(trackerViewModelProvider.notifier));
-                    log('device connected');
-                  },
-                ),
-              ],
-            ),
-            // For debugging only:
-            // MaterialButton(
-            //   child: const Text('ReSync pattern'),
-            //   onPressed: () async {
-            //     _e2Device.getPattern();
-            //   },
-            // ),
-            StreamBuilder<E2Pattern>(
-              stream: _e2Device.currentPatternStream,
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                } else {
-                  final pattern = snapshot.data;
-                  if (pattern == null) {
-                    return const Text('no pattern');
+        body: RawKeyboardListener(
+          focusNode: _focusNode,
+          onKey: (k) {
+            _handleKey(k, viewModel);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  MaterialButton(
+                    child: const Text('Disconnect'),
+                    onPressed: () async {
+                      _e2Device.disconnect();
+                      log('device disconnected');
+                    },
+                  ),
+                  MaterialButton(
+                    child: const Text('Connect'),
+                    onPressed: () async {
+                      _e2Device.connectDevice();
+                      _subscribeE2Events(ref.watch(trackerViewModelProvider.notifier));
+                      log('device connected');
+                    },
+                  ),
+                ],
+              ),
+              // For debugging only:
+              // MaterialButton(
+              //   child: const Text('ReSync pattern'),
+              //   onPressed: () async {
+              //     _e2Device.getPattern();
+              //   },
+              // ),
+              StreamBuilder<E2Pattern>(
+                stream: _e2Device.currentPatternStream,
+                builder: (_, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator();
+                  } else {
+                    final pattern = snapshot.data;
+                    if (pattern == null) {
+                      return const Text('no pattern');
+                    }
+                    return PatternWidget(pattern: pattern);
                   }
-                  return PatternWidget(pattern: pattern);
-                }
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -125,6 +137,20 @@ class _MyAppState extends ConsumerState<MyApp> {
         }
       });
       log('subscribed to E2 events');
+    }
+  }
+
+  void _handleKey(RawKeyEvent event, TrackerViewModel viewModel) {
+    if (event.repeat || event.isKeyPressed(event.logicalKey)) {
+      //print('repeat: ${event.character}');
+      return;
+    }
+    if (event.logicalKey == LogicalKeyboardKey.keyQ) {
+      //log('keybd: quit');
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      viewModel.editNote();
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      viewModel.editNote(down: true);
     }
   }
 }

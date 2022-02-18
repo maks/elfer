@@ -12,5 +12,6 @@ class TrackerState with _$TrackerState {
     E2Pattern? pattern,
     E2Part? selectedPart,
     int? selectedStepIndex,
+    required int editVersion,
   }) = _TrackerState;
 }

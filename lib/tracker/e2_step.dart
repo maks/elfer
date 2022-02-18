@@ -1,6 +1,8 @@
 // needed to access extension for "[]" operator on Array, eg for stepdata note prop
 import 'dart:ffi' as ffi;
 
+import 'package:bonsai/bonsai.dart';
+
 import '../elecmidi_generated.dart';
 
 class E2Step {
@@ -24,7 +26,9 @@ class E2Step {
 
   void setNote(index, value) {
     RangeError.checkValueInInterval(index, 0, 3);
+    log('set note:$value');
     _stepData.note[index] = value;
+    log('step native: ${_stepData.note[index]}');
   }
 
   E2Step(this._stepData);
