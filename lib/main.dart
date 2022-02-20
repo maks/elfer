@@ -40,6 +40,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   // for keybd input
   final FocusNode _focusNode = FocusNode();
 
+  E2Pattern? _currentPattern;
+
   @override
   void initState() {
     super.initState();
@@ -102,17 +104,30 @@ class _MyAppState extends ConsumerState<MyApp> {
               //     _e2Device.getPattern();
               //   },
               // ),
+              MaterialButton(
+                child: const Text('SEND pattern'),
+                onPressed: () async {
+                  final pat = _currentPattern;
+                  if (pat != null) {
+                    pat.name = 'Test1a';
+                    _e2Device.sendPatternData(pat.data, pat.indexNumber);
+                  } else {
+                    log("cant send NO current pattern");
+                  }
+                },
+              ),
               StreamBuilder<E2Pattern>(
                 stream: _e2Device.currentPatternStream,
                 builder: (_, snapshot) {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
                   } else {
-                    final pattern = snapshot.data;
-                    if (pattern == null) {
+                    _currentPattern = snapshot.data;
+                    if (_currentPattern == null) {
                       return const Text('no pattern');
+                    } else {
+                      return PatternWidget(pattern: _currentPattern!);
                     }
-                    return PatternWidget(pattern: pattern);
                   }
                 },
               ),

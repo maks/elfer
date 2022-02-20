@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:ffi' as ffi;
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
@@ -102,7 +103,7 @@ class E2Device {
             final decoded =
                 decodeMidiData(packet.data.sublist(headerOffSet, packet.data.length - 1));
 
-            if (decoded.length != 18725) {
+            if (decoded.length != 16384) {
               throw Exception('Invalid pattern data size:${decoded.length}');
             }
 
@@ -118,12 +119,16 @@ class E2Device {
             log('decode check...');
             checkData(patternData);
             log("decode ✔️");
-            _currentPatternStreamController.add(E2Pattern(patternData, _currentPatternIndex));
+            _currentPatternStreamController.add(E2Pattern(
+              patternData,
+              decoded.length,
+              _currentPatternIndex,
+            ));
           } else {
             log('not a pattern data message');
           }
         } else {
-          //log('received packet: ${hexView(0, packet.data)}');
+          log('received packet: ${hexView(0, packet.data)}');
           if (e2.isBankSelect(packet.data) && packet.data[1] == 0x20) {
             // the 3rd byte of the bankselect tells us if the following Prog Change mesg
             // is for 001-127 or 128-250 pattern range
@@ -151,6 +156,37 @@ class E2Device {
         _inputStreamController.add(E2InputEvent(packet.data));
       }
     }
+  }
+
+  Future<void> sendPatternData(List<int> data, int patternNumber) async {
+    final encodedPatternData = encodeMidiData(Uint8List.fromList(data));
+
+    final midiMesg = e2.sendPatternMessage(
+      _globalChannel!,
+      _e2ProductId!,
+      patternNumber,
+      encodedPatternData,
+    );
+
+    // Need to ensure that large sysex data is not sent too fast
+    // see: https://www.spinics.net/lists/alsa-devel/msg54414.html
+    // and: https://github.com/InvisibleWrench/FlutterMidiCommand/issues/36
+    int chunkSize = 256;
+    int chunks = (midiMesg.lengthInBytes % chunkSize == 0)
+        ? midiMesg.lengthInBytes ~/ chunkSize
+        : midiMesg.lengthInBytes ~/ chunkSize + 1;
+
+    for (int chunkCount = 1, start = 0, end = chunkSize; chunkCount <= chunks; chunkCount++) {
+      if (chunkCount == chunks) {
+        _midi.sendData(midiMesg.sublist(start));
+      } else {
+        _midi.sendData(midiMesg.sublist(start, end));
+      }
+      start = chunkCount * chunkSize;
+      end = start + chunkSize;
+      sleep(const Duration(milliseconds: 10));
+    }
+    // log('sent Pattern:');
   }
 }
 

@@ -9,12 +9,15 @@ import 'dart:typed_data';
 
 import '../elecmidi_generated.dart';
 
+const decodedSize = 16384;
+const encodedSize = 18725;
+
 /// This converts "7 bit" 8 byte "sets" of midi data as sent/recieved
 /// from an E2 to "normal" 8bits per byte format
 /// E2's format is that every 8th byte (b7 in the Korg docs) contains
 /// the high-bit of each of the following 7 bytes (which are only 7bit)
 Uint8List decodeMidiData(Uint8List midiData) {
-  List<int> outputBuffer = List.filled(midiData.length, 0);
+  List<int> outputBuffer = List.filled(decodedSize, 0);
   int byte7 = 0;
   int o = 0;
   for (var i = 0; i < midiData.length; i++) {
@@ -34,19 +37,21 @@ Uint8List decodeMidiData(Uint8List midiData) {
 }
 
 Uint8List encodeMidiData(Uint8List data) {
-  List<int> outputBuffer = List.filled(data.length, 0);
+  List<int> outputBuffer = List.filled(encodedSize, 0);
   int byte7 = 0;
-  int o = 0;
+  int o = 1; //start at one to skip initial byte holding the first 7 "highbits"
   for (var i = 0; i < data.length; i++) {
     outputBuffer[o] = data[i] & 0x7F;
+
     if ((data[i] & 0x80) > 0) {
       byte7 = byte7 | 0x80;
-      byte7 = byte7 >> 1;
     }
+    byte7 = byte7 >> 1;
+
     if ((i % 7) == 6) {
       outputBuffer[o - 7] = byte7;
       byte7 = 0;
-      o++;
+      o++; //skip the byte that fill hold following
     }
     o++;
   }
