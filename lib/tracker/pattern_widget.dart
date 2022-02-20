@@ -51,7 +51,7 @@ class PatternWidget extends ConsumerWidget {
             ),
           ),
           SizedBox(
-            height: 40,
+            height: 20,
             width: 600,
             child: PatternDataView(
               beat: pattern.tempo,
@@ -65,7 +65,7 @@ class PatternWidget extends ConsumerWidget {
               Column(
                 children: [
                   Container(
-                    height: 34,
+                    height: 24,
                   ),
                   ...List.generate(E2Part.maxSteps, (i) => i)
                       .getRange(firstStep, firstStep + 16)

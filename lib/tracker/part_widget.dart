@@ -36,7 +36,7 @@ class PartView extends ConsumerWidget {
                   Text(
                     int.parse(part.name).toRadixString(16).toUpperCase(),
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(
                           color: _getHeaderTextColor(_isSelected(state, part)),
                         ),
                   ),

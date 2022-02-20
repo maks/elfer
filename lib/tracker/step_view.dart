@@ -38,7 +38,7 @@ class StepContainer extends StatelessWidget {
       padding: const EdgeInsets.all(6.0),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
       ),
     );
   }
