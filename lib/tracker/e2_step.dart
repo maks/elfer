@@ -24,7 +24,7 @@ class E2Step {
 
   int get gateTime => _stepData.gateTime;
 
-  void setNote(index, value) {
+  void setNote(int index, int value) {
     RangeError.checkValueInInterval(index, 0, 3);
     log('set note:$value');
     _stepData.note[index] = value;

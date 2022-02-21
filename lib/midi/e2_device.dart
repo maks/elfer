@@ -33,7 +33,7 @@ class E2Device {
 
   final _currentPatternStreamController = StreamController<E2Pattern>();
 
-  late Stream e2Events = _inputStreamController.stream.asBroadcastStream();
+  late Stream<E2InputEvent> e2Events = _inputStreamController.stream.asBroadcastStream();
 
   late Stream<E2Pattern> currentPatternStream =
       _currentPatternStreamController.stream.asBroadcastStream();
@@ -53,7 +53,7 @@ class E2Device {
 
       // not sure why need small delay before being able to send search device mesg,
       // maybe time it takes for Alsa midi connection to setup?
-      await Future.delayed(const Duration(milliseconds: _delayHACK));
+      await Future<void>.delayed(const Duration(milliseconds: _delayHACK));
       log('Search for E2 Device...');
       send(e2.searchDeviceMessage);
     } else {

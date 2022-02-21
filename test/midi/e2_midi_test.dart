@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:elfer/midi/e2_midi.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const eq = ListEquality();
+const eq = ListEquality<int>();
 
 void main() {
   test('string is padded correctly', () {
