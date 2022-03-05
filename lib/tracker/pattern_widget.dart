@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'e2_part.dart';
-import 'e2_pattern.dart';
+import 'e2_data/e2_part.dart';
+import 'e2_data/e2_pattern.dart';
 import 'part_widget.dart';
 import 'pattern_data_view.dart';
 import 'providers.dart';

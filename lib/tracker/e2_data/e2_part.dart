@@ -1,8 +1,8 @@
 // needed to access extension for "[]" operator on Array, eg for partdata step prop
 import 'dart:ffi' as ffi;
 
-import '../elecmidi_generated.dart';
 import 'e2_step.dart';
+import 'elecmidi_generated.dart';
 
 class E2Part {
   static const maxSteps = 64;

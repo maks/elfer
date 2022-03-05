@@ -1,9 +1,9 @@
 import 'dart:ffi';
 
-import '../elecmidi_generated.dart';
-import '../midi/e2_data.dart';
-import '../midi/e2_device.dart';
+import '../../midi/e2_data.dart';
+import '../../midi/e2_device.dart';
 import 'e2_part.dart';
+import 'elecmidi_generated.dart';
 
 class E2Pattern {
   final Pointer<PatternType> _patternData;

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:ffi' as ffi;
 import 'dart:ffi';
 import 'dart:io';
@@ -12,8 +11,8 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 
-import '../elecmidi_generated.dart';
-import '../tracker/e2_pattern.dart';
+import '../tracker/e2_data/e2_pattern.dart';
+import '../tracker/e2_data/elecmidi_generated.dart';
 import 'e2_data.dart';
 import 'e2_midi.dart' as e2;
 
@@ -33,10 +32,13 @@ class E2Device {
 
   final _currentPatternStreamController = StreamController<E2Pattern>();
 
+  final _messagesStreamController = StreamController<String>();
+
   late Stream<E2InputEvent> e2Events = _inputStreamController.stream.asBroadcastStream();
 
-  late Stream<E2Pattern> currentPatternStream =
-      _currentPatternStreamController.stream.asBroadcastStream();
+  late Stream<E2Pattern> currentPatternStream = _currentPatternStreamController.stream.asBroadcastStream();
+
+  late Stream<String> messages = _messagesStreamController.stream.asBroadcastStream();
 
   E2Device(this._midi);
 
@@ -47,17 +49,19 @@ class E2Device {
       await _midi.connectToDevice(device);
 
       _rxSubscription ??= _midi.onMidiDataReceived?.listen(_handleMidiInput);
-
       _device = device;
       log('connected device:${_device?.name}');
+      _messagesStreamController.add('E2 Connected');
 
       // not sure why need small delay before being able to send search device mesg,
       // maybe time it takes for Alsa midi connection to setup?
       await Future<void>.delayed(const Duration(milliseconds: _delayHACK));
-      log('Search for E2 Device...');
+      log('Searching for E2 Device...');
+      _messagesStreamController.add('Searching for E2 Device...');
       send(e2.searchDeviceMessage);
     } else {
-      Log.e('no E2 device to connect to');
+      log('no E2 device to connect to');
+      _messagesStreamController.add('no E2 device to connect to');
     }
   }
 
@@ -65,16 +69,20 @@ class E2Device {
     if (_device != null) {
       _midi.disconnectDevice(_device!);
       log('disconnected device:${_device?.name}');
+      _messagesStreamController.add('E2 Disconnected');
     } else {
       log('no device to disconnect');
+      _messagesStreamController.add('no device to disconnect');
     }
   }
 
   Future<void> getPattern() async {
     if (_globalChannel != null && _e2ProductId != null) {
       send(e2.getPatternMessage(_currentPatternIndex, _globalChannel!, _e2ProductId!));
+      _messagesStreamController.add('Received pattern ${_currentPatternIndex + 1}');
     } else {
       Log.e('cannot get Pattern not initialised');
+      _messagesStreamController.add('cannot get Pattern: not initialised');
     }
   }
 
@@ -100,8 +108,7 @@ class E2Device {
 
           const headerOffSet = 9;
           if (e2.isPatternReply(packet.data, _e2ProductId!)) {
-            final decoded =
-                decodeMidiData(packet.data.sublist(headerOffSet, packet.data.length - 1));
+            final decoded = decodeMidiData(packet.data.sublist(headerOffSet, packet.data.length - 1));
 
             if (decoded.length != 16384) {
               throw Exception('Invalid pattern data size:${decoded.length}');

@@ -3,9 +3,8 @@ import 'dart:math' as math;
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tonic/tonic.dart';
-
-import 'e2_part.dart';
-import 'e2_pattern.dart';
+import 'e2_data/e2_part.dart';
+import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
 
 class TrackerViewModel extends StateNotifier<TrackerState> {
@@ -26,8 +25,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   set _pattern(E2Pattern p) => state = state.copyWith(pattern: p);
 
   void nextPage() => state = state.copyWith(stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1);
-  void prevPage() =>
-      state = state.copyWith(stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1));
+  void prevPage() => state = state.copyWith(stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1));
 
   void setNote(int index, int note) {
     final stepIndex = state.selectedStepIndex;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tonic/tonic.dart';
 
-import 'e2_step.dart';
+import 'e2_data/e2_step.dart';
 
 class StepView extends StatelessWidget {
   final E2Step step;
@@ -16,8 +16,7 @@ class StepView extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Pitch.fromMidiNumber(step.notes[0] - 1);
     // use normal ascii hash instead of unicode sharp to get nicer looking monofont layout
-    final accidentalOrDash =
-        p.accidentalsString.isNotEmpty ? p.accidentalsString.replaceAll('♯', '#') : ('-');
+    final accidentalOrDash = p.accidentalsString.isNotEmpty ? p.accidentalsString.replaceAll('♯', '#') : ('-');
     final pitchText = '${p.letterName}$accidentalOrDash${p.octave - 1}';
     // TODO: need to find way to display when more than 1 note, show chord names maybe?
     final String noteText = step.notes[0] == 0 ? '---' : pitchText;

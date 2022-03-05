@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'e2_part.dart';
+import 'e2_data/e2_part.dart';
 import 'providers.dart';
 import 'step_view.dart';
 import 'tracker_state.dart';

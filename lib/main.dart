@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 
 import 'midi/e2_device.dart';
-import 'tracker/e2_pattern.dart';
+import 'tracker/e2_data/e2_pattern.dart';
 import 'tracker/pattern_widget.dart';
 import 'tracker/providers.dart';
 import 'tracker/tracker_viewmodel.dart';
@@ -92,9 +92,22 @@ class _MyAppState extends ConsumerState<MyApp> {
                     onPressed: () async {
                       _e2Device.connectDevice();
                       _subscribeE2Events(ref.watch(trackerViewModelProvider.notifier));
-                      log('device connected');
+                      log('subscribe to e2 events');
                     },
                   ),
+                  StreamBuilder<String>(
+                      stream: _e2Device.messages,
+                      builder: (context, snapshot) {
+                        return snapshot.hasData
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: Text(
+                                  snapshot.data ?? '',
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.orange),
+                                ),
+                              )
+                            : Container();
+                      }),
                 ],
               ),
               // For debugging only:
