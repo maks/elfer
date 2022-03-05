@@ -21,13 +21,13 @@ class _$TrackerStateTearOff {
   _TrackerState call(
       {required int stepPage,
       E2Pattern? pattern,
-      E2Part? selectedPart,
+      int? selectedPartIndex,
       int? selectedStepIndex,
       required int editVersion}) {
     return _TrackerState(
       stepPage: stepPage,
       pattern: pattern,
-      selectedPart: selectedPart,
+      selectedPartIndex: selectedPartIndex,
       selectedStepIndex: selectedStepIndex,
       editVersion: editVersion,
     );
@@ -41,7 +41,7 @@ const $TrackerState = _$TrackerStateTearOff();
 mixin _$TrackerState {
   int get stepPage => throw _privateConstructorUsedError;
   E2Pattern? get pattern => throw _privateConstructorUsedError;
-  E2Part? get selectedPart => throw _privateConstructorUsedError;
+  int? get selectedPartIndex => throw _privateConstructorUsedError;
   int? get selectedStepIndex => throw _privateConstructorUsedError;
   int get editVersion => throw _privateConstructorUsedError;
 
@@ -58,7 +58,7 @@ abstract class $TrackerStateCopyWith<$Res> {
   $Res call(
       {int stepPage,
       E2Pattern? pattern,
-      E2Part? selectedPart,
+      int? selectedPartIndex,
       int? selectedStepIndex,
       int editVersion});
 }
@@ -75,7 +75,7 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
   $Res call({
     Object? stepPage = freezed,
     Object? pattern = freezed,
-    Object? selectedPart = freezed,
+    Object? selectedPartIndex = freezed,
     Object? selectedStepIndex = freezed,
     Object? editVersion = freezed,
   }) {
@@ -88,10 +88,10 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
           ? _value.pattern
           : pattern // ignore: cast_nullable_to_non_nullable
               as E2Pattern?,
-      selectedPart: selectedPart == freezed
-          ? _value.selectedPart
-          : selectedPart // ignore: cast_nullable_to_non_nullable
-              as E2Part?,
+      selectedPartIndex: selectedPartIndex == freezed
+          ? _value.selectedPartIndex
+          : selectedPartIndex // ignore: cast_nullable_to_non_nullable
+              as int?,
       selectedStepIndex: selectedStepIndex == freezed
           ? _value.selectedStepIndex
           : selectedStepIndex // ignore: cast_nullable_to_non_nullable
@@ -114,7 +114,7 @@ abstract class _$TrackerStateCopyWith<$Res>
   $Res call(
       {int stepPage,
       E2Pattern? pattern,
-      E2Part? selectedPart,
+      int? selectedPartIndex,
       int? selectedStepIndex,
       int editVersion});
 }
@@ -133,7 +133,7 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
   $Res call({
     Object? stepPage = freezed,
     Object? pattern = freezed,
-    Object? selectedPart = freezed,
+    Object? selectedPartIndex = freezed,
     Object? selectedStepIndex = freezed,
     Object? editVersion = freezed,
   }) {
@@ -146,10 +146,10 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
           ? _value.pattern
           : pattern // ignore: cast_nullable_to_non_nullable
               as E2Pattern?,
-      selectedPart: selectedPart == freezed
-          ? _value.selectedPart
-          : selectedPart // ignore: cast_nullable_to_non_nullable
-              as E2Part?,
+      selectedPartIndex: selectedPartIndex == freezed
+          ? _value.selectedPartIndex
+          : selectedPartIndex // ignore: cast_nullable_to_non_nullable
+              as int?,
       selectedStepIndex: selectedStepIndex == freezed
           ? _value.selectedStepIndex
           : selectedStepIndex // ignore: cast_nullable_to_non_nullable
@@ -168,7 +168,7 @@ class _$_TrackerState implements _TrackerState {
   const _$_TrackerState(
       {required this.stepPage,
       this.pattern,
-      this.selectedPart,
+      this.selectedPartIndex,
       this.selectedStepIndex,
       required this.editVersion});
 
@@ -177,7 +177,7 @@ class _$_TrackerState implements _TrackerState {
   @override
   final E2Pattern? pattern;
   @override
-  final E2Part? selectedPart;
+  final int? selectedPartIndex;
   @override
   final int? selectedStepIndex;
   @override
@@ -185,7 +185,7 @@ class _$_TrackerState implements _TrackerState {
 
   @override
   String toString() {
-    return 'TrackerState(stepPage: $stepPage, pattern: $pattern, selectedPart: $selectedPart, selectedStepIndex: $selectedStepIndex, editVersion: $editVersion)';
+    return 'TrackerState(stepPage: $stepPage, pattern: $pattern, selectedPartIndex: $selectedPartIndex, selectedStepIndex: $selectedStepIndex, editVersion: $editVersion)';
   }
 
   @override
@@ -196,7 +196,7 @@ class _$_TrackerState implements _TrackerState {
             const DeepCollectionEquality().equals(other.stepPage, stepPage) &&
             const DeepCollectionEquality().equals(other.pattern, pattern) &&
             const DeepCollectionEquality()
-                .equals(other.selectedPart, selectedPart) &&
+                .equals(other.selectedPartIndex, selectedPartIndex) &&
             const DeepCollectionEquality()
                 .equals(other.selectedStepIndex, selectedStepIndex) &&
             const DeepCollectionEquality()
@@ -208,7 +208,7 @@ class _$_TrackerState implements _TrackerState {
       runtimeType,
       const DeepCollectionEquality().hash(stepPage),
       const DeepCollectionEquality().hash(pattern),
-      const DeepCollectionEquality().hash(selectedPart),
+      const DeepCollectionEquality().hash(selectedPartIndex),
       const DeepCollectionEquality().hash(selectedStepIndex),
       const DeepCollectionEquality().hash(editVersion));
 
@@ -222,7 +222,7 @@ abstract class _TrackerState implements TrackerState {
   const factory _TrackerState(
       {required int stepPage,
       E2Pattern? pattern,
-      E2Part? selectedPart,
+      int? selectedPartIndex,
       int? selectedStepIndex,
       required int editVersion}) = _$_TrackerState;
 
@@ -231,7 +231,7 @@ abstract class _TrackerState implements TrackerState {
   @override
   E2Pattern? get pattern;
   @override
-  E2Part? get selectedPart;
+  int? get selectedPartIndex;
   @override
   int? get selectedStepIndex;
   @override

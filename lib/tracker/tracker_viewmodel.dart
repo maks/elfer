@@ -18,14 +18,20 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
           ),
         ) {
     patternStream.forEach((p) {
-      _pattern = p;
+      state = state.copyWith(pattern: p, selectedPartIndex: 0, stepPage: 0, selectedStepIndex: 0, editVersion: 0);
     });
   }
 
-  set _pattern(E2Pattern p) => state = state.copyWith(pattern: p);
+  E2Part? get selectedPart => state.pattern?.parts[state.selectedPartIndex ?? 0];
 
   void nextPage() => state = state.copyWith(stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1);
   void prevPage() => state = state.copyWith(stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1));
+
+  void nextStep() => state = state.copyWith(selectedStepIndex: math.min(63, state.selectedStepIndex! + 1));
+  void prevStep() => state = state.copyWith(selectedStepIndex: math.max(0, state.selectedStepIndex! - 1));
+
+  void nextPart() => state = state.copyWith(selectedPartIndex: math.min(15, state.selectedPartIndex! + 1));
+  void prevPart() => state = state.copyWith(selectedPartIndex: math.max(0, state.selectedPartIndex! - 1));
 
   void setNote(int index, int note) {
     final stepIndex = state.selectedStepIndex;
@@ -33,7 +39,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
       log('NO selected step to set note');
       return;
     }
-    final step = state.selectedPart?.steps[stepIndex];
+    final step = selectedPart?.steps[stepIndex];
     if (step == null) {
       log('NO selected Part to set note');
       return;
@@ -42,13 +48,13 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     log('set step: [$index] note:$note');
   }
 
-  void selectPart(E2Part part) {
-    state = state.copyWith(selectedPart: part);
+  void selectPartIndex(int partIndex) {
+    state = state.copyWith(selectedPartIndex: partIndex);
   }
 
   void selectStepIndex(int index) {
     state = state.copyWith(selectedStepIndex: index);
-    log('sel step: ${Pitch.fromMidiNumber((state.selectedPart?.steps[index].notes[0] ?? 0) - 1)}');
+    log('sel step: ${Pitch.fromMidiNumber((selectedPart?.steps[index].notes[0] ?? 0) - 1)}');
   }
 
   void clearSelectedStepIndex() {
@@ -61,13 +67,13 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
       log('no selected step');
       return;
     }
-    int currentNote = state.selectedPart?.steps[stepIndex].notes[0] ?? 0;
+    int currentNote = selectedPart?.steps[stepIndex].notes[0] ?? 0;
     if (true == down) {
       currentNote = math.max(0, currentNote - 1);
     } else {
       currentNote = math.min(127, currentNote + 1);
     }
-    state.selectedPart?.steps[stepIndex].setNote(0, currentNote);
+    selectedPart?.steps[stepIndex].setNote(0, currentNote);
     state = state.copyWith(editVersion: state.editVersion + 1);
     log('new note:$currentNote');
   }

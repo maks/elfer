@@ -65,7 +65,7 @@ class PatternWidget extends ConsumerWidget {
               Column(
                 children: [
                   Container(
-                    height: 24,
+                    height: 28,
                   ),
                   ...List.generate(E2Part.maxSteps, (i) => i)
                       .getRange(firstStep, firstStep + 16)
@@ -80,7 +80,11 @@ class PatternWidget extends ConsumerWidget {
               ),
               ...pattern.parts
                   .map(
-                    (p) => PartView(part: p, firstStep: firstStep),
+                    (p) => PartView(
+                      part: p,
+                      firstStep: firstStep,
+                      partIndex: int.parse(p.name),
+                    ),
                   )
                   .toList(),
             ],

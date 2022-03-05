@@ -174,16 +174,20 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   void _handleKey(RawKeyEvent event, TrackerViewModel viewModel) {
-    if (event.repeat || event.isKeyPressed(event.logicalKey)) {
-      //print('repeat: ${event.character}');
-      return;
-    }
-    if (event.logicalKey == LogicalKeyboardKey.keyQ) {
-      //log('keybd: quit');
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      viewModel.editNote();
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      viewModel.editNote(down: true);
+    if (event is RawKeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.keyQ) {
+        //log('keybd: quit');
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        // viewModel.editNote();
+        viewModel.prevStep();
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        // viewModel.editNote(down: true);
+        viewModel.nextStep();
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        viewModel.prevPart();
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        viewModel.nextPart();
+      }
     }
   }
 }
