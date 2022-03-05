@@ -12,6 +12,7 @@ import 'midi/e2_device.dart';
 import 'tracker/e2_data/e2_pattern.dart';
 import 'tracker/pattern_widget.dart';
 import 'tracker/providers.dart';
+import 'tracker/tracker_state.dart';
 import 'tracker/tracker_viewmodel.dart';
 
 void main() {
@@ -35,7 +36,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   StreamSubscription? _e2Subscription;
 
   Uint8List? lastMidiMesg;
-  late final TrackerViewModel viewModel;
+  late final TrackerViewModel _viewModel;
 
   // for keybd input
   final FocusNode _focusNode = FocusNode();
@@ -46,8 +47,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     _e2Device = ref.read(e2DeviceProvider);
-    viewModel = ref.read(trackerViewModelProvider.notifier);
-    _subscribeE2Events(viewModel);
+    _viewModel = ref.read(trackerViewModelProvider.notifier);
+    _subscribeE2Events(_viewModel);
   }
 
   @override
@@ -59,6 +60,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final viewState = ref.watch(trackerViewModelProvider);
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -73,7 +75,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         body: RawKeyboardListener(
           focusNode: _focusNode,
           onKey: (k) {
-            _handleKey(k, viewModel);
+            _handleKey(k, _viewModel, viewState);
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -91,23 +93,30 @@ class _MyAppState extends ConsumerState<MyApp> {
                     child: const Text('Connect'),
                     onPressed: () async {
                       _e2Device.connectDevice();
-                      _subscribeE2Events(ref.watch(trackerViewModelProvider.notifier));
+                      _subscribeE2Events(_viewModel);
                       log('subscribe to e2 events');
                     },
                   ),
                   StreamBuilder<String>(
-                      stream: _e2Device.messages,
-                      builder: (context, snapshot) {
-                        return snapshot.hasData
-                            ? Padding(
-                                padding: const EdgeInsets.only(left: 16.0),
-                                child: Text(
-                                  snapshot.data ?? '',
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.orange),
-                                ),
-                              )
-                            : Container();
-                      }),
+                    stream: _e2Device.messages,
+                    builder: (context, snapshot) {
+                      return snapshot.hasData
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Text(
+                                snapshot.data ?? '',
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.orange),
+                              ),
+                            )
+                          : Container();
+                    },
+                  ),
+                  Text(
+                    'EDIT',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: viewState.editing ? Colors.amber : Colors.grey,
+                        ),
+                  )
                 ],
               ),
               // For debugging only:
@@ -173,20 +182,30 @@ class _MyAppState extends ConsumerState<MyApp> {
     }
   }
 
-  void _handleKey(RawKeyEvent event, TrackerViewModel viewModel) {
+  void _handleKey(RawKeyEvent event, TrackerViewModel viewModel, TrackerState viewState) {
     if (event is RawKeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.keyQ) {
-        //log('keybd: quit');
+      if (event.logicalKey == LogicalKeyboardKey.keyX) {
+        viewModel.editing(true);
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        // viewModel.editNote();
-        viewModel.prevStep();
+        if (viewState.editing) {
+          viewModel.editNote();
+        } else {
+          viewModel.prevStep();
+        }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        // viewModel.editNote(down: true);
-        viewModel.nextStep();
+        if (viewState.editing) {
+          viewModel.editNote(down: true);
+        } else {
+          viewModel.nextStep();
+        }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         viewModel.prevPart();
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         viewModel.nextPart();
+      }
+    } else if (event is RawKeyUpEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.keyX) {
+        viewModel.editing(false);
       }
     }
   }

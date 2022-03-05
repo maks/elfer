@@ -12,5 +12,7 @@ class TrackerState with _$TrackerState {
     int? selectedPartIndex,
     int? selectedStepIndex,
     required int editVersion,
+    required bool editing,
+    required bool shifting,
   }) = _TrackerState;
 }

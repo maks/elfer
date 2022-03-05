@@ -15,6 +15,8 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
           const TrackerState(
             editVersion: 0,
             stepPage: 0,
+            editing: false,
+            shifting: false,
           ),
         ) {
     patternStream.forEach((p) {
@@ -32,6 +34,8 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   void nextPart() => state = state.copyWith(selectedPartIndex: math.min(15, state.selectedPartIndex! + 1));
   void prevPart() => state = state.copyWith(selectedPartIndex: math.max(0, state.selectedPartIndex! - 1));
+
+  void editing(bool val) => state = state.copyWith(editing: val);
 
   void setNote(int index, int note) {
     final stepIndex = state.selectedStepIndex;
