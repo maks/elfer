@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +24,8 @@ class PartView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final state = ref.watch(trackerViewModelProvider);
-    final viewmodel = ref.watch(trackerViewModelProvider.notifier);
+    final relativeStepIndex =
+        state.stepPage != 0 ? state.selectedStepIndex! % (16 * state.stepPage) : state.selectedStepIndex;
 
     return Container(
       decoration: BoxDecoration(
@@ -33,6 +36,7 @@ class PartView extends ConsumerWidget {
         children: [
           Column(
             children: [
+              // Part name header
               Text(
                 int.parse(part.name).toRadixString(16).toUpperCase(),
                 textAlign: TextAlign.center,
@@ -48,7 +52,7 @@ class PartView extends ConsumerWidget {
               .mapIndexed(
                 (i, s) => StepView(
                   step: s,
-                  color: _getStepColor(i == state.selectedStepIndex && _isSelected(state, partIndex)),
+                  color: _getStepColor((i == relativeStepIndex) && _isSelected(state, partIndex)),
                 ),
               )
               .toList()
@@ -61,7 +65,7 @@ class PartView extends ConsumerWidget {
 
   Color _getHeaderTextColor(bool isSelected) => isSelected
       ? Colors.lightBlue
-      : int.parse(part.name) % 2 == 0
+      : partIndex % 2 == 0
           ? Colors.amber
           : Colors.white;
 

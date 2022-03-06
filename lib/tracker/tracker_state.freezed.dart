@@ -24,8 +24,7 @@ class _$TrackerStateTearOff {
       int? selectedPartIndex,
       int? selectedStepIndex,
       required int editVersion,
-      required bool editing,
-      required bool shifting}) {
+      required bool editing}) {
     return _TrackerState(
       stepPage: stepPage,
       pattern: pattern,
@@ -33,7 +32,6 @@ class _$TrackerStateTearOff {
       selectedStepIndex: selectedStepIndex,
       editVersion: editVersion,
       editing: editing,
-      shifting: shifting,
     );
   }
 }
@@ -49,7 +47,6 @@ mixin _$TrackerState {
   int? get selectedStepIndex => throw _privateConstructorUsedError;
   int get editVersion => throw _privateConstructorUsedError;
   bool get editing => throw _privateConstructorUsedError;
-  bool get shifting => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TrackerStateCopyWith<TrackerState> get copyWith =>
@@ -67,8 +64,7 @@ abstract class $TrackerStateCopyWith<$Res> {
       int? selectedPartIndex,
       int? selectedStepIndex,
       int editVersion,
-      bool editing,
-      bool shifting});
+      bool editing});
 }
 
 /// @nodoc
@@ -87,7 +83,6 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
     Object? selectedStepIndex = freezed,
     Object? editVersion = freezed,
     Object? editing = freezed,
-    Object? shifting = freezed,
   }) {
     return _then(_value.copyWith(
       stepPage: stepPage == freezed
@@ -114,10 +109,6 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
           ? _value.editing
           : editing // ignore: cast_nullable_to_non_nullable
               as bool,
-      shifting: shifting == freezed
-          ? _value.shifting
-          : shifting // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -135,8 +126,7 @@ abstract class _$TrackerStateCopyWith<$Res>
       int? selectedPartIndex,
       int? selectedStepIndex,
       int editVersion,
-      bool editing,
-      bool shifting});
+      bool editing});
 }
 
 /// @nodoc
@@ -157,7 +147,6 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
     Object? selectedStepIndex = freezed,
     Object? editVersion = freezed,
     Object? editing = freezed,
-    Object? shifting = freezed,
   }) {
     return _then(_TrackerState(
       stepPage: stepPage == freezed
@@ -184,10 +173,6 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
           ? _value.editing
           : editing // ignore: cast_nullable_to_non_nullable
               as bool,
-      shifting: shifting == freezed
-          ? _value.shifting
-          : shifting // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -201,8 +186,7 @@ class _$_TrackerState implements _TrackerState {
       this.selectedPartIndex,
       this.selectedStepIndex,
       required this.editVersion,
-      required this.editing,
-      required this.shifting});
+      required this.editing});
 
   @override
   final int stepPage;
@@ -216,12 +200,10 @@ class _$_TrackerState implements _TrackerState {
   final int editVersion;
   @override
   final bool editing;
-  @override
-  final bool shifting;
 
   @override
   String toString() {
-    return 'TrackerState(stepPage: $stepPage, pattern: $pattern, selectedPartIndex: $selectedPartIndex, selectedStepIndex: $selectedStepIndex, editVersion: $editVersion, editing: $editing, shifting: $shifting)';
+    return 'TrackerState(stepPage: $stepPage, pattern: $pattern, selectedPartIndex: $selectedPartIndex, selectedStepIndex: $selectedStepIndex, editVersion: $editVersion, editing: $editing)';
   }
 
   @override
@@ -237,8 +219,7 @@ class _$_TrackerState implements _TrackerState {
                 .equals(other.selectedStepIndex, selectedStepIndex) &&
             const DeepCollectionEquality()
                 .equals(other.editVersion, editVersion) &&
-            const DeepCollectionEquality().equals(other.editing, editing) &&
-            const DeepCollectionEquality().equals(other.shifting, shifting));
+            const DeepCollectionEquality().equals(other.editing, editing));
   }
 
   @override
@@ -249,8 +230,7 @@ class _$_TrackerState implements _TrackerState {
       const DeepCollectionEquality().hash(selectedPartIndex),
       const DeepCollectionEquality().hash(selectedStepIndex),
       const DeepCollectionEquality().hash(editVersion),
-      const DeepCollectionEquality().hash(editing),
-      const DeepCollectionEquality().hash(shifting));
+      const DeepCollectionEquality().hash(editing));
 
   @JsonKey(ignore: true)
   @override
@@ -265,8 +245,7 @@ abstract class _TrackerState implements TrackerState {
       int? selectedPartIndex,
       int? selectedStepIndex,
       required int editVersion,
-      required bool editing,
-      required bool shifting}) = _$_TrackerState;
+      required bool editing}) = _$_TrackerState;
 
   @override
   int get stepPage;
@@ -280,8 +259,6 @@ abstract class _TrackerState implements TrackerState {
   int get editVersion;
   @override
   bool get editing;
-  @override
-  bool get shifting;
   @override
   @JsonKey(ignore: true)
   _$TrackerStateCopyWith<_TrackerState> get copyWith =>

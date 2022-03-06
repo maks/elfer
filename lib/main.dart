@@ -61,6 +61,9 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     final viewState = ref.watch(trackerViewModelProvider);
+
+    log('sel step: ${viewState.selectedStepIndex}');
+
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -116,7 +119,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: viewState.editing ? Colors.amber : Colors.grey,
                         ),
-                  )
+                  ),
                 ],
               ),
               // For debugging only:
@@ -190,13 +193,21 @@ class _MyAppState extends ConsumerState<MyApp> {
         if (viewState.editing) {
           viewModel.editNote();
         } else {
-          viewModel.prevStep();
+          if (event.isShiftPressed) {
+            viewModel.prevPage();
+          } else {
+            viewModel.prevStep();
+          }
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         if (viewState.editing) {
           viewModel.editNote(down: true);
         } else {
-          viewModel.nextStep();
+          if (event.isShiftPressed) {
+            viewModel.nextPage();
+          } else {
+            viewModel.nextStep();
+          }
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         viewModel.prevPart();

@@ -16,7 +16,6 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
             editVersion: 0,
             stepPage: 0,
             editing: false,
-            shifting: false,
           ),
         ) {
     patternStream.forEach((p) {
@@ -26,11 +25,41 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   E2Part? get selectedPart => state.pattern?.parts[state.selectedPartIndex ?? 0];
 
-  void nextPage() => state = state.copyWith(stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1);
-  void prevPage() => state = state.copyWith(stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1));
+  void nextPage() {
+    final nuStepIndex = math.min(63, (state.selectedStepIndex ?? 0) + 16);
+    state = state.copyWith(
+      stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1,
+      selectedStepIndex: nuStepIndex,
+    );
+  }
 
-  void nextStep() => state = state.copyWith(selectedStepIndex: math.min(63, state.selectedStepIndex! + 1));
-  void prevStep() => state = state.copyWith(selectedStepIndex: math.max(0, state.selectedStepIndex! - 1));
+  void prevPage() {
+    final nuStepIndex = math.max(0, state.selectedStepIndex! - 16);
+    state = state.copyWith(
+      stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1),
+      selectedStepIndex: nuStepIndex,
+    );
+  }
+
+  void nextStep() {
+    final nuStepIndex = math.min(63, state.selectedStepIndex! + 1);
+    // need to make sure we move to the new page BEFORE we update the selectedStepIndex
+    // as the selectedStepIndex is used relative to the page index when the UI draws it
+    if (nuStepIndex == ((state.stepPage + 1) * 16)) {
+      nextPage();
+    }
+    state = state.copyWith(selectedStepIndex: nuStepIndex);
+  }
+
+  void prevStep() {
+    final nuStepIndex = math.max(0, state.selectedStepIndex! - 1);
+    // need to make sure we move to the new page BEFORE we update the selectedStepIndex
+    // as the selectedStepIndex is used relative to the page index when the UI draws it
+    if (nuStepIndex == (state.stepPage * 16) - 1) {
+      prevPage();
+    }
+    state = state.copyWith(selectedStepIndex: nuStepIndex);
+  }
 
   void nextPart() => state = state.copyWith(selectedPartIndex: math.min(15, state.selectedPartIndex! + 1));
   void prevPart() => state = state.copyWith(selectedPartIndex: math.max(0, state.selectedPartIndex! - 1));
