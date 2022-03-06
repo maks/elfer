@@ -36,15 +36,13 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
   @override
   void initState() {
     final viewModel = ref.read(trackerViewModelProvider.notifier);
-    final state = ref.read(trackerViewModelProvider);
 
     super.initState();
     _focusNode.onKey = (node, event) {
       handleKey(
         event,
         viewModel,
-        state,
-        state.pattern,
+        ref,
         widget.e2Device,
       );
       _focusNode.requestFocus();

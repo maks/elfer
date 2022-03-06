@@ -1,18 +1,21 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../midi/e2_device.dart';
-import 'e2_data/e2_pattern.dart';
-import 'tracker_state.dart';
+import 'providers.dart';
 import 'tracker_viewmodel.dart';
 
 void handleKey(
   RawKeyEvent event,
   TrackerViewModel viewModel,
-  TrackerState viewState,
-  E2Pattern? pattern,
+  // TrackerState viewState,
+  WidgetRef ref,
+  // E2Pattern? pattern,
   E2Device e2Device,
 ) {
+  final viewState = ref.read(trackerViewModelProvider);
+  final pattern = viewState.pattern;
   if (event is RawKeyDownEvent) {
     // Log.d('key', '${event.logicalKey} shift:${event.isShiftPressed}');
     if (event.logicalKey == LogicalKeyboardKey.keyX) {
