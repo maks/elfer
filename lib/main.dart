@@ -114,12 +114,6 @@ class _MyAppState extends ConsumerState<MyApp> {
                           : Container();
                     },
                   ),
-                  Text(
-                    'EDIT',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: viewState.editing ? Colors.amber : Colors.grey,
-                        ),
-                  ),
                 ],
               ),
               // For debugging only:
@@ -155,6 +149,12 @@ class _MyAppState extends ConsumerState<MyApp> {
                     }
                   }
                 },
+              ),
+              Text(
+                'EDIT',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: viewState.editing ? Colors.amber : Colors.grey,
+                    ),
               ),
             ],
           ),
