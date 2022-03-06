@@ -9,6 +9,7 @@ import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
 
 const partsCount = 16;
+const stepsCount = 64;
 const stepsPerPage = 16;
 // TODO: make this config setting or set based on device screen size
 const partsPerPage = 8;
@@ -34,7 +35,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   E2Part? get selectedPart => state.pattern?.parts[state.selectedPartIndex ?? 0];
 
   void nextStepPage() {
-    final nuStepIndex = math.min(63, (state.selectedStepIndex ?? 0) + 16);
+    final nuStepIndex = math.min(stepsCount - 1, (state.selectedStepIndex ?? 0) + stepsPerPage);
     state = state.copyWith(
       stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1,
       selectedStepIndex: nuStepIndex,
@@ -42,7 +43,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   }
 
   void prevStepPage() {
-    final nuStepIndex = math.max(0, state.selectedStepIndex! - 16);
+    final nuStepIndex = math.max(0, state.selectedStepIndex! - stepsPerPage);
     state = state.copyWith(
       stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1),
       selectedStepIndex: nuStepIndex,
@@ -50,10 +51,10 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   }
 
   void nextStep() {
-    final nuStepIndex = math.min(63, state.selectedStepIndex! + 1);
+    final nuStepIndex = math.min(stepsCount - 1, state.selectedStepIndex! + 1);
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == ((state.stepPage + 1) * 16)) {
+    if (nuStepIndex == ((state.stepPage + 1) * stepsPerPage)) {
       nextStepPage();
     }
     state = state.copyWith(selectedStepIndex: nuStepIndex);
@@ -63,14 +64,14 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     final nuStepIndex = math.max(0, state.selectedStepIndex! - 1);
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == (state.stepPage * 16) - 1) {
+    if (nuStepIndex == (state.stepPage * stepsPerPage) - 1) {
       prevStepPage();
     }
     state = state.copyWith(selectedStepIndex: nuStepIndex);
   }
 
   void nextPart() {
-    final nuPartIndex = math.min(15, state.selectedPartIndex! + 1);
+    final nuPartIndex = math.min(partsCount - 1, state.selectedPartIndex! + 1);
     if (nuPartIndex == ((state.partPage + 1) * partsPerPage)) {
       nextPartPage();
     }
@@ -154,6 +155,13 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
       data.length,
       0,
     );
-    state = state.copyWith(pattern: loadedPattern);
+    state = state.copyWith(
+      pattern: loadedPattern,
+      selectedPartIndex: 0,
+      selectedStepIndex: 0,
+      editing: false,
+      partPage: 0,
+      stepPage: 0,
+    );
   }
 }
