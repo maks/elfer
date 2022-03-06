@@ -7,7 +7,7 @@ library e2_data;
 import 'dart:ffi';
 import 'dart:typed_data';
 
-import '../elecmidi_generated.dart';
+import '../tracker/e2_data/elecmidi_generated.dart';
 
 const decodedSize = 16384;
 const encodedSize = 18725;

@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'e2_part.dart';
-import 'e2_pattern.dart';
+import 'e2_data/e2_pattern.dart';
 
 part 'tracker_state.freezed.dart';
 
@@ -9,9 +8,11 @@ part 'tracker_state.freezed.dart';
 class TrackerState with _$TrackerState {
   const factory TrackerState({
     required int stepPage,
+    required int partPage,
     E2Pattern? pattern,
-    E2Part? selectedPart,
+    int? selectedPartIndex,
     int? selectedStepIndex,
     required int editVersion,
+    required bool editing,
   }) = _TrackerState;
 }

@@ -41,7 +41,7 @@ flutter:
 
 ffigen:
   name: "elecmidi"
-  output: "lib/elecmidi_generated.dart"
+  output: "lib/tracker/e2_data/elecmidi_generated.dart"
   headers:
     entry-points:
       - "elecmidi/elecmidi.h"

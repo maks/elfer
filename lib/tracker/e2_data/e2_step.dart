@@ -3,7 +3,7 @@ import 'dart:ffi' as ffi;
 
 import 'package:bonsai/bonsai.dart';
 
-import '../elecmidi_generated.dart';
+import 'elecmidi_generated.dart';
 
 class E2Step {
   final StepType _stepData;

@@ -2,11 +2,15 @@ import 'dart:math' as math;
 
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tonic/tonic.dart';
-
-import 'e2_part.dart';
-import 'e2_pattern.dart';
+import 'e2_data/e2_part.dart';
+import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
+
+const partsCount = 16;
+const stepsPerPage = 16;
+// TODO: make this config setting or set based on device screen size
+const partsPerPage = 8;
+const int partsPageCount = partsCount ~/ partsPerPage;
 
 class TrackerViewModel extends StateNotifier<TrackerState> {
   final Stream<E2Pattern> patternStream;
@@ -16,18 +20,78 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
           const TrackerState(
             editVersion: 0,
             stepPage: 0,
+            partPage: 0,
+            editing: false,
           ),
         ) {
     patternStream.forEach((p) {
-      _pattern = p;
+      state = state.copyWith(pattern: p, selectedPartIndex: 0, stepPage: 0, selectedStepIndex: 0, editVersion: 0);
     });
   }
 
-  set _pattern(E2Pattern p) => state = state.copyWith(pattern: p);
+  E2Part? get selectedPart => state.pattern?.parts[state.selectedPartIndex ?? 0];
 
-  void nextPage() => state = state.copyWith(stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1);
-  void prevPage() =>
-      state = state.copyWith(stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1));
+  void nextStepPage() {
+    final nuStepIndex = math.min(63, (state.selectedStepIndex ?? 0) + 16);
+    state = state.copyWith(
+      stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1,
+      selectedStepIndex: nuStepIndex,
+    );
+  }
+
+  void prevStepPage() {
+    final nuStepIndex = math.max(0, state.selectedStepIndex! - 16);
+    state = state.copyWith(
+      stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1),
+      selectedStepIndex: nuStepIndex,
+    );
+  }
+
+  void nextStep() {
+    final nuStepIndex = math.min(63, state.selectedStepIndex! + 1);
+    // need to make sure we move to the new page BEFORE we update the selectedStepIndex
+    // as the selectedStepIndex is used relative to the page index when the UI draws it
+    if (nuStepIndex == ((state.stepPage + 1) * 16)) {
+      nextStepPage();
+    }
+    state = state.copyWith(selectedStepIndex: nuStepIndex);
+  }
+
+  void prevStep() {
+    final nuStepIndex = math.max(0, state.selectedStepIndex! - 1);
+    // need to make sure we move to the new page BEFORE we update the selectedStepIndex
+    // as the selectedStepIndex is used relative to the page index when the UI draws it
+    if (nuStepIndex == (state.stepPage * 16) - 1) {
+      prevStepPage();
+    }
+    state = state.copyWith(selectedStepIndex: nuStepIndex);
+  }
+
+  void nextPart() {
+    final nuPartIndex = math.min(15, state.selectedPartIndex! + 1);
+    if (nuPartIndex == ((state.partPage + 1) * partsPerPage)) {
+      nextPartPage();
+    }
+    state = state.copyWith(selectedPartIndex: nuPartIndex);
+  }
+
+  void prevPart() {
+    final nuPartIndex = math.max(0, state.selectedPartIndex! - 1);
+    if (nuPartIndex == (state.partPage * partsPerPage) - 1) {
+      prevPartPage();
+    }
+    state = state.copyWith(selectedPartIndex: nuPartIndex);
+  }
+
+  void nextPartPage() {
+    state = state.copyWith(partPage: math.min(partsPageCount - 1, state.partPage + 1));
+  }
+
+  void prevPartPage() {
+    state = state.copyWith(partPage: math.max(0, state.partPage - 1));
+  }
+
+  void editing(bool val) => state = state.copyWith(editing: val);
 
   void setNote(int index, int note) {
     final stepIndex = state.selectedStepIndex;
@@ -35,7 +99,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
       log('NO selected step to set note');
       return;
     }
-    final step = state.selectedPart?.steps[stepIndex];
+    final step = selectedPart?.steps[stepIndex];
     if (step == null) {
       log('NO selected Part to set note');
       return;
@@ -44,13 +108,12 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     log('set step: [$index] note:$note');
   }
 
-  void selectPart(E2Part part) {
-    state = state.copyWith(selectedPart: part);
+  void selectPartIndex(int partIndex) {
+    state = state.copyWith(selectedPartIndex: partIndex);
   }
 
   void selectStepIndex(int index) {
     state = state.copyWith(selectedStepIndex: index);
-    log('sel step: ${Pitch.fromMidiNumber((state.selectedPart?.steps[index].notes[0] ?? 0) - 1)}');
   }
 
   void clearSelectedStepIndex() {
@@ -63,13 +126,13 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
       log('no selected step');
       return;
     }
-    int currentNote = state.selectedPart?.steps[stepIndex].notes[0] ?? 0;
+    int currentNote = selectedPart?.steps[stepIndex].notes[0] ?? 0;
     if (true == down) {
       currentNote = math.max(0, currentNote - 1);
     } else {
       currentNote = math.min(127, currentNote + 1);
     }
-    state.selectedPart?.steps[stepIndex].setNote(0, currentNote);
+    selectedPart?.steps[stepIndex].setNote(0, currentNote);
     state = state.copyWith(editVersion: state.editVersion + 1);
     log('new note:$currentNote');
   }
