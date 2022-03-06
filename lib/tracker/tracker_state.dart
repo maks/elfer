@@ -8,6 +8,7 @@ part 'tracker_state.freezed.dart';
 class TrackerState with _$TrackerState {
   const factory TrackerState({
     required int stepPage,
+    required int partPage,
     E2Pattern? pattern,
     int? selectedPartIndex,
     int? selectedStepIndex,

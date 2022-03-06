@@ -20,6 +20,7 @@ class _$TrackerStateTearOff {
 
   _TrackerState call(
       {required int stepPage,
+      required int partPage,
       E2Pattern? pattern,
       int? selectedPartIndex,
       int? selectedStepIndex,
@@ -27,6 +28,7 @@ class _$TrackerStateTearOff {
       required bool editing}) {
     return _TrackerState(
       stepPage: stepPage,
+      partPage: partPage,
       pattern: pattern,
       selectedPartIndex: selectedPartIndex,
       selectedStepIndex: selectedStepIndex,
@@ -42,6 +44,7 @@ const $TrackerState = _$TrackerStateTearOff();
 /// @nodoc
 mixin _$TrackerState {
   int get stepPage => throw _privateConstructorUsedError;
+  int get partPage => throw _privateConstructorUsedError;
   E2Pattern? get pattern => throw _privateConstructorUsedError;
   int? get selectedPartIndex => throw _privateConstructorUsedError;
   int? get selectedStepIndex => throw _privateConstructorUsedError;
@@ -60,6 +63,7 @@ abstract class $TrackerStateCopyWith<$Res> {
       _$TrackerStateCopyWithImpl<$Res>;
   $Res call(
       {int stepPage,
+      int partPage,
       E2Pattern? pattern,
       int? selectedPartIndex,
       int? selectedStepIndex,
@@ -78,6 +82,7 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
   @override
   $Res call({
     Object? stepPage = freezed,
+    Object? partPage = freezed,
     Object? pattern = freezed,
     Object? selectedPartIndex = freezed,
     Object? selectedStepIndex = freezed,
@@ -88,6 +93,10 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
       stepPage: stepPage == freezed
           ? _value.stepPage
           : stepPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      partPage: partPage == freezed
+          ? _value.partPage
+          : partPage // ignore: cast_nullable_to_non_nullable
               as int,
       pattern: pattern == freezed
           ? _value.pattern
@@ -122,6 +131,7 @@ abstract class _$TrackerStateCopyWith<$Res>
   @override
   $Res call(
       {int stepPage,
+      int partPage,
       E2Pattern? pattern,
       int? selectedPartIndex,
       int? selectedStepIndex,
@@ -142,6 +152,7 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? stepPage = freezed,
+    Object? partPage = freezed,
     Object? pattern = freezed,
     Object? selectedPartIndex = freezed,
     Object? selectedStepIndex = freezed,
@@ -152,6 +163,10 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
       stepPage: stepPage == freezed
           ? _value.stepPage
           : stepPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      partPage: partPage == freezed
+          ? _value.partPage
+          : partPage // ignore: cast_nullable_to_non_nullable
               as int,
       pattern: pattern == freezed
           ? _value.pattern
@@ -182,6 +197,7 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
 class _$_TrackerState implements _TrackerState {
   const _$_TrackerState(
       {required this.stepPage,
+      required this.partPage,
       this.pattern,
       this.selectedPartIndex,
       this.selectedStepIndex,
@@ -190,6 +206,8 @@ class _$_TrackerState implements _TrackerState {
 
   @override
   final int stepPage;
+  @override
+  final int partPage;
   @override
   final E2Pattern? pattern;
   @override
@@ -203,7 +221,7 @@ class _$_TrackerState implements _TrackerState {
 
   @override
   String toString() {
-    return 'TrackerState(stepPage: $stepPage, pattern: $pattern, selectedPartIndex: $selectedPartIndex, selectedStepIndex: $selectedStepIndex, editVersion: $editVersion, editing: $editing)';
+    return 'TrackerState(stepPage: $stepPage, partPage: $partPage, pattern: $pattern, selectedPartIndex: $selectedPartIndex, selectedStepIndex: $selectedStepIndex, editVersion: $editVersion, editing: $editing)';
   }
 
   @override
@@ -212,6 +230,7 @@ class _$_TrackerState implements _TrackerState {
         (other.runtimeType == runtimeType &&
             other is _TrackerState &&
             const DeepCollectionEquality().equals(other.stepPage, stepPage) &&
+            const DeepCollectionEquality().equals(other.partPage, partPage) &&
             const DeepCollectionEquality().equals(other.pattern, pattern) &&
             const DeepCollectionEquality()
                 .equals(other.selectedPartIndex, selectedPartIndex) &&
@@ -226,6 +245,7 @@ class _$_TrackerState implements _TrackerState {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(stepPage),
+      const DeepCollectionEquality().hash(partPage),
       const DeepCollectionEquality().hash(pattern),
       const DeepCollectionEquality().hash(selectedPartIndex),
       const DeepCollectionEquality().hash(selectedStepIndex),
@@ -241,6 +261,7 @@ class _$_TrackerState implements _TrackerState {
 abstract class _TrackerState implements TrackerState {
   const factory _TrackerState(
       {required int stepPage,
+      required int partPage,
       E2Pattern? pattern,
       int? selectedPartIndex,
       int? selectedStepIndex,
@@ -249,6 +270,8 @@ abstract class _TrackerState implements TrackerState {
 
   @override
   int get stepPage;
+  @override
+  int get partPage;
   @override
   E2Pattern? get pattern;
   @override

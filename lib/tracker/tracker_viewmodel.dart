@@ -7,6 +7,12 @@ import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
 
+const partsCount = 16;
+const stepsPerPage = 16;
+// TODO: make this config setting or set based on device screen size
+const partsPerPage = 8;
+const int partsPageCount = partsCount ~/ partsPerPage;
+
 class TrackerViewModel extends StateNotifier<TrackerState> {
   final Stream<E2Pattern> patternStream;
 
@@ -15,6 +21,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
           const TrackerState(
             editVersion: 0,
             stepPage: 0,
+            partPage: 0,
             editing: false,
           ),
         ) {
@@ -25,7 +32,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   E2Part? get selectedPart => state.pattern?.parts[state.selectedPartIndex ?? 0];
 
-  void nextPage() {
+  void nextStepPage() {
     final nuStepIndex = math.min(63, (state.selectedStepIndex ?? 0) + 16);
     state = state.copyWith(
       stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1,
@@ -33,7 +40,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     );
   }
 
-  void prevPage() {
+  void prevStepPage() {
     final nuStepIndex = math.max(0, state.selectedStepIndex! - 16);
     state = state.copyWith(
       stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1),
@@ -46,7 +53,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
     if (nuStepIndex == ((state.stepPage + 1) * 16)) {
-      nextPage();
+      nextStepPage();
     }
     state = state.copyWith(selectedStepIndex: nuStepIndex);
   }
@@ -56,13 +63,34 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
     if (nuStepIndex == (state.stepPage * 16) - 1) {
-      prevPage();
+      prevStepPage();
     }
     state = state.copyWith(selectedStepIndex: nuStepIndex);
   }
 
-  void nextPart() => state = state.copyWith(selectedPartIndex: math.min(15, state.selectedPartIndex! + 1));
-  void prevPart() => state = state.copyWith(selectedPartIndex: math.max(0, state.selectedPartIndex! - 1));
+  void nextPart() {
+    final nuPartIndex = math.min(15, state.selectedPartIndex! + 1);
+    if (nuPartIndex == ((state.partPage + 1) * partsPerPage)) {
+      nextPartPage();
+    }
+    state = state.copyWith(selectedPartIndex: nuPartIndex);
+  }
+
+  void prevPart() {
+    final nuPartIndex = math.max(0, state.selectedPartIndex! - 1);
+    if (nuPartIndex == (state.partPage * partsPerPage) - 1) {
+      prevPartPage();
+    }
+    state = state.copyWith(selectedPartIndex: nuPartIndex);
+  }
+
+  void nextPartPage() {
+    state = state.copyWith(partPage: math.min(partsPageCount - 1, state.partPage + 1));
+  }
+
+  void prevPartPage() {
+    state = state.copyWith(partPage: math.max(0, state.partPage - 1));
+  }
 
   void editing(bool val) => state = state.copyWith(editing: val);
 

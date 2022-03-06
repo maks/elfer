@@ -9,6 +9,7 @@ import 'providers.dart';
 import 'step_view.dart';
 import 'theme.dart';
 import 'tracker_state.dart';
+import 'tracker_viewmodel.dart';
 
 class PatternWidget extends ConsumerWidget {
   final E2Pattern pattern;
@@ -17,8 +18,11 @@ class PatternWidget extends ConsumerWidget {
   @override
   Widget build(context, ref) {
     final patternNumberFormatted = (pattern.indexNumber + 1).toString().padLeft(3, '0');
-    final firstStep = ref.watch(trackerViewModelProvider).stepPage * 16;
+    final firstStep = ref.watch(trackerViewModelProvider).stepPage * stepsPerPage;
     final state = ref.watch(trackerViewModelProvider);
+
+    final partStartIndex = state.partPage * partsPerPage;
+    final partEndIndex = (state.partPage + 1) * partsPerPage;
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -41,11 +45,11 @@ class PatternWidget extends ConsumerWidget {
                 Text(pattern.name),
                 IconButton(
                   icon: const Icon(Icons.arrow_upward),
-                  onPressed: () => ref.read(trackerViewModelProvider.notifier).prevPage(),
+                  onPressed: () => ref.read(trackerViewModelProvider.notifier).prevStepPage(),
                 ),
                 IconButton(
                   icon: const Icon(Icons.arrow_downward),
-                  onPressed: () => ref.read(trackerViewModelProvider.notifier).nextPage(),
+                  onPressed: () => ref.read(trackerViewModelProvider.notifier).nextStepPage(),
                 ),
               ],
             ),
@@ -79,6 +83,7 @@ class PatternWidget extends ConsumerWidget {
                 ],
               ),
               ...pattern.parts
+                  .getRange(partStartIndex, partEndIndex)
                   .map(
                     (p) => PartView(
                       part: p,

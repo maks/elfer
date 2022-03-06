@@ -194,7 +194,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           viewModel.editNote();
         } else {
           if (event.isShiftPressed) {
-            viewModel.prevPage();
+            //TODO: use to move around diff tracker screens?
           } else {
             viewModel.prevStep();
           }
@@ -204,15 +204,23 @@ class _MyAppState extends ConsumerState<MyApp> {
           viewModel.editNote(down: true);
         } else {
           if (event.isShiftPressed) {
-            viewModel.nextPage();
+            //TODO: use to move around diff tracker screens?
           } else {
             viewModel.nextStep();
           }
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        viewModel.prevPart();
+        if (event.isShiftPressed) {
+          //TODO: use to move around diff tracker screens?
+        } else {
+          viewModel.prevPart();
+        }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        viewModel.nextPart();
+        if (event.isShiftPressed) {
+          //TODO: use to move around diff tracker screens?
+        } else {
+          viewModel.nextPart();
+        }
       }
     } else if (event is RawKeyUpEvent) {
       if (event.logicalKey == LogicalKeyboardKey.keyX) {
