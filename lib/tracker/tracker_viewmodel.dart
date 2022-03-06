@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tonic/tonic.dart';
 import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
@@ -115,7 +114,6 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   void selectStepIndex(int index) {
     state = state.copyWith(selectedStepIndex: index);
-    log('sel step: ${Pitch.fromMidiNumber((selectedPart?.steps[index].notes[0] ?? 0) - 1)}');
   }
 
   void clearSelectedStepIndex() {
