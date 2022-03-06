@@ -42,8 +42,7 @@ void handleKey(
       // "l" to load stashed pattern
       final pat = pattern;
       if (pat != null) {
-        final p = await viewModel.loadStash();
-        e2Device.loadPattern(p);
+        await viewModel.loadStash();
         Log.d('_handleKey', 'Loaded stashed pat');
       } else {
         Log.d('_handleKey', 'no pattern to stash');

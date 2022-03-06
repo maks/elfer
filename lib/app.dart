@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 
 import 'midi/e2_device.dart';
-import 'tracker/e2_data/e2_pattern.dart';
 import 'tracker/pattern_widget.dart';
 import 'tracker/providers.dart';
 import 'tracker/tracker_viewmodel.dart';
@@ -26,8 +25,6 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   Uint8List? lastMidiMesg;
   late final TrackerViewModel _viewModel;
-
-  E2Pattern? _currentPattern;
 
   @override
   void initState() {
@@ -81,8 +78,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                 MaterialButton(
                   child: const Text('Load'),
                   onPressed: () async {
-                    final p = await ref.read(trackerViewModelProvider.notifier).loadStash();
-                    _e2Device.loadPattern(p);
+                    await ref.read(trackerViewModelProvider.notifier).loadStash();
                     log('LOADED stashed pattern');
                   },
                 ),
@@ -105,7 +101,7 @@ class _MyAppState extends ConsumerState<MyApp> {
             MaterialButton(
               child: const Text('SEND pattern'),
               onPressed: () async {
-                final pat = _currentPattern;
+                final pat = viewState.pattern;
                 if (pat != null) {
                   _e2Device.sendPatternData(pat.data, pat.indexNumber);
                 } else {
@@ -113,24 +109,12 @@ class _MyAppState extends ConsumerState<MyApp> {
                 }
               },
             ),
-            StreamBuilder<E2Pattern>(
-              stream: _e2Device.currentPatternStream,
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                } else {
-                  _currentPattern = snapshot.data;
-                  if (_currentPattern == null) {
-                    return const Text('no pattern');
-                  } else {
-                    return PatternWidget(
-                      pattern: _currentPattern!,
-                      e2Device: _e2Device,
-                    );
-                  }
-                }
-              },
-            ),
+            if (viewState.pattern == null) const Text('no pattern'),
+            if (viewState.pattern != null)
+              PatternWidget(
+                pattern: viewState.pattern!,
+                e2Device: _e2Device,
+              ),
             Text(
               'EDIT',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(

@@ -145,14 +145,15 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     log('stashed pattern to:${f.path}');
   }
 
-  Future<E2Pattern> loadStash() async {
+  Future<void> loadStash() async {
     final f = File('/tmp/e2pattern.dat');
     final data = await f.readAsBytes();
 
-    return E2Pattern(
+    final loadedPattern = E2Pattern(
       patternPointerFromData(data),
       data.length,
       0,
     );
+    state = state.copyWith(pattern: loadedPattern);
   }
 }
