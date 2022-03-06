@@ -78,6 +78,14 @@ class _MyAppState extends ConsumerState<MyApp> {
                     log('subscribe to e2 events');
                   },
                 ),
+                MaterialButton(
+                  child: const Text('Load'),
+                  onPressed: () async {
+                    final p = await ref.read(trackerViewModelProvider.notifier).loadStash();
+                    _e2Device.loadPattern(p);
+                    log('LOADED stashed pattern');
+                  },
+                ),
                 StreamBuilder<String>(
                   stream: _e2Device.messages,
                   builder: (context, snapshot) {

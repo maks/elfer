@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../midi/e2_data.dart';
 import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
@@ -135,5 +137,22 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     selectedPart?.steps[stepIndex].setNote(0, currentNote);
     state = state.copyWith(editVersion: state.editVersion + 1);
     log('new note:$currentNote');
+  }
+
+  Future<void> stashPattern(E2Pattern pattern) async {
+    final f = File('/tmp/e2pattern.dat');
+    f.writeAsBytes(pattern.data);
+    log('stashed pattern to:${f.path}');
+  }
+
+  Future<E2Pattern> loadStash() async {
+    final f = File('/tmp/e2pattern.dat');
+    final data = await f.readAsBytes();
+
+    return E2Pattern(
+      patternPointerFromData(data),
+      data.length,
+      0,
+    );
   }
 }

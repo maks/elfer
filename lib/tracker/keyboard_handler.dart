@@ -13,7 +13,7 @@ void handleKey(
   WidgetRef ref,
   // E2Pattern? pattern,
   E2Device e2Device,
-) {
+) async {
   final viewState = ref.read(trackerViewModelProvider);
   final pattern = viewState.pattern;
   if (event is RawKeyDownEvent) {
@@ -28,6 +28,25 @@ void handleKey(
         Log.d('_handleKey', 'saved pat');
       } else {
         Log.d('_handleKey', 'no pattern to save');
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
+      // "s" to stash pattern
+      final pat = pattern;
+      if (pat != null) {
+        viewModel.stashPattern(pat);
+        Log.d('_handleKey', 'Stashed pat');
+      } else {
+        Log.d('_handleKey', 'no pattern to stash');
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.keyP) {
+      // "l" to load stashed pattern
+      final pat = pattern;
+      if (pat != null) {
+        final p = await viewModel.loadStash();
+        e2Device.loadPattern(p);
+        Log.d('_handleKey', 'Loaded stashed pat');
+      } else {
+        Log.d('_handleKey', 'no pattern to stash');
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
       if (viewState.editing) {

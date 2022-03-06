@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
 import 'package:collection/collection.dart';
-import 'package:ffi/ffi.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 
@@ -114,12 +112,7 @@ class E2Device {
               throw Exception('Invalid pattern data size:${decoded.length}');
             }
 
-            final ffi.Pointer<ffi.Uint8> p = calloc(decoded.length);
-            final buf = p.asTypedList(decoded.length);
-            for (var i = 0; i < decoded.length; i++) {
-              buf[i] = decoded[i];
-            }
-            final Pointer<PatternType> patternData = Pointer.fromAddress(p.address);
+            final ffi.Pointer<PatternType> patternData = patternPointerFromData(decoded);
             final patName = patternData.ref.name;
             log('name: ${patName.getDartString(18)}');
 
@@ -195,6 +188,10 @@ class E2Device {
     }
     // log('sent Pattern:');
   }
+
+  void loadPattern(E2Pattern p) {
+    _currentPatternStreamController.add(p);
+  }
 }
 
 class E2InputEvent {
@@ -205,7 +202,7 @@ class E2InputEvent {
 
 /// thank you @Sunbreak!
 /// https://github.com/timsneath/win32/issues/142#issuecomment-829846260
-extension CharArray on Array<Uint8> {
+extension CharArray on ffi.Array<ffi.Uint8> {
   String getDartString(int maxLength) {
     var list = <int>[];
     for (var i = 0; i < maxLength; i++) {
