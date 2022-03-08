@@ -28,13 +28,9 @@ This is very much a WORK-IN-PROGRESS, not too much works right now, except for r
 
 I'm currently developing with Flutter beta channel.
 
-It works on Linux, should also work on Web. 
+Currently only works on Linux. 
 
 Android support coming soon.
-
-### Running on Web
-
-Run in non-Chrome browser, ie. Firefox using: `flutter run -d web-server`
 
 
 ## Debugging
