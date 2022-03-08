@@ -12,14 +12,17 @@ This is very much a WORK-IN-PROGRESS, not too much works right now, except for r
 
 * [x] Display partial pattern in tracker UI
 * [x] Switch patterns in tracker UI using E2 dial
-* [ ] Display full pattern (all 64 steps) 
+* [x] Display full pattern (all 64 steps) 
+* [x] Edit pattern notes in tracker UI using keyboard
 * [ ] Edit pattern notes in tracker UI using E2 controls
-* [ ] Send edited pattern back to E2
+* [x] Send edited pattern back to E2
+* [x] Stash/Load current pattern with app
+* [ ] Edit step velocity & gate in tracker UI
+* [ ] Send pattern to E2 current pattern, not save to pattern slot on E2
 * [ ] Edit pattern parts, osc, ifx etc in Tracker UI
 * [ ] Edit instrument patchs (samples?) in Tracker UI
 * [ ] Playback pattern(s) from Tracker state (without sending to E2)
 * more?
-
 
 ## Getting Started
 
