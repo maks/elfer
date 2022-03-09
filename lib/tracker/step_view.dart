@@ -5,18 +5,14 @@ import 'e2_data/e2_step.dart';
 
 class StepView extends StatelessWidget {
   final E2Step step;
-  final Color? color;
-  const StepView({
-    Key? key,
-    required this.step,
-    this.color,
-  }) : super(key: key);
+  final bool selected;
+  const StepView({Key? key, required this.step, required this.selected}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // TODO: need to find way to display when more than 1 note, show chord names maybe?
     final String noteText = stepText(step);
-    return StepContainer(text: noteText, color: color ?? Colors.white);
+    return StepContainer(text: noteText, color: fgColor, backgroundColor: bgColor);
   }
 
   String stepText(E2Step step) {
@@ -28,15 +24,29 @@ class StepView extends StatelessWidget {
     final velocityText = step.velocity == 0 ? '--' : '${step.velocity}';
     final gateText = step.gateTime == 0 ? '--' : '${step.gateTime}';
 
-    return '$noteText$velocityText$gateText';
+    return '$noteText $velocityText $gateText';
+  }
+
+  Color get bgColor {
+    return selected ? Colors.white24 : Colors.black;
+  }
+
+  Color get fgColor {
+    return step.stepOn ? Colors.white : Colors.grey;
   }
 }
 
 class StepContainer extends StatelessWidget {
   final String text;
   final Color color;
+  final Color backgroundColor;
 
-  const StepContainer({Key? key, required this.text, required this.color}) : super(key: key);
+  const StepContainer({
+    Key? key,
+    required this.text,
+    required this.color,
+    required this.backgroundColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +55,10 @@ class StepContainer extends StatelessWidget {
       padding: const EdgeInsets.all(6.0),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: color,
+              backgroundColor: backgroundColor,
+            ),
       ),
     );
   }

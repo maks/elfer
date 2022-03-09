@@ -18,7 +18,7 @@ class PatternDataView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Text('Beat:'),
+        const Text('Bpm:'),
         Text(
           '$beat',
           style: body1Amber(context),
