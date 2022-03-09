@@ -156,7 +156,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
     selectedPart?.steps[stepIndex].setNote(0, currentNote);
     state = state.copyWith(editVersion: state.editVersion + 1);
-    log('new note:$currentNote');
+    //log('new note:$currentNote');
   }
 
   Future<void> stashPattern(E2Pattern pattern) async {
