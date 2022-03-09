@@ -18,6 +18,8 @@ class E2Step {
 
   bool get stepOn => _stepData.onOff == 1;
 
+  set stepOn(bool val) => _stepData.onOff = val ? 1 : 0;
+
   bool get trigger => _stepData.triggerOnOff == 1;
 
   int get velocity => _stepData.velocity;
@@ -26,9 +28,7 @@ class E2Step {
 
   void setNote(int index, int value) {
     RangeError.checkValueInInterval(index, 0, 3);
-    log('set note:$value');
     _stepData.note[index] = value;
-    log('step native: ${_stepData.note[index]}');
   }
 
   E2Step(this._stepData);

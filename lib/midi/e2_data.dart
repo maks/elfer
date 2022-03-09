@@ -7,6 +7,8 @@ library e2_data;
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:ffi/ffi.dart';
+
 import '../tracker/e2_data/elecmidi_generated.dart';
 
 const decodedSize = 16384;
@@ -68,6 +70,17 @@ void checkData(Pointer<PatternType> patternData) {
   if (patternData.ref.footer[0] != 0x50) {
     throw Exception('invalid footer: [${patternData.ref.footer[0]}]');
   }
+}
+
+/// return a FFI Pointer<PatternType> with data copied from a plain Uint8List of bytes
+Pointer<PatternType> patternPointerFromData(Uint8List data) {
+  final Pointer<Uint8> p = calloc(data.length);
+  final buf = p.asTypedList(data.length);
+  for (var i = 0; i < data.length; i++) {
+    buf[i] = data[i];
+  }
+  final Pointer<PatternType> patternData = Pointer.fromAddress(p.address);
+  return patternData;
 }
 
 // TODO: these are factory, add new array for Hacktribe ones

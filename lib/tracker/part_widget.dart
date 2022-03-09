@@ -50,7 +50,7 @@ class PartView extends ConsumerWidget {
               .mapIndexed(
                 (i, s) => StepView(
                   step: s,
-                  color: _getStepColor((i == relativeStepIndex) && _isSelected(state, partIndex)),
+                  selected: (i == relativeStepIndex) && _isSelected(state, partIndex),
                 ),
               )
               .toList()
@@ -66,6 +66,4 @@ class PartView extends ConsumerWidget {
       : partIndex % 2 == 0
           ? Colors.amber
           : Colors.white;
-
-  Color _getStepColor(bool selected) => selected ? Colors.lightBlue : Colors.white;
 }

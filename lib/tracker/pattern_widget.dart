@@ -1,3 +1,4 @@
+import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,7 +45,12 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
         viewModel,
         ref,
         widget.e2Device,
-      );
+      ).then((value) {
+        if (value) {
+          log('next focus');
+          return _focusNode.nextFocus();
+        }
+      });
       _focusNode.requestFocus();
       return KeyEventResult.handled;
     };
@@ -78,7 +84,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Pattern:'),
+                const Text('Patn:'),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
@@ -93,6 +99,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
                     onChanged: (val) {
                       widget.pattern.name = val;
                     },
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.lightBlue),
                   ),
                 ),
               ],
@@ -125,6 +132,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
                         (idx) => StepContainer(
                           text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),
                           color: _getStepTextColor(state, idx),
+                          backgroundColor: Colors.black, //TODO: set based on selection state
                         ),
                       )
                       .toList()

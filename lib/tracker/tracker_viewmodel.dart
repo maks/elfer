@@ -1,16 +1,23 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../midi/e2_data.dart';
 import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
 
 const partsCount = 16;
+const stepsCount = 64;
 const stepsPerPage = 16;
 // TODO: make this config setting or set based on device screen size
 const partsPerPage = 8;
 const int partsPageCount = partsCount ~/ partsPerPage;
+
+const c4MidiOnE2 = 60 + 1; //E2 midi note C4 is 61 not 60 for some reason?
+
+enum Direction { up, down, left, right }
 
 class TrackerViewModel extends StateNotifier<TrackerState> {
   final Stream<E2Pattern> patternStream;
@@ -32,7 +39,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   E2Part? get selectedPart => state.pattern?.parts[state.selectedPartIndex ?? 0];
 
   void nextStepPage() {
-    final nuStepIndex = math.min(63, (state.selectedStepIndex ?? 0) + 16);
+    final nuStepIndex = math.min(stepsCount - 1, (state.selectedStepIndex ?? 0) + stepsPerPage);
     state = state.copyWith(
       stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1,
       selectedStepIndex: nuStepIndex,
@@ -40,7 +47,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   }
 
   void prevStepPage() {
-    final nuStepIndex = math.max(0, state.selectedStepIndex! - 16);
+    final nuStepIndex = math.max(0, state.selectedStepIndex! - stepsPerPage);
     state = state.copyWith(
       stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1),
       selectedStepIndex: nuStepIndex,
@@ -48,10 +55,10 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   }
 
   void nextStep() {
-    final nuStepIndex = math.min(63, state.selectedStepIndex! + 1);
+    final nuStepIndex = math.min(stepsCount - 1, state.selectedStepIndex! + 1);
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == ((state.stepPage + 1) * 16)) {
+    if (nuStepIndex == ((state.stepPage + 1) * stepsPerPage)) {
       nextStepPage();
     }
     state = state.copyWith(selectedStepIndex: nuStepIndex);
@@ -61,14 +68,14 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     final nuStepIndex = math.max(0, state.selectedStepIndex! - 1);
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == (state.stepPage * 16) - 1) {
+    if (nuStepIndex == (state.stepPage * stepsPerPage) - 1) {
       prevStepPage();
     }
     state = state.copyWith(selectedStepIndex: nuStepIndex);
   }
 
   void nextPart() {
-    final nuPartIndex = math.min(15, state.selectedPartIndex! + 1);
+    final nuPartIndex = math.min(partsCount - 1, state.selectedPartIndex! + 1);
     if (nuPartIndex == ((state.partPage + 1) * partsPerPage)) {
       nextPartPage();
     }
@@ -120,20 +127,60 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     state = state.copyWith(selectedStepIndex: null);
   }
 
-  void editNote({bool? down}) {
+  void editNote(Direction dir) {
     final stepIndex = state.selectedStepIndex;
     if (stepIndex == null) {
       log('no selected step');
       return;
     }
-    int currentNote = selectedPart?.steps[stepIndex].notes[0] ?? 0;
-    if (true == down) {
-      currentNote = math.max(0, currentNote - 1);
-    } else {
-      currentNote = math.min(127, currentNote + 1);
+    final step = selectedPart?.steps[stepIndex];
+    int currentNote = step?.notes[0] ?? 0;
+    switch (dir) {
+      case Direction.down:
+        currentNote = math.max(0, currentNote - 1);
+        break;
+      case Direction.up:
+        currentNote = math.min(127, currentNote + 1);
+        break;
+      case Direction.left:
+        step?.stepOn = false;
+        break;
+      case Direction.right:
+        if (currentNote == 0) {
+          // if no note set, init to C-4
+          currentNote = c4MidiOnE2;
+        }
+        step?.stepOn = true;
+        break;
     }
+
     selectedPart?.steps[stepIndex].setNote(0, currentNote);
     state = state.copyWith(editVersion: state.editVersion + 1);
-    log('new note:$currentNote');
+    //log('new note:$currentNote');
+  }
+
+  Future<void> stashPattern(E2Pattern pattern) async {
+    final f = File('/tmp/e2pattern.dat');
+    f.writeAsBytes(pattern.data);
+    log('stashed pattern to:${f.path}');
+  }
+
+  Future<void> loadStash() async {
+    final f = File('/tmp/e2pattern.dat');
+    final data = await f.readAsBytes();
+
+    final loadedPattern = E2Pattern(
+      patternPointerFromData(data),
+      data.length,
+      0,
+    );
+    state = state.copyWith(
+      pattern: loadedPattern,
+      selectedPartIndex: 0,
+      selectedStepIndex: 0,
+      editing: false,
+      partPage: 0,
+      stepPage: 0,
+    );
   }
 }

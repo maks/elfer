@@ -6,7 +6,7 @@ A pattern editor, in the "style" of a Tracker, for the Korg Electribe 2's (synth
 
 This is very much a WORK-IN-PROGRESS, not too much works right now, except for reading a pattern in from the E2.
 
-![screenshot](docs/screenshot-3.png)
+![screenshot](docs/screenshot-4.png)
 
 ### Features
 
@@ -14,10 +14,11 @@ This is very much a WORK-IN-PROGRESS, not too much works right now, except for r
 * [x] Switch patterns in tracker UI using E2 dial
 * [x] Display full pattern (all 64 steps) 
 * [x] Edit pattern notes in tracker UI using keyboard
-* [ ] Edit pattern notes in tracker UI using E2 controls
+* [ ] Edit pattern notes in tracker UI using E2 controls (Hacktribe only)
 * [x] Send edited pattern back to E2
 * [x] Stash/Load current pattern with app
-* [ ] Edit step velocity & gate in tracker UI
+* [x] display step on/off, velocity & gate in tracker UI
+* [ ] Edit step on-off, velocity & gate in tracker UI
 * [ ] Send pattern to E2 current pattern, not save to pattern slot on E2
 * [ ] Edit pattern parts, osc, ifx etc in Tracker UI
 * [ ] Edit instrument patchs (samples?) in Tracker UI
@@ -28,13 +29,9 @@ This is very much a WORK-IN-PROGRESS, not too much works right now, except for r
 
 I'm currently developing with Flutter beta channel.
 
-It works on Linux, should also work on Web. 
+Currently only works on Linux. 
 
 Android support coming soon.
-
-### Running on Web
-
-Run in non-Chrome browser, ie. Firefox using: `flutter run -d web-server`
 
 
 ## Debugging
