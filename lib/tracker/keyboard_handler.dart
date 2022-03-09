@@ -6,7 +6,7 @@ import '../midi/e2_device.dart';
 import 'providers.dart';
 import 'tracker_viewmodel.dart';
 
-void handleKey(
+Future<bool> handleKey(
   RawKeyEvent event,
   TrackerViewModel viewModel,
   // TrackerState viewState,
@@ -18,6 +18,10 @@ void handleKey(
   final pattern = viewState.pattern;
   if (event is RawKeyDownEvent) {
     // Log.d('key', '${event.logicalKey} shift:${event.isShiftPressed}');
+    if (event.logicalKey == LogicalKeyboardKey.tab) {
+      return true;
+    }
+
     if (event.logicalKey == LogicalKeyboardKey.keyX) {
       viewModel.editing(true);
     } else if (event.logicalKey == LogicalKeyboardKey.keyW) {
@@ -89,4 +93,5 @@ void handleKey(
       viewModel.editing(false);
     }
   }
+  return false;
 }

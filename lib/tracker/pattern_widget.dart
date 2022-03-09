@@ -1,3 +1,4 @@
+import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,7 +45,12 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
         viewModel,
         ref,
         widget.e2Device,
-      );
+      ).then((value) {
+        if (value) {
+          log('next focus');
+          return _focusNode.nextFocus();
+        }
+      });
       _focusNode.requestFocus();
       return KeyEventResult.handled;
     };
