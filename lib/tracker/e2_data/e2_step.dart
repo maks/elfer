@@ -18,6 +18,8 @@ class E2Step {
 
   bool get stepOn => _stepData.onOff == 1;
 
+  set stepOn(bool val) => _stepData.onOff = val ? 1 : 0;
+
   bool get trigger => _stepData.triggerOnOff == 1;
 
   int get velocity => _stepData.velocity;

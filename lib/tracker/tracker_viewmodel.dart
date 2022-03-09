@@ -15,6 +15,10 @@ const stepsPerPage = 16;
 const partsPerPage = 8;
 const int partsPageCount = partsCount ~/ partsPerPage;
 
+const c4MidiOnE2 = 60 + 1; //E2 midi note C4 is 61 not 60 for some reason?
+
+enum Direction { up, down, left, right }
+
 class TrackerViewModel extends StateNotifier<TrackerState> {
   final Stream<E2Pattern> patternStream;
 
@@ -123,18 +127,33 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     state = state.copyWith(selectedStepIndex: null);
   }
 
-  void editNote({bool? down}) {
+  void editNote(Direction dir) {
     final stepIndex = state.selectedStepIndex;
     if (stepIndex == null) {
       log('no selected step');
       return;
     }
-    int currentNote = selectedPart?.steps[stepIndex].notes[0] ?? 0;
-    if (true == down) {
-      currentNote = math.max(0, currentNote - 1);
-    } else {
-      currentNote = math.min(127, currentNote + 1);
+    final step = selectedPart?.steps[stepIndex];
+    int currentNote = step?.notes[0] ?? 0;
+    switch (dir) {
+      case Direction.down:
+        currentNote = math.max(0, currentNote - 1);
+        break;
+      case Direction.up:
+        currentNote = math.min(127, currentNote + 1);
+        break;
+      case Direction.left:
+        step?.stepOn = false;
+        break;
+      case Direction.right:
+        if (currentNote == 0) {
+          // if no note set, init to C-4
+          currentNote = c4MidiOnE2;
+        }
+        step?.stepOn = true;
+        break;
     }
+
     selectedPart?.steps[stepIndex].setNote(0, currentNote);
     state = state.copyWith(editVersion: state.editVersion + 1);
     log('new note:$currentNote');

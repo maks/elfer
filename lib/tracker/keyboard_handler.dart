@@ -49,7 +49,7 @@ void handleKey(
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
       if (viewState.editing) {
-        viewModel.editNote();
+        viewModel.editNote(Direction.up);
       } else {
         if (event.isShiftPressed) {
           //TODO: use to move around diff tracker screens?
@@ -59,7 +59,7 @@ void handleKey(
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
       if (viewState.editing) {
-        viewModel.editNote(down: true);
+        viewModel.editNote(Direction.down);
       } else {
         if (event.isShiftPressed) {
           //TODO: use to move around diff tracker screens?
@@ -68,13 +68,17 @@ void handleKey(
         }
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      if (event.isShiftPressed) {
+      if (viewState.editing) {
+        viewModel.editNote(Direction.left);
+      } else if (event.isShiftPressed) {
         //TODO: use to move around diff tracker screens?
       } else {
         viewModel.prevPart();
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      if (event.isShiftPressed) {
+      if (viewState.editing) {
+        viewModel.editNote(Direction.right);
+      } else if (event.isShiftPressed) {
         //TODO: use to move around diff tracker screens?
       } else {
         viewModel.nextPart();
