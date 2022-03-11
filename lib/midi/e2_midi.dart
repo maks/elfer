@@ -4,6 +4,8 @@ import 'package:collection/collection.dart';
 
 const searchDeviceID = 0x11;
 
+const patternMessageSize = 18735;
+
 const eq = ListEquality<int>();
 
 Uint8List get searchDeviceMessage {
@@ -60,7 +62,7 @@ bool isBankSelect(Uint8List data) => data.isNotEmpty && data[0] == 0xB0;
 bool isProgramChange(Uint8List data) => data.isNotEmpty && data[0] == 0xC0;
 
 bool isPatternReply(Uint8List data, int e2Id) =>
-    eq.equals(data.sublist(0, 7), <int>[0xF0, 0x42, 0x30, 0x0, 0x01, e2Id, 0x4C]);
+    data.length == patternMessageSize && eq.equals(data.sublist(0, 7), <int>[0xF0, 0x42, 0x30, 0x0, 0x01, e2Id, 0x4C]);
 
 List<int> _sysexHeader(int globalChannel, int e2Id) => [
       0xF0,
