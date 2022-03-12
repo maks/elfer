@@ -39,7 +39,7 @@ class E2Device {
 
   late Stream<String> messages = _messagesStreamController.stream.asBroadcastStream();
 
-  List<int> _pendingBuffer = [];
+  final List<int> _pendingBuffer = [];
 
   E2Device(this._midi);
 

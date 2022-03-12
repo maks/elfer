@@ -127,68 +127,128 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   void _subscribeE2Events(TrackerViewModel viewModel) {
-    int _pendingNRPN = 0;
     if (_e2Subscription == null) {
       _e2Subscription = _e2Device.e2Events.listen((packet) {
         final d = packet.data;
-
+        if (d.length != 3) {
+          log('skipping large midi mesg: ${d.length}');
+          return;
+        }
         // pad down in Trigger mode
         if (d.length > 1 && d[1] == 0x3C) {
           final int pad = d[0] & 0x0F;
           final int pressDir = d[0] & 0xF0;
-          log('pad:$pad');
+
           if (pressDir == 0x90) {
-            viewModel.selectStepIndex(pad);
-          } else {
-            viewModel.clearSelectedStepIndex();
+            log('PAD down in trigger mode?');
           }
-        } else if (d.length == 3 && d[0] == 0xB0) {
-          // 0xB0 - NRPN message
-          // a single NRPN message can be made up of upto 4 separate CC midi messages
-          // in case of Hacktribe panel control NRPNs they are max of 3: only 1 for the value
-          // and upto 2 (0x62, 0x63) for the LSB, MSB of the controller "number"
-          // For buttons the "NRPN value" is 0x06 CC but for encoders its 0x60 or 0x61, with the CC
-          // number indicating the direction, rather than the 3rd bytes, which is always 0x01.
-          //
-          // set controller can be either 1 or 2 messages depe
-          // ref: https://www.morningstarfx.com/post/sending-midi-nrpn-messages
-
-          // Controllers:
-          // 8192 = select, 1 = osc, 2 = filt, 3 = mod, 4 = ifx
-          // 0x900 = left-arrow, 0xD00 = right-arrow, 0xC00 = Part-Left, 0x1000 = Part-Right
-          // 0xB00 = shift, 0xe00 = exit
-          // 0x1100 = part mute, 0x1200 = part erase, 0x1400 = trigger, 0x1600 = seq, 0x1800 = seq,
-          // 0x1900 = chord, 0x1a00 = step jmp, 0x1C00 = pat set
-          // 0x1100 Page1, 0x1102 = Page2, 0x1103 = Page3, 0x1104 = Page4 or 1,2,3,4 when a page already selected
-
+        } else if (d.length == 3 && d[0] >= 0xB0) {
+          final currentChannel = d[0] - 0xB0;
           if (d[1] == 0x62) {
-            _pendingNRPN = d[2];
-          } else if (d[1] == 0x63) {
-            // we have a MSB part of a NRPN number
-            _pendingNRPN = (d[2] << 8) + _pendingNRPN;
-          }
-
-          if (d[1] == 0x06) {
+            switch (d[2]) {
+              case 0x0A:
+                viewModel.currentControl = E2Control.shift;
+                break;
+              case 0x0D:
+                viewModel.currentControl = E2Control.exit;
+                break;
+              case 0x08:
+                viewModel.currentControl = E2Control.leftArrow;
+                break;
+              case 0x0C:
+                viewModel.currentControl = E2Control.rightArrow;
+                break;
+              case 0x3C:
+                viewModel.currentControl = E2Control.b1;
+                break;
+              case 0x3D:
+                viewModel.currentControl = E2Control.b2;
+                break;
+              case 0x3E:
+                viewModel.currentControl = E2Control.b3;
+                break;
+              case 0x3F:
+                viewModel.currentControl = E2Control.b4;
+                break;
+              case 0x0B:
+                viewModel.currentControl = E2Control.prevPart;
+                break;
+              case 0x0F:
+                viewModel.currentControl = E2Control.nextPart;
+                break;
+              default:
+                // jsut set to none for any control we are not interested in handling
+                viewModel.currentControl = E2Control.none;
+                break;
+            }
+          } else if (d[1] == 0x06) {
             if (d[2] == 0x7F) {
-              // button down
-              log('NRPN: ${_pendingNRPN.toRadixString(16)}');
+              _e2ButtonDown(viewModel);
             } else if (d[2] == 0) {
-              // button up
+              _e2ButtonUp(viewModel);
+            } else {
+              log('UNrecognised button action:${d[2]}');
             }
-            _pendingNRPN = 0;
           }
-          if (d[2] == 0x01) {
-            if (d[1] == 0x61) {
-              // encoder left
-            } else if (d[1] == 0x60) {
-              // encoder right
-            }
-            log('NRPN: ${_pendingNRPN.toRadixString(16)}');
-            _pendingNRPN = 0;
-          }
+          viewModel.setPart(currentChannel);
+          log('ch:$currentChannel control:${viewModel.currentControl}');
         }
       });
       log('subscribed to E2 events');
     }
   }
+
+  void _e2ButtonUp(TrackerViewModel viewModel) {}
+
+  void _e2ButtonDown(TrackerViewModel viewModel) {
+    switch (viewModel.currentControl) {
+      case E2Control.none:
+        // TODO: Handle this case.
+        break;
+      case E2Control.shift:
+        // TODO: Handle this case.
+        break;
+      case E2Control.exit:
+        // TODO: Handle this case.
+        break;
+      case E2Control.leftArrow:
+        viewModel.prevStep();
+        break;
+      case E2Control.rightArrow:
+        viewModel.nextStep();
+        break;
+      case E2Control.b1:
+        viewModel.setStepPage(0, viewModel.stepIndex);
+        break;
+      case E2Control.b2:
+        viewModel.setStepPage(1, viewModel.stepIndex);
+        break;
+      case E2Control.b3:
+        viewModel.setStepPage(2, viewModel.stepIndex);
+        break;
+      case E2Control.b4:
+        viewModel.setStepPage(3, viewModel.stepIndex);
+        break;
+      case E2Control.prevPart:
+        // NA
+        break;
+      case E2Control.nextPart:
+        // NA
+        break;
+    }
+  }
+}
+
+enum E2Control {
+  none,
+  shift,
+  exit,
+  leftArrow,
+  rightArrow,
+  prevPart,
+  nextPart,
+  b1,
+  b2,
+  b3,
+  b4,
 }

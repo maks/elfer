@@ -23,7 +23,7 @@ class PartView extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final state = ref.watch(trackerViewModelProvider);
     final relativeStepIndex =
-        state.stepPage != 0 ? state.selectedStepIndex! % (16 * state.stepPage) : state.selectedStepIndex;
+        state.stepPage != 0 ? state.selectedStepIndex % (16 * state.stepPage) : state.selectedStepIndex;
 
     return Container(
       decoration: BoxDecoration(
