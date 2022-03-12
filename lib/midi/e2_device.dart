@@ -13,6 +13,7 @@ import '../tracker/e2_data/e2_pattern.dart';
 import '../tracker/e2_data/elecmidi_generated.dart';
 import 'e2_data.dart';
 import 'e2_midi.dart' as e2;
+import 'e2_midi.dart';
 
 const _delayHACK = 500; //ms
 
@@ -38,9 +39,12 @@ class E2Device {
 
   late Stream<String> messages = _messagesStreamController.stream.asBroadcastStream();
 
+  List<int> _pendingBuffer = [];
+
   E2Device(this._midi);
 
   Future<void> connectDevice() async {
+    _pendingBuffer.clear();
     final devices = await _midi.devices;
     final device = devices?.firstWhereOrNull((dev) => dev.name.startsWith('electribe2'));
     if (device != null) {
@@ -76,6 +80,7 @@ class E2Device {
 
   Future<void> getPattern() async {
     if (_globalChannel != null && _e2ProductId != null) {
+      log('sending Get Current Pattern');
       send(e2.getPatternMessage(_currentPatternIndex, _globalChannel!, _e2ProductId!));
       _messagesStreamController.add('Received pattern ${_currentPatternIndex + 1}');
     } else {
@@ -100,13 +105,37 @@ class E2Device {
     } else {
       // don't debug log Midi clock mesgs
       if (packet.data[0] != 0xF8) {
-        if (packet.data.length > 80) {
-          log('received BIG packet [${packet.data.length}] first 40bytes:'
-              ' ${hexView(0, packet.data.sublist(0, 39))}');
+        if (packet.data.length > 3) {
+          log('received BIG packet [${packet.data.length}] ');
+          // ' ${hexView(0, packet.data.sublist(0, math.min(39, packet.data.length)))}');
+
+          if (e2.isSysex(packet.data)) {
+            // process the incoming midi message
+            if (e2.isSearchDevicereply(packet.data)) {
+              _globalChannel = packet.data[4];
+              _e2ProductId = packet.data[6];
+              log('got Search Device reply, Global channel:$_globalChannel e2Id:$_e2ProductId');
+
+              // now can request initial current pattern data
+              getPattern();
+              return;
+            }
+          }
+
+          if (packet.data.length < patternMessageSize) {
+            // log('partial response: ${packet.data.length} pendingBuffer:${_pendingBuffer.length}');
+            _pendingBuffer.addAll(packet.data);
+          }
 
           const headerOffSet = 9;
-          if (e2.isPatternReply(packet.data, _e2ProductId!)) {
-            final decoded = decodeMidiData(packet.data.sublist(headerOffSet, packet.data.length - 1));
+          log('pending: ${_pendingBuffer.length}');
+          final encodedData =
+              _pendingBuffer.length == patternMessageSize ? Uint8List.fromList(_pendingBuffer) : packet.data;
+          if (_pendingBuffer.length == patternMessageSize) {
+            _pendingBuffer.clear();
+          }
+          if (e2.isPatternReply(encodedData, _e2ProductId!)) {
+            final decoded = decodeMidiData(encodedData.sublist(headerOffSet, encodedData.length - 1));
 
             if (decoded.length != 16384) {
               throw Exception('Invalid pattern data size:${decoded.length}');
@@ -128,32 +157,19 @@ class E2Device {
             log('not a pattern data message');
           }
         } else {
-          log('received packet: ${hexView(0, packet.data)}');
+          log('received Std Midi packet: ${hexView(0, packet.data)}');
           if (e2.isBankSelect(packet.data) && packet.data[1] == 0x20) {
             // the 3rd byte of the bankselect tells us if the following Prog Change mesg
             // is for 001-127 or 128-250 pattern range
             _pendingBankSelect = packet.data[2];
-          }
-          if (e2.isProgramChange(packet.data)) {
+          } else if (e2.isProgramChange(packet.data)) {
             _currentPatternIndex = (_pendingBankSelect * 128) + packet.data[1];
             log('select pattern:$_currentPatternIndex');
             getPattern();
+          } else {
+            _inputStreamController.add(E2InputEvent(packet.data));
           }
         }
-      }
-
-      // process the incoming midi message
-      if (e2.isSysex(packet.data)) {
-        if (e2.isSearchDevicereply(packet.data)) {
-          _globalChannel = packet.data[4];
-          _e2ProductId = packet.data[6];
-          log('got global channel:$_globalChannel e2Id:$_e2ProductId');
-
-          // now can request initial current pattern data
-          getPattern();
-        }
-      } else {
-        _inputStreamController.add(E2InputEvent(packet.data));
       }
     }
   }

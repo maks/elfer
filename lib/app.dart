@@ -130,7 +130,6 @@ class _MyAppState extends ConsumerState<MyApp> {
   void _subscribeE2Events(TrackerViewModel viewModel) {
     if (_e2Subscription == null) {
       _e2Subscription = _e2Device.e2Events.listen((packet) {
-        log('received packet: ${hexView(0, packet.data)}');
         final d = packet.data;
 
         // pad down in Trigger mode
