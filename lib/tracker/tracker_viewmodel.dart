@@ -32,11 +32,17 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
             editing: false,
             currentControl: E2Control.none,
             selectedPartIndex: 0,
-            selectedStepIndex: 0,
+            selectedStepOffset: 0,
           ),
         ) {
     patternStream.forEach((p) {
-      state = state.copyWith(pattern: p, selectedPartIndex: 0, stepPage: 0, selectedStepIndex: 0, editVersion: 0);
+      state = state.copyWith(
+        pattern: p,
+        selectedPartIndex: 0,
+        stepPage: 0,
+        selectedStepOffset: 0,
+        editVersion: 0,
+      );
     });
   }
 
@@ -46,43 +52,46 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   E2Control get currentControl => state.currentControl;
 
-  int get stepIndex => state.selectedStepIndex;
+  int get stepIndex => state.selectedStepOffset + (state.stepPage * stepsPerPage);
 
   void nextStepPage() {
-    final nuStepIndex = math.min(stepsCount - 1, (state.selectedStepIndex) + stepsPerPage);
-    setStepPage(state.stepPage >= 2 ? 3 : state.stepPage + 1, nuStepIndex);
+    setStepPage(state.stepPage >= 2 ? 3 : state.stepPage + 1);
   }
 
   void prevStepPage() {
-    final nuStepIndex = math.max(0, state.selectedStepIndex - stepsPerPage);
-    setStepPage(state.stepPage <= 1 ? 0 : (state.stepPage - 1), nuStepIndex);
+    setStepPage(state.stepPage <= 1 ? 0 : (state.stepPage - 1));
   }
 
-  void setStepPage(int page, int stepIndex) {
+  void setStepPage(int page) {
     state = state.copyWith(
       stepPage: page,
-      selectedStepIndex: stepIndex,
     );
   }
 
   void nextStep() {
-    final nuStepIndex = math.min(stepsCount - 1, state.selectedStepIndex + 1);
+    int nuStepOffset = (state.selectedStepOffset + 1) % stepsPerPage;
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == ((state.stepPage + 1) * stepsPerPage)) {
+    if (nuStepOffset == 0) {
+      if (state.stepPage + 1 == (stepsCount ~/ stepsPerPage)) {
+        return; //at last step of last page, do nothing
+      }
       nextStepPage();
     }
-    state = state.copyWith(selectedStepIndex: nuStepIndex);
+    state = state.copyWith(selectedStepOffset: nuStepOffset);
   }
 
   void prevStep() {
-    final nuStepIndex = math.max(0, state.selectedStepIndex - 1);
+    final nuStepOffset = state.selectedStepOffset - 1 < 0 ? (stepsPerPage - 1) : state.selectedStepOffset - 1;
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == (state.stepPage * stepsPerPage) - 1) {
+    if (nuStepOffset == stepsPerPage - 1) {
+      if (state.stepPage == 0) {
+        return;
+      }
       prevStepPage();
     }
-    state = state.copyWith(selectedStepIndex: nuStepIndex);
+    state = state.copyWith(selectedStepOffset: nuStepOffset);
   }
 
   void nextPart() {
@@ -116,7 +125,6 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   void editing(bool val) => state = state.copyWith(editing: val);
 
   void setNote(int index, int note) {
-    final stepIndex = state.selectedStepIndex;
     final step = selectedPart?.steps[stepIndex];
     if (step == null) {
       log('NO selected Part to set note');
@@ -130,16 +138,15 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     state = state.copyWith(selectedPartIndex: partIndex);
   }
 
-  void selectStepIndex(int index) {
-    state = state.copyWith(selectedStepIndex: index);
+  void setStepIndex(int offset) {
+    state = state.copyWith(selectedStepOffset: offset);
   }
 
   void clearSelectedStepIndex() {
-    state = state.copyWith(selectedStepIndex: 0);
+    state = state.copyWith(selectedStepOffset: 0);
   }
 
   void editNote(Direction dir) {
-    final stepIndex = state.selectedStepIndex;
     final step = selectedPart?.steps[stepIndex];
     int currentNote = step?.notes[0] ?? 0;
     switch (dir) {
@@ -184,7 +191,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     state = state.copyWith(
       pattern: loadedPattern,
       selectedPartIndex: 0,
-      selectedStepIndex: 0,
+      selectedStepOffset: 0,
       editing: false,
       partPage: 0,
       stepPage: 0,

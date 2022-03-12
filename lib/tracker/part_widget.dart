@@ -22,9 +22,6 @@ class PartView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final state = ref.watch(trackerViewModelProvider);
-    final relativeStepIndex =
-        state.stepPage != 0 ? state.selectedStepIndex % (16 * state.stepPage) : state.selectedStepIndex;
-
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.blueAccent),
@@ -50,7 +47,7 @@ class PartView extends ConsumerWidget {
               .mapIndexed(
                 (i, s) => StepView(
                   step: s,
-                  selected: (i == relativeStepIndex) && _isSelected(state, partIndex),
+                  selected: (i == state.selectedStepOffset) && _isSelected(state, partIndex),
                 ),
               )
               .toList()

@@ -218,16 +218,16 @@ class _MyAppState extends ConsumerState<MyApp> {
         viewModel.nextStep();
         break;
       case E2Control.b1:
-        viewModel.setStepPage(0, viewModel.stepIndex);
+        viewModel.setStepPage(0);
         break;
       case E2Control.b2:
-        viewModel.setStepPage(1, viewModel.stepIndex);
+        viewModel.setStepPage(1);
         break;
       case E2Control.b3:
-        viewModel.setStepPage(2, viewModel.stepIndex);
+        viewModel.setStepPage(2);
         break;
       case E2Control.b4:
-        viewModel.setStepPage(3, viewModel.stepIndex);
+        viewModel.setStepPage(3);
         break;
       case E2Control.prevPart:
         // NA

@@ -156,7 +156,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
   }
 
   Color _getStepTextColor(TrackerState state, int stepIndex) {
-    if (state.selectedStepIndex == stepIndex) {
+    if (state.selectedStepOffset == stepIndex) {
       return Colors.lightBlue;
     }
     return stepIndex % 4 == 0 ? Colors.amber : Colors.white;
