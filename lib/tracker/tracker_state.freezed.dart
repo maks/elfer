@@ -22,7 +22,7 @@ class _$TrackerStateTearOff {
       {required int stepPage,
       required int partPage,
       E2Pattern? pattern,
-      required int selectedPartIndex,
+      required int selectedPartOffset,
       required int selectedStepOffset,
       required E2Control currentControl,
       required int editVersion,
@@ -31,7 +31,7 @@ class _$TrackerStateTearOff {
       stepPage: stepPage,
       partPage: partPage,
       pattern: pattern,
-      selectedPartIndex: selectedPartIndex,
+      selectedPartOffset: selectedPartOffset,
       selectedStepOffset: selectedStepOffset,
       currentControl: currentControl,
       editVersion: editVersion,
@@ -48,7 +48,7 @@ mixin _$TrackerState {
   int get stepPage => throw _privateConstructorUsedError;
   int get partPage => throw _privateConstructorUsedError;
   E2Pattern? get pattern => throw _privateConstructorUsedError;
-  int get selectedPartIndex => throw _privateConstructorUsedError;
+  int get selectedPartOffset => throw _privateConstructorUsedError;
   int get selectedStepOffset => throw _privateConstructorUsedError;
   E2Control get currentControl => throw _privateConstructorUsedError;
   int get editVersion => throw _privateConstructorUsedError;
@@ -68,7 +68,7 @@ abstract class $TrackerStateCopyWith<$Res> {
       {int stepPage,
       int partPage,
       E2Pattern? pattern,
-      int selectedPartIndex,
+      int selectedPartOffset,
       int selectedStepOffset,
       E2Control currentControl,
       int editVersion,
@@ -88,7 +88,7 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
     Object? stepPage = freezed,
     Object? partPage = freezed,
     Object? pattern = freezed,
-    Object? selectedPartIndex = freezed,
+    Object? selectedPartOffset = freezed,
     Object? selectedStepOffset = freezed,
     Object? currentControl = freezed,
     Object? editVersion = freezed,
@@ -107,9 +107,9 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
           ? _value.pattern
           : pattern // ignore: cast_nullable_to_non_nullable
               as E2Pattern?,
-      selectedPartIndex: selectedPartIndex == freezed
-          ? _value.selectedPartIndex
-          : selectedPartIndex // ignore: cast_nullable_to_non_nullable
+      selectedPartOffset: selectedPartOffset == freezed
+          ? _value.selectedPartOffset
+          : selectedPartOffset // ignore: cast_nullable_to_non_nullable
               as int,
       selectedStepOffset: selectedStepOffset == freezed
           ? _value.selectedStepOffset
@@ -142,7 +142,7 @@ abstract class _$TrackerStateCopyWith<$Res>
       {int stepPage,
       int partPage,
       E2Pattern? pattern,
-      int selectedPartIndex,
+      int selectedPartOffset,
       int selectedStepOffset,
       E2Control currentControl,
       int editVersion,
@@ -164,7 +164,7 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
     Object? stepPage = freezed,
     Object? partPage = freezed,
     Object? pattern = freezed,
-    Object? selectedPartIndex = freezed,
+    Object? selectedPartOffset = freezed,
     Object? selectedStepOffset = freezed,
     Object? currentControl = freezed,
     Object? editVersion = freezed,
@@ -183,9 +183,9 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
           ? _value.pattern
           : pattern // ignore: cast_nullable_to_non_nullable
               as E2Pattern?,
-      selectedPartIndex: selectedPartIndex == freezed
-          ? _value.selectedPartIndex
-          : selectedPartIndex // ignore: cast_nullable_to_non_nullable
+      selectedPartOffset: selectedPartOffset == freezed
+          ? _value.selectedPartOffset
+          : selectedPartOffset // ignore: cast_nullable_to_non_nullable
               as int,
       selectedStepOffset: selectedStepOffset == freezed
           ? _value.selectedStepOffset
@@ -214,7 +214,7 @@ class _$_TrackerState implements _TrackerState {
       {required this.stepPage,
       required this.partPage,
       this.pattern,
-      required this.selectedPartIndex,
+      required this.selectedPartOffset,
       required this.selectedStepOffset,
       required this.currentControl,
       required this.editVersion,
@@ -227,7 +227,7 @@ class _$_TrackerState implements _TrackerState {
   @override
   final E2Pattern? pattern;
   @override
-  final int selectedPartIndex;
+  final int selectedPartOffset;
   @override
   final int selectedStepOffset;
   @override
@@ -239,7 +239,7 @@ class _$_TrackerState implements _TrackerState {
 
   @override
   String toString() {
-    return 'TrackerState(stepPage: $stepPage, partPage: $partPage, pattern: $pattern, selectedPartIndex: $selectedPartIndex, selectedStepOffset: $selectedStepOffset, currentControl: $currentControl, editVersion: $editVersion, editing: $editing)';
+    return 'TrackerState(stepPage: $stepPage, partPage: $partPage, pattern: $pattern, selectedPartOffset: $selectedPartOffset, selectedStepOffset: $selectedStepOffset, currentControl: $currentControl, editVersion: $editVersion, editing: $editing)';
   }
 
   @override
@@ -251,7 +251,7 @@ class _$_TrackerState implements _TrackerState {
             const DeepCollectionEquality().equals(other.partPage, partPage) &&
             const DeepCollectionEquality().equals(other.pattern, pattern) &&
             const DeepCollectionEquality()
-                .equals(other.selectedPartIndex, selectedPartIndex) &&
+                .equals(other.selectedPartOffset, selectedPartOffset) &&
             const DeepCollectionEquality()
                 .equals(other.selectedStepOffset, selectedStepOffset) &&
             const DeepCollectionEquality()
@@ -267,7 +267,7 @@ class _$_TrackerState implements _TrackerState {
       const DeepCollectionEquality().hash(stepPage),
       const DeepCollectionEquality().hash(partPage),
       const DeepCollectionEquality().hash(pattern),
-      const DeepCollectionEquality().hash(selectedPartIndex),
+      const DeepCollectionEquality().hash(selectedPartOffset),
       const DeepCollectionEquality().hash(selectedStepOffset),
       const DeepCollectionEquality().hash(currentControl),
       const DeepCollectionEquality().hash(editVersion),
@@ -284,7 +284,7 @@ abstract class _TrackerState implements TrackerState {
       {required int stepPage,
       required int partPage,
       E2Pattern? pattern,
-      required int selectedPartIndex,
+      required int selectedPartOffset,
       required int selectedStepOffset,
       required E2Control currentControl,
       required int editVersion,
@@ -297,7 +297,7 @@ abstract class _TrackerState implements TrackerState {
   @override
   E2Pattern? get pattern;
   @override
-  int get selectedPartIndex;
+  int get selectedPartOffset;
   @override
   int get selectedStepOffset;
   @override

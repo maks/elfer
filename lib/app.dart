@@ -190,7 +190,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               log('UNrecognised button action:${d[2]}');
             }
           }
-          viewModel.setPart(currentChannel);
+          viewModel.setPartIndex(currentChannel);
           log('ch:$currentChannel control:${viewModel.currentControl}');
         }
       });

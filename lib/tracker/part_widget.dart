@@ -10,13 +10,13 @@ import 'tracker_state.dart';
 class PartView extends ConsumerWidget {
   final E2Part part;
   final int firstStep;
-  final int partIndex;
+  final int partOffset;
 
   const PartView({
     Key? key,
     required this.part,
     required this.firstStep,
-    required this.partIndex,
+    required this.partOffset,
   }) : super(key: key);
 
   @override
@@ -36,7 +36,7 @@ class PartView extends ConsumerWidget {
                 int.parse(part.name).toRadixString(16).toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      color: _getHeaderTextColor(_isSelected(state, partIndex)),
+                      color: _getHeaderTextColor(_isSelected(state, partOffset)),
                     ),
               ),
               Text('${part.oscillator}'),
@@ -47,7 +47,7 @@ class PartView extends ConsumerWidget {
               .mapIndexed(
                 (i, s) => StepView(
                   step: s,
-                  selected: (i == state.selectedStepOffset) && _isSelected(state, partIndex),
+                  selected: (i == state.selectedStepOffset) && _isSelected(state, partOffset),
                 ),
               )
               .toList()
@@ -56,11 +56,11 @@ class PartView extends ConsumerWidget {
     );
   }
 
-  bool _isSelected(TrackerState state, int partIndex) => state.selectedPartIndex == partIndex;
+  bool _isSelected(TrackerState state, int partOffset) => state.selectedPartOffset == partOffset;
 
   Color _getHeaderTextColor(bool isSelected) => isSelected
       ? Colors.lightBlue
-      : partIndex % 2 == 0
+      : partOffset % 2 == 0
           ? Colors.amber
           : Colors.white;
 }

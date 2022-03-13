@@ -11,7 +11,7 @@ class TrackerState with _$TrackerState {
     required int stepPage,
     required int partPage,
     E2Pattern? pattern,
-    required int selectedPartIndex,
+    required int selectedPartOffset,
     required int selectedStepOffset,
     required E2Control currentControl,
     required int editVersion,
