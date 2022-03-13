@@ -1,8 +1,6 @@
 // needed to access extension for "[]" operator on Array, eg for stepdata note prop
 import 'dart:ffi' as ffi;
 
-import 'package:bonsai/bonsai.dart';
-
 import 'elecmidi_generated.dart';
 
 class E2Step {

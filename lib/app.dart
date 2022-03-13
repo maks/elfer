@@ -5,9 +5,9 @@ import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ninja_hex/ninja_hex.dart';
 
 import 'midi/e2_device.dart';
+import 'tracker/e2_controls_handler.dart';
 import 'tracker/pattern_widget.dart';
 import 'tracker/providers.dart';
 import 'tracker/tracker_viewmodel.dart';
@@ -31,7 +31,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     super.initState();
     _e2Device = ref.read(e2DeviceProvider);
     _viewModel = ref.read(trackerViewModelProvider.notifier);
-    _subscribeE2Events(_viewModel);
+    _e2Subscription = subscribeE2Events(_viewModel, _e2Device, _e2Subscription);
   }
 
   @override
@@ -71,7 +71,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                   child: const Text('Connect'),
                   onPressed: () async {
                     _e2Device.connectDevice();
-                    _subscribeE2Events(_viewModel);
+                    subscribeE2Events(_viewModel, _e2Device, _e2Subscription);
                     log('subscribe to e2 events');
                   },
                 ),
@@ -125,26 +125,5 @@ class _MyAppState extends ConsumerState<MyApp> {
         ),
       ),
     );
-  }
-
-  void _subscribeE2Events(TrackerViewModel viewModel) {
-    if (_e2Subscription == null) {
-      _e2Subscription = _e2Device.e2Events.listen((packet) {
-        final d = packet.data;
-
-        // pad down in Trigger mode
-        if (d.length > 1 && d[1] == 0x3C) {
-          final int pad = d[0] & 0x0F;
-          final int pressDir = d[0] & 0xF0;
-          log('pad:$pad');
-          if (pressDir == 0x90) {
-            viewModel.selectStepIndex(pad);
-          } else {
-            viewModel.clearSelectedStepIndex();
-          }
-        }
-      });
-      log('subscribed to E2 events');
-    }
   }
 }

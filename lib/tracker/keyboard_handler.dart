@@ -56,7 +56,7 @@ Future<bool> handleKey(
         viewModel.editNote(Direction.up);
       } else {
         if (event.isShiftPressed) {
-          //TODO: use to move around diff tracker screens?
+          // use to move around diff tracker screens?
         } else {
           viewModel.prevStep();
         }
@@ -66,7 +66,7 @@ Future<bool> handleKey(
         viewModel.editNote(Direction.down);
       } else {
         if (event.isShiftPressed) {
-          //TODO: use to move around diff tracker screens?
+          // use to move around diff tracker screens?
         } else {
           viewModel.nextStep();
         }
@@ -75,7 +75,7 @@ Future<bool> handleKey(
       if (viewState.editing) {
         viewModel.editNote(Direction.left);
       } else if (event.isShiftPressed) {
-        //TODO: use to move around diff tracker screens?
+        // use to move around diff tracker screens?
       } else {
         viewModel.prevPart();
       }
@@ -83,7 +83,7 @@ Future<bool> handleKey(
       if (viewState.editing) {
         viewModel.editNote(Direction.right);
       } else if (event.isShiftPressed) {
-        //TODO: use to move around diff tracker screens?
+        // use to move around diff tracker screens?
       } else {
         viewModel.nextPart();
       }

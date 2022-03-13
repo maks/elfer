@@ -1,4 +1,5 @@
 import 'package:bonsai/bonsai.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -140,11 +141,11 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
               ),
               ...widget.pattern.parts
                   .getRange(partStartIndex, partEndIndex)
-                  .map(
-                    (p) => PartView(
+                  .mapIndexed(
+                    (index, p) => PartView(
                       part: p,
                       firstStep: firstStep,
-                      partIndex: int.parse(p.name),
+                      partOffset: index % partsPerPage,
                     ),
                   )
                   .toList(),
@@ -156,7 +157,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
   }
 
   Color _getStepTextColor(TrackerState state, int stepIndex) {
-    if (state.selectedStepIndex == stepIndex) {
+    if (state.selectedStepOffset == stepIndex) {
       return Colors.lightBlue;
     }
     return stepIndex % 4 == 0 ? Colors.amber : Colors.white;

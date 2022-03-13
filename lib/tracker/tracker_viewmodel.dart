@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../midi/e2_data.dart';
+import 'e2_controls_handler.dart';
 import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
@@ -29,65 +30,101 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
             stepPage: 0,
             partPage: 0,
             editing: false,
+            currentControl: E2Control.none,
+            selectedPartOffset: 0,
+            selectedStepOffset: 0,
           ),
         ) {
     patternStream.forEach((p) {
-      state = state.copyWith(pattern: p, selectedPartIndex: 0, stepPage: 0, selectedStepIndex: 0, editVersion: 0);
+      state = state.copyWith(
+        pattern: p,
+        selectedPartOffset: 0,
+        stepPage: 0,
+        selectedStepOffset: 0,
+        editVersion: 0,
+      );
     });
   }
 
-  E2Part? get selectedPart => state.pattern?.parts[state.selectedPartIndex ?? 0];
+  E2Part? get selectedPart => state.pattern?.parts[partIndex];
+
+  bool get isEditing => state.editing;
+
+  set currentControl(E2Control c) => state = state.copyWith(currentControl: c);
+
+  E2Control get currentControl => state.currentControl;
+
+  int get stepIndex => state.selectedStepOffset + (state.stepPage * stepsPerPage);
+
+  int get partIndex => state.selectedPartOffset + (state.partPage * partsPerPage);
 
   void nextStepPage() {
-    final nuStepIndex = math.min(stepsCount - 1, (state.selectedStepIndex ?? 0) + stepsPerPage);
-    state = state.copyWith(
-      stepPage: state.stepPage >= 2 ? 3 : state.stepPage + 1,
-      selectedStepIndex: nuStepIndex,
-    );
+    setStepPage(state.stepPage >= 2 ? 3 : state.stepPage + 1);
   }
 
   void prevStepPage() {
-    final nuStepIndex = math.max(0, state.selectedStepIndex! - stepsPerPage);
+    setStepPage(state.stepPage <= 1 ? 0 : (state.stepPage - 1));
+  }
+
+  void setStepPage(int page) {
     state = state.copyWith(
-      stepPage: state.stepPage <= 1 ? 0 : (state.stepPage - 1),
-      selectedStepIndex: nuStepIndex,
+      stepPage: page,
     );
   }
 
   void nextStep() {
-    final nuStepIndex = math.min(stepsCount - 1, state.selectedStepIndex! + 1);
+    int nuStepOffset = (state.selectedStepOffset + 1) % stepsPerPage;
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == ((state.stepPage + 1) * stepsPerPage)) {
+    if (nuStepOffset == 0) {
+      if (state.stepPage + 1 == (stepsCount ~/ stepsPerPage)) {
+        return; //at last step of last page, do nothing
+      }
       nextStepPage();
     }
-    state = state.copyWith(selectedStepIndex: nuStepIndex);
+    state = state.copyWith(selectedStepOffset: nuStepOffset);
   }
 
   void prevStep() {
-    final nuStepIndex = math.max(0, state.selectedStepIndex! - 1);
+    final nuStepOffset = state.selectedStepOffset - 1 < 0 ? (stepsPerPage - 1) : state.selectedStepOffset - 1;
     // need to make sure we move to the new page BEFORE we update the selectedStepIndex
     // as the selectedStepIndex is used relative to the page index when the UI draws it
-    if (nuStepIndex == (state.stepPage * stepsPerPage) - 1) {
+    if (nuStepOffset == stepsPerPage - 1) {
+      if (state.stepPage == 0) {
+        return;
+      }
       prevStepPage();
     }
-    state = state.copyWith(selectedStepIndex: nuStepIndex);
+    state = state.copyWith(selectedStepOffset: nuStepOffset);
   }
 
   void nextPart() {
-    final nuPartIndex = math.min(partsCount - 1, state.selectedPartIndex! + 1);
-    if (nuPartIndex == ((state.partPage + 1) * partsPerPage)) {
+    int nuPartOffset = (state.selectedPartOffset + 1) % partsPerPage;
+    // need to make sure we move to the new page BEFORE we update the selectedStepIndex
+    // as the selectedStepIndex is used relative to the page index when the UI draws it
+    if (nuPartOffset == 0) {
+      if (state.partPage + 1 == (partsCount ~/ partsPerPage)) {
+        return; //at last step of last page, do nothing
+      }
       nextPartPage();
     }
-    state = state.copyWith(selectedPartIndex: nuPartIndex);
+    state = state.copyWith(selectedPartOffset: nuPartOffset);
   }
 
   void prevPart() {
-    final nuPartIndex = math.max(0, state.selectedPartIndex! - 1);
-    if (nuPartIndex == (state.partPage * partsPerPage) - 1) {
-      prevPartPage();
+    final nuPartOffset = state.selectedPartOffset - 1 < 0 ? (partsPerPage - 1) : state.selectedPartOffset - 1;
+
+    if (nuPartOffset == partsPerPage - 1) {
+      if (state.partPage == 0) {
+        return;
+      }
+      prevStepPage();
     }
-    state = state.copyWith(selectedPartIndex: nuPartIndex);
+    setPartOffset(nuPartOffset);
+  }
+
+  void setPartOffset(int p) {
+    state = state.copyWith(selectedPartOffset: p);
   }
 
   void nextPartPage() {
@@ -100,39 +137,26 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   void editing(bool val) => state = state.copyWith(editing: val);
 
-  void setNote(int index, int note) {
-    final stepIndex = state.selectedStepIndex;
-    if (stepIndex == null) {
-      log('NO selected step to set note');
-      return;
-    }
-    final step = selectedPart?.steps[stepIndex];
-    if (step == null) {
-      log('NO selected Part to set note');
-      return;
-    }
-    step.notes[index] = note;
-    log('set step: [$index] note:$note');
+  void selectPartOffset(int partOffset) {
+    state = state.copyWith(selectedPartOffset: partOffset);
   }
 
-  void selectPartIndex(int partIndex) {
-    state = state.copyWith(selectedPartIndex: partIndex);
+  void setPartIndex(int index) {
+    final nuPartOffset = index % partsPerPage;
+    final nuPartPage = index ~/ partsPerPage;
+    state = state.copyWith(partPage: nuPartPage);
+    selectPartOffset(nuPartOffset);
   }
 
-  void selectStepIndex(int index) {
-    state = state.copyWith(selectedStepIndex: index);
+  void setStepIndex(int offset) {
+    state = state.copyWith(selectedStepOffset: offset);
   }
 
   void clearSelectedStepIndex() {
-    state = state.copyWith(selectedStepIndex: null);
+    state = state.copyWith(selectedStepOffset: 0);
   }
 
   void editNote(Direction dir) {
-    final stepIndex = state.selectedStepIndex;
-    if (stepIndex == null) {
-      log('no selected step');
-      return;
-    }
     final step = selectedPart?.steps[stepIndex];
     int currentNote = step?.notes[0] ?? 0;
     switch (dir) {
@@ -153,10 +177,28 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
         step?.stepOn = true;
         break;
     }
-
-    selectedPart?.steps[stepIndex].setNote(0, currentNote);
-    state = state.copyWith(editVersion: state.editVersion + 1);
+    setNote(0, currentNote);
     //log('new note:$currentNote');
+  }
+
+  void setNote(int noteIndex, int note) {
+    final step = selectedPart?.steps[stepIndex];
+    final currentNote = selectedPart?.steps[stepIndex].notes[noteIndex];
+    // if note currently not set, set the step to on as well
+    if (currentNote == null || currentNote == 0) {
+      step?.stepOn = true;
+    }
+    step?.setNote(noteIndex, note + 1); //again notes in Pattern data are offset by 1 from normal midi because 0=off?
+    incrementEditVersion();
+    log('set part[${selectedPart?.name}] step: [$stepIndex] note:$note');
+  }
+
+  void incrementEditVersion() => state = state.copyWith(editVersion: state.editVersion + 1);
+
+  void toggleStep() {
+    final step = selectedPart?.steps[stepIndex];
+    step?.stepOn = !(step.stepOn);
+    incrementEditVersion();
   }
 
   Future<void> stashPattern(E2Pattern pattern) async {
@@ -176,8 +218,8 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     );
     state = state.copyWith(
       pattern: loadedPattern,
-      selectedPartIndex: 0,
-      selectedStepIndex: 0,
+      selectedPartOffset: 0,
+      selectedStepOffset: 0,
       editing: false,
       partPage: 0,
       stepPage: 0,
