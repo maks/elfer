@@ -14,7 +14,7 @@ This is very much a WORK-IN-PROGRESS, not too much works right now, except for r
 * [x] Switch patterns in tracker UI using E2 dial
 * [x] Display full pattern (all 64 steps) 
 * [x] Edit pattern notes in tracker UI using keyboard
-* [ ] Edit pattern notes in tracker UI using E2 controls (Hacktribe only)
+* [x] Edit pattern notes in tracker UI using E2 controls (Hacktribe only)
 * [x] Send edited pattern back to E2
 * [x] Stash/Load current pattern with app
 * [x] display step on/off, velocity & gate in tracker UI
