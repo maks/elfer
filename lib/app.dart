@@ -177,6 +177,31 @@ class _MyAppState extends ConsumerState<MyApp> {
               case 0x0F:
                 viewModel.currentControl = E2Control.nextPart;
                 break;
+              case 0x10:
+                viewModel.currentControl = E2Control.partMute;
+                break;
+              case 0x12:
+                viewModel.currentControl = E2Control.partErase;
+                break;
+              case 0x13:
+                viewModel.currentControl = E2Control.trigger;
+                break;
+              case 0x15:
+                viewModel.currentControl = E2Control.sequencer;
+                break;
+              case 0x17:
+                viewModel.currentControl = E2Control.keyboard;
+                break;
+              case 0x18:
+                viewModel.currentControl = E2Control.chord;
+                break;
+              case 0x19:
+                viewModel.currentControl = E2Control.stepJump;
+                break;
+              case 0x1B:
+                viewModel.currentControl = E2Control.patternSet;
+                break;
+
               default:
                 // jsut set to none for any control we are not interested in handling
                 viewModel.currentControl = E2Control.none;
@@ -219,22 +244,54 @@ class _MyAppState extends ConsumerState<MyApp> {
         viewModel.nextStep();
         break;
       case E2Control.b1:
-        viewModel.setStepPage(0);
+        if (!viewModel.isEditing) {
+          viewModel.setStepPage(0);
+        }
         break;
       case E2Control.b2:
-        viewModel.setStepPage(1);
+        if (!viewModel.isEditing) {
+          viewModel.setStepPage(1);
+        }
         break;
       case E2Control.b3:
-        viewModel.setStepPage(2);
+        if (!viewModel.isEditing) {
+          viewModel.setStepPage(2);
+        }
         break;
       case E2Control.b4:
-        viewModel.setStepPage(3);
+        if (!viewModel.isEditing) {
+          viewModel.setStepPage(3);
+        }
         break;
       case E2Control.prevPart:
         // NA
         break;
       case E2Control.nextPart:
         // NA
+        break;
+      case E2Control.partMute:
+        // TODO: Handle this case.
+        break;
+      case E2Control.partErase:
+        // TODO: Handle this case.
+        break;
+      case E2Control.trigger:
+        viewModel.editing(false);
+        break;
+      case E2Control.sequencer:
+        viewModel.editing(false);
+        break;
+      case E2Control.keyboard:
+        viewModel.editing(true);
+        break;
+      case E2Control.chord:
+        // TODO: Handle this case.
+        break;
+      case E2Control.stepJump:
+        // TODO: Handle this case.
+        break;
+      case E2Control.patternSet:
+        // TODO: Handle this case.
         break;
     }
   }
@@ -250,6 +307,14 @@ enum E2Control {
   rightArrow,
   prevPart,
   nextPart,
+  partMute,
+  partErase,
+  trigger,
+  sequencer,
+  keyboard,
+  chord,
+  stepJump,
+  patternSet,
   b1,
   b2,
   b3,

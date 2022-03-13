@@ -48,6 +48,8 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   E2Part? get selectedPart => state.pattern?.parts[partIndex];
 
+  bool get isEditing => state.editing;
+
   set currentControl(E2Control c) => state = state.copyWith(currentControl: c);
 
   E2Control get currentControl => state.currentControl;
