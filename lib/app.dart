@@ -5,9 +5,9 @@ import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tonic/tonic.dart';
 
 import 'midi/e2_device.dart';
+import 'tracker/e2_controls_handler.dart';
 import 'tracker/pattern_widget.dart';
 import 'tracker/providers.dart';
 import 'tracker/tracker_viewmodel.dart';
@@ -31,7 +31,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     super.initState();
     _e2Device = ref.read(e2DeviceProvider);
     _viewModel = ref.read(trackerViewModelProvider.notifier);
-    _subscribeE2Events(_viewModel);
+    _e2Subscription = subscribeE2Events(_viewModel, _e2Device, _e2Subscription);
   }
 
   @override
@@ -71,7 +71,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                   child: const Text('Connect'),
                   onPressed: () async {
                     _e2Device.connectDevice();
-                    _subscribeE2Events(_viewModel);
+                    subscribeE2Events(_viewModel, _e2Device, _e2Subscription);
                     log('subscribe to e2 events');
                   },
                 ),
@@ -126,197 +126,4 @@ class _MyAppState extends ConsumerState<MyApp> {
       ),
     );
   }
-
-  void _subscribeE2Events(TrackerViewModel viewModel) {
-    if (_e2Subscription == null) {
-      _e2Subscription = _e2Device.e2Events.listen((packet) {
-        final d = packet.data;
-        if (d.length != 3) {
-          log('skipping large midi mesg: ${d.length}');
-          return;
-        }
-        // pad down in Trigger mode
-        if (_isChannelNote(d[0])) {
-          final channel = d[0] & 0x0F;
-          final note = d[1];
-          final buttonDown = d[2] == 0x60;
-
-          log('NOTE: ${Pitch.fromMidiNumber(note)} [down:$buttonDown] [ch:$channel]');
-          viewModel.setNote(0, note); //TODO: hard code note index 0 for now
-        } else if (d.length == 3 && d[0] >= 0xB0) {
-          final currentChannel = d[0] - 0xB0;
-          if (d[1] == 0x62) {
-            switch (d[2]) {
-              case 0x0A:
-                viewModel.currentControl = E2Control.shift;
-                break;
-              case 0x0D:
-                viewModel.currentControl = E2Control.exit;
-                break;
-              case 0x08:
-                viewModel.currentControl = E2Control.leftArrow;
-                break;
-              case 0x0C:
-                viewModel.currentControl = E2Control.rightArrow;
-                break;
-              case 0x3C:
-                viewModel.currentControl = E2Control.b1;
-                break;
-              case 0x3D:
-                viewModel.currentControl = E2Control.b2;
-                break;
-              case 0x3E:
-                viewModel.currentControl = E2Control.b3;
-                break;
-              case 0x3F:
-                viewModel.currentControl = E2Control.b4;
-                break;
-              case 0x0B:
-                viewModel.currentControl = E2Control.prevPart;
-                break;
-              case 0x0F:
-                viewModel.currentControl = E2Control.nextPart;
-                break;
-              case 0x10:
-                viewModel.currentControl = E2Control.partMute;
-                break;
-              case 0x12:
-                viewModel.currentControl = E2Control.partErase;
-                break;
-              case 0x13:
-                viewModel.currentControl = E2Control.trigger;
-                break;
-              case 0x15:
-                viewModel.currentControl = E2Control.sequencer;
-                break;
-              case 0x17:
-                viewModel.currentControl = E2Control.keyboard;
-                break;
-              case 0x18:
-                viewModel.currentControl = E2Control.chord;
-                break;
-              case 0x19:
-                viewModel.currentControl = E2Control.stepJump;
-                break;
-              case 0x1B:
-                viewModel.currentControl = E2Control.patternSet;
-                break;
-
-              default:
-                // jsut set to none for any control we are not interested in handling
-                viewModel.currentControl = E2Control.none;
-                break;
-            }
-          } else if (d[1] == 0x06) {
-            if (d[2] == 0x7F) {
-              _e2ButtonDown(viewModel);
-            } else if (d[2] == 0) {
-              _e2ButtonUp(viewModel);
-            } else {
-              log('UNrecognised button action:${d[2]}');
-            }
-          }
-          viewModel.setPartIndex(currentChannel);
-          log('ch:$currentChannel control:${viewModel.currentControl}');
-        }
-      });
-      log('subscribed to E2 events');
-    }
-  }
-
-  void _e2ButtonUp(TrackerViewModel viewModel) {}
-
-  void _e2ButtonDown(TrackerViewModel viewModel) {
-    switch (viewModel.currentControl) {
-      case E2Control.none:
-        // TODO: Handle this case.
-        break;
-      case E2Control.shift:
-        // TODO: Handle this case.
-        break;
-      case E2Control.exit:
-        viewModel.toggleStep();
-        break;
-      case E2Control.leftArrow:
-        viewModel.prevStep();
-        break;
-      case E2Control.rightArrow:
-        viewModel.nextStep();
-        break;
-      case E2Control.b1:
-        if (!viewModel.isEditing) {
-          viewModel.setStepPage(0);
-        }
-        break;
-      case E2Control.b2:
-        if (!viewModel.isEditing) {
-          viewModel.setStepPage(1);
-        }
-        break;
-      case E2Control.b3:
-        if (!viewModel.isEditing) {
-          viewModel.setStepPage(2);
-        }
-        break;
-      case E2Control.b4:
-        if (!viewModel.isEditing) {
-          viewModel.setStepPage(3);
-        }
-        break;
-      case E2Control.prevPart:
-        // NA
-        break;
-      case E2Control.nextPart:
-        // NA
-        break;
-      case E2Control.partMute:
-        // TODO: Handle this case.
-        break;
-      case E2Control.partErase:
-        // TODO: Handle this case.
-        break;
-      case E2Control.trigger:
-        viewModel.editing(false);
-        break;
-      case E2Control.sequencer:
-        viewModel.editing(false);
-        break;
-      case E2Control.keyboard:
-        viewModel.editing(true);
-        break;
-      case E2Control.chord:
-        // TODO: Handle this case.
-        break;
-      case E2Control.stepJump:
-        // TODO: Handle this case.
-        break;
-      case E2Control.patternSet:
-        // TODO: Handle this case.
-        break;
-    }
-  }
-
-  bool _isChannelNote(int d) => (d >= 0x80 && d <= 0x8F) || (d >= 0x90 && d <= 0x9F);
-}
-
-enum E2Control {
-  none,
-  shift,
-  exit,
-  leftArrow,
-  rightArrow,
-  prevPart,
-  nextPart,
-  partMute,
-  partErase,
-  trigger,
-  sequencer,
-  keyboard,
-  chord,
-  stepJump,
-  patternSet,
-  b1,
-  b2,
-  b3,
-  b4,
 }

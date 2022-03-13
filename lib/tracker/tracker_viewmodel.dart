@@ -3,8 +3,8 @@ import 'dart:math' as math;
 
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../app.dart';
 import '../midi/e2_data.dart';
+import 'e2_controls_handler.dart';
 import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';

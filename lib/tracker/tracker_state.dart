@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../app.dart';
+import 'e2_controls_handler.dart';
 import 'e2_data/e2_pattern.dart';
 
 part 'tracker_state.freezed.dart';
