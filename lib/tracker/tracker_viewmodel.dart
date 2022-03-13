@@ -135,16 +135,6 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
 
   void editing(bool val) => state = state.copyWith(editing: val);
 
-  void setNote(int index, int note) {
-    final step = selectedPart?.steps[stepIndex];
-    if (step == null) {
-      log('NO selected Part to set note');
-      return;
-    }
-    step.notes[index] = note;
-    log('set step: [$index] note:$note');
-  }
-
   void selectPartOffset(int partOffset) {
     state = state.copyWith(selectedPartOffset: partOffset);
   }
@@ -185,10 +175,28 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
         step?.stepOn = true;
         break;
     }
-
-    selectedPart?.steps[stepIndex].setNote(0, currentNote);
-    state = state.copyWith(editVersion: state.editVersion + 1);
+    setNote(0, currentNote);
     //log('new note:$currentNote');
+  }
+
+  void setNote(int noteIndex, int note) {
+    final step = selectedPart?.steps[stepIndex];
+    final currentNote = selectedPart?.steps[stepIndex].notes[noteIndex];
+    // if note currently not set, set the step to on as well
+    if (currentNote == null || currentNote == 0) {
+      step?.stepOn = true;
+    }
+    step?.setNote(noteIndex, note + 1); //again notes in Pattern data are offset by 1 from normal midi because 0=off?
+    incrementEditVersion();
+    log('set part[${selectedPart?.name}] step: [$stepIndex] note:$note');
+  }
+
+  void incrementEditVersion() => state = state.copyWith(editVersion: state.editVersion + 1);
+
+  void toggleStep() {
+    final step = selectedPart?.steps[stepIndex];
+    step?.stepOn = !(step.stepOn);
+    incrementEditVersion();
   }
 
   Future<void> stashPattern(E2Pattern pattern) async {

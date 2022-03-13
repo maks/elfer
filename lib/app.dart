@@ -5,6 +5,7 @@ import 'package:bonsai/bonsai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tonic/tonic.dart';
 
 import 'midi/e2_device.dart';
 import 'tracker/pattern_widget.dart';
@@ -135,13 +136,13 @@ class _MyAppState extends ConsumerState<MyApp> {
           return;
         }
         // pad down in Trigger mode
-        if (d.length > 1 && d[1] == 0x3C) {
-          final int pad = d[0] & 0x0F;
-          final int pressDir = d[0] & 0xF0;
+        if (_isChannelNote(d[0])) {
+          final channel = d[0] & 0x0F;
+          final note = d[1];
+          final buttonDown = d[2] == 0x60;
 
-          if (pressDir == 0x90) {
-            log('PAD down in trigger mode?');
-          }
+          log('NOTE: ${Pitch.fromMidiNumber(note)} [down:$buttonDown] [ch:$channel]');
+          viewModel.setNote(0, note); //TODO: hard code note index 0 for now
         } else if (d.length == 3 && d[0] >= 0xB0) {
           final currentChannel = d[0] - 0xB0;
           if (d[1] == 0x62) {
@@ -209,7 +210,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         // TODO: Handle this case.
         break;
       case E2Control.exit:
-        // TODO: Handle this case.
+        viewModel.toggleStep();
         break;
       case E2Control.leftArrow:
         viewModel.prevStep();
@@ -237,6 +238,8 @@ class _MyAppState extends ConsumerState<MyApp> {
         break;
     }
   }
+
+  bool _isChannelNote(int d) => (d >= 0x80 && d <= 0x8F) || (d >= 0x90 && d <= 0x9F);
 }
 
 enum E2Control {
