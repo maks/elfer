@@ -77,54 +77,54 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
 
     _nameTextController.text = widget.pattern.name;
 
-    return RawKeyboardListener(
-      autofocus: true,
-      focusNode: _focusNode,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Pattern:',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: widget.editing ? Colors.amber : Colors.grey,
-                        ),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Pattern:',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: widget.editing ? Colors.amber : Colors.grey,
+                      ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    patternNumberFormatted,
+                    style: body1Amber(context),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      patternNumberFormatted,
-                      style: body1Amber(context),
-                    ),
+                ),
+                SizedBox(
+                  width: 250,
+                  child: TextField(
+                    controller: _nameTextController,
+                    onChanged: (val) {
+                      widget.pattern.name = val;
+                    },
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.lightBlue),
                   ),
-                  SizedBox(
-                    width: 250,
-                    child: TextField(
-                      controller: _nameTextController,
-                      onChanged: (val) {
-                        widget.pattern.name = val;
-                      },
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.lightBlue),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 8),
-              child: PatternDataView(
-                beat: widget.pattern.tempo,
-                swing: widget.pattern.swing,
-                scale: widget.pattern.scale,
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, bottom: 8),
+            child: PatternDataView(
+              beat: widget.pattern.tempo,
+              swing: widget.pattern.swing,
+              scale: widget.pattern.scale,
             ),
-            Row(
+          ),
+          KeyboardListener(
+            autofocus: true,
+            focusNode: _focusNode,
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // step number label column
@@ -157,8 +157,8 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
                     .toList(),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
