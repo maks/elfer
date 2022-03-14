@@ -39,7 +39,12 @@ class PartView extends ConsumerWidget {
                       color: _getHeaderTextColor(_isSelected(state, partOffset)),
                     ),
               ),
-              Text('${part.oscillator}'),
+              Text(
+                '[${part.oscillator}]',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
             ],
           ),
           ...part.steps

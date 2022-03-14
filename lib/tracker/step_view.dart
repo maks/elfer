@@ -24,7 +24,7 @@ class StepView extends StatelessWidget {
     final velocityText = step.velocity == 0 ? '--' : '${step.velocity}';
     final gateText = step.gateTime == 0 ? '--' : '${step.gateTime}';
 
-    return '$noteText $velocityText $gateText';
+    return noteText;
   }
 
   Color get bgColor {
