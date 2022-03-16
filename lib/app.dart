@@ -57,69 +57,68 @@ class _MyAppState extends ConsumerState<MyApp> {
         ),
         body: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                MaterialButton(
-                  child: const Text('Disconnect'),
-                  onPressed: () async {
-                    _e2Device.disconnect();
-                    log('device disconnected');
-                  },
-                ),
-                MaterialButton(
-                  child: const Text('Connect'),
-                  onPressed: () async {
-                    _e2Device.connectDevice();
-                    subscribeE2Events(_viewModel, _e2Device, _e2Subscription);
-                    log('subscribe to e2 events');
-                  },
-                ),
-                MaterialButton(
-                  child: const Text('Load'),
-                  onPressed: () async {
-                    await ref.read(trackerViewModelProvider.notifier).loadStash();
-                    log('LOADED stashed pattern');
-                  },
-                ),
-                StreamBuilder<String>(
-                  stream: _e2Device.messages,
-                  builder: (context, snapshot) {
-                    return snapshot.hasData
-                        ? Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
-                            child: Text(
-                              snapshot.data ?? '',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.orange),
-                            ),
-                          )
-                        : Container();
-                  },
-                ),
-              ],
-            ),
-            MaterialButton(
-              child: const Text('SEND pattern'),
-              onPressed: () async {
-                final pat = viewState.pattern;
-                if (pat != null) {
-                  _e2Device.sendPatternData(pat.data, pat.indexNumber);
-                } else {
-                  log("cant send NO current pattern");
-                }
-              },
+            SizedBox(
+              width: 400,
+              child: Wrap(
+                children: [
+                  MaterialButton(
+                    child: const Text('Disconnect'),
+                    onPressed: () async {
+                      _e2Device.disconnect();
+                      log('device disconnected');
+                    },
+                  ),
+                  MaterialButton(
+                    child: const Text('Connect'),
+                    onPressed: () async {
+                      _e2Device.connectDevice();
+                      subscribeE2Events(_viewModel, _e2Device, _e2Subscription);
+                      log('subscribe to e2 events');
+                    },
+                  ),
+                  MaterialButton(
+                    child: const Text('Load'),
+                    onPressed: () async {
+                      await ref.read(trackerViewModelProvider.notifier).loadStash();
+                      log('LOADED stashed pattern');
+                    },
+                  ),
+                  MaterialButton(
+                    child: const Text('SEND-E2'),
+                    onPressed: () async {
+                      final pat = viewState.pattern;
+                      if (pat != null) {
+                        _e2Device.sendPatternData(pat.data, pat.indexNumber);
+                      } else {
+                        log("cant send NO current pattern");
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
             if (viewState.pattern == null) const Text('no pattern'),
             if (viewState.pattern != null)
               PatternWidget(
                 pattern: viewState.pattern!,
                 e2Device: _e2Device,
+                editing: viewState.editing,
               ),
-            Text(
-              'EDIT',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: viewState.editing ? Colors.amber : Colors.grey,
-                  ),
+            StreamBuilder<String>(
+              stream: _e2Device.messages,
+              builder: (context, snapshot) {
+                return snapshot.hasData
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Text(
+                          snapshot.data ?? '',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.orange),
+                        ),
+                      )
+                    : Container();
+              },
             ),
           ],
         ),

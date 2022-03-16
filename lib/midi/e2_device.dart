@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
@@ -80,7 +81,7 @@ class E2Device {
 
   Future<void> getPattern() async {
     if (_globalChannel != null && _e2ProductId != null) {
-      log('sending Get Current Pattern');
+      log('sending Get Pattern: $_currentPatternIndex');
       send(e2.getPatternMessage(_currentPatternIndex, _globalChannel!, _e2ProductId!));
       _messagesStreamController.add('Received pattern ${_currentPatternIndex + 1}');
     } else {
@@ -107,7 +108,7 @@ class E2Device {
       if (packet.data[0] != 0xF8) {
         if (packet.data.length > 3) {
           log('received BIG packet [${packet.data.length}] ');
-          // ' ${hexView(0, packet.data.sublist(0, math.min(39, packet.data.length)))}');
+          log('DATA: ${hexView(0, packet.data.sublist(0, math.min(20, packet.data.length)))}');
 
           if (e2.isSysex(packet.data)) {
             // process the incoming midi message
@@ -176,11 +177,9 @@ class E2Device {
 
   Future<void> sendPatternData(List<int> data, int patternNumber) async {
     final encodedPatternData = encodeMidiData(Uint8List.fromList(data));
-
-    final midiMesg = e2.sendPatternMessage(
+    final midiMesg = e2.sendCurrentPatternMessage(
       _globalChannel!,
       _e2ProductId!,
-      patternNumber,
       encodedPatternData,
     );
 

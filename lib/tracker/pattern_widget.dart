@@ -18,11 +18,13 @@ import 'tracker_viewmodel.dart';
 class PatternWidget extends ConsumerStatefulWidget {
   final E2Pattern pattern;
   final E2Device e2Device;
+  final bool editing;
 
   const PatternWidget({
     Key? key,
     required this.pattern,
     required this.e2Device,
+    required this.editing,
   }) : super(key: key);
 
   @override
@@ -85,7 +87,12 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Patn:'),
+                Text(
+                  'Pattern:',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: widget.editing ? Colors.amber : Colors.grey,
+                      ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
@@ -94,7 +101,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
                   ),
                 ),
                 SizedBox(
-                  width: 270,
+                  width: 250,
                   child: TextField(
                     controller: _nameTextController,
                     onChanged: (val) {
@@ -106,50 +113,50 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
               ],
             ),
           ),
-          SizedBox(
-            height: 20,
-            width: 600,
-            child: RawKeyboardListener(
-              autofocus: true,
-              focusNode: _focusNode,
-              child: PatternDataView(
-                beat: widget.pattern.tempo,
-                swing: widget.pattern.swing,
-                scale: widget.pattern.scale,
-              ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, bottom: 8),
+            child: PatternDataView(
+              beat: widget.pattern.tempo,
+              swing: widget.pattern.swing,
+              scale: widget.pattern.scale,
             ),
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                children: [
-                  Container(
-                    height: 28,
-                  ),
-                  ...List.generate(E2Part.maxSteps, (i) => i)
-                      .getRange(firstStep, firstStep + 16)
-                      .map(
-                        (idx) => StepContainer(
-                          text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),
-                          color: _getStepTextColor(state, idx),
-                          backgroundColor: Colors.black, //TODO: set based on selection state
-                        ),
-                      )
-                      .toList()
-                ],
-              ),
-              ...widget.pattern.parts
-                  .getRange(partStartIndex, partEndIndex)
-                  .mapIndexed(
-                    (index, p) => PartView(
-                      part: p,
-                      firstStep: firstStep,
-                      partOffset: index % partsPerPage,
+          KeyboardListener(
+            autofocus: true,
+            focusNode: _focusNode,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // step number label column
+                Column(
+                  children: [
+                    Container(
+                      height: 28,
                     ),
-                  )
-                  .toList(),
-            ],
+                    ...List.generate(E2Part.maxSteps, (i) => i)
+                        .getRange(firstStep, firstStep + 16)
+                        .map(
+                          (idx) => StepContainer(
+                            text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),
+                            color: _getStepTextColor(state, idx),
+                            backgroundColor: Colors.black, //TODO: set based on selection state
+                          ),
+                        )
+                        .toList()
+                  ],
+                ),
+                ...widget.pattern.parts
+                    .getRange(partStartIndex, partEndIndex)
+                    .mapIndexed(
+                      (index, p) => PartView(
+                        part: p,
+                        firstStep: firstStep,
+                        partOffset: index % partsPerPage,
+                      ),
+                    )
+                    .toList(),
+              ],
+            ),
           ),
         ],
       ),
