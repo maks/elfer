@@ -6,6 +6,8 @@ const searchDeviceID = 0x11;
 
 const patternMessageSize = 18735;
 
+const currentPatternMessageSize = 18733;
+
 const eq = ListEquality<int>();
 
 Uint8List get searchDeviceMessage {
@@ -31,12 +33,31 @@ Uint8List getPatternMessage(int patternNumber, int globalChannel, int e2Id) {
   return Uint8List.fromList(midiData);
 }
 
+Uint8List getCurrentPatternMessage(int globalChannel, int e2Id) {
+  final sysexHeader = _sysexHeader(globalChannel, e2Id);
+  const sysexFooter = [
+    0xF7, // End of Exclusive
+  ];
+  final mesg = [0x10];
+  final midiData = <int>[...sysexHeader, ...mesg, ...sysexFooter];
+  return Uint8List.fromList(midiData);
+}
+
 Uint8List sendPatternMessage(int globalChannel, int e2Id, int patternNumber, List<int> data) {
   final sysexHeader = _sysexHeader(globalChannel, e2Id);
   const sysexFooter = [
     0xF7, // End of Exclusive
   ];
   final mesg = [...sysexHeader, 0x4C, ...intToMidi(patternNumber), ...data, ...sysexFooter];
+  return Uint8List.fromList(mesg);
+}
+
+Uint8List sendCurrentPatternMessage(int globalChannel, int e2Id, List<int> data) {
+  final sysexHeader = _sysexHeader(globalChannel, e2Id);
+  const sysexFooter = [
+    0xF7, // End of Exclusive
+  ];
+  final mesg = [...sysexHeader, 0x40, ...data, ...sysexFooter];
   return Uint8List.fromList(mesg);
 }
 
@@ -63,6 +84,10 @@ bool isProgramChange(Uint8List data) => data.isNotEmpty && data[0] == 0xC0;
 
 bool isPatternReply(Uint8List data, int e2Id) =>
     data.length == patternMessageSize && eq.equals(data.sublist(0, 7), <int>[0xF0, 0x42, 0x30, 0x0, 0x01, e2Id, 0x4C]);
+
+bool isCurrentPatternReply(Uint8List data, int e2Id) =>
+    data.length == currentPatternMessageSize &&
+    eq.equals(data.sublist(0, 7), <int>[0xF0, 0x42, 0x30, 0x0, 0x01, e2Id, 0x40]);
 
 List<int> _sysexHeader(int globalChannel, int e2Id) => [
       0xF0,
