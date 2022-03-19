@@ -106,8 +106,6 @@ class _MyAppState extends ConsumerState<MyApp> {
               StreamBuilder<String>(
                 stream: _e2Device.messages,
                 builder: (context, snapshot) {
-                  final size = MediaQuery.of(context).size;
-                  log('SCR: ${size.width}x${size.height}');
                   return snapshot.hasData
                       ? Padding(
                           padding: const EdgeInsets.only(left: 4),
