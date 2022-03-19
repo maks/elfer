@@ -80,6 +80,9 @@ class _MyAppState extends ConsumerState<MyApp> {
                       onPressed: () async {
                         await ref.read(trackerViewModelProvider.notifier).loadStash();
                         log('LOADED stashed pattern');
+
+                        final size = MediaQuery.of(context).size;
+                        log('SCR: ${size.width}x${size.height}');
                       },
                     ),
                     MaterialButton(

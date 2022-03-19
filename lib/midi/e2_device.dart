@@ -47,7 +47,7 @@ class E2Device {
   Future<void> connectDevice() async {
     _pendingBuffer.clear();
     final devices = await _midi.devices;
-    final device = devices?.firstWhereOrNull((dev) => dev.name.startsWith('electribe2'));
+    final device = devices?.firstWhereOrNull((dev) => dev.name.contains('electribe2'));
     if (device != null) {
       await _midi.connectToDevice(device);
 
@@ -64,7 +64,7 @@ class E2Device {
       send(e2.searchDeviceMessage);
     } else {
       log('no E2 device to connect to');
-      _messagesStreamController.add('no E2 device to connect to');
+      _messagesStreamController.add('no E2 device to connect to: ');
     }
   }
 

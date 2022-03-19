@@ -13,10 +13,11 @@ dependencies:
   ffi: ^1.1.2
   flutter:
     sdk: flutter
-  flutter_midi_command:
-    git:
-      url: https://github.com/maks/FlutterMidiCommand
-      ref: dart-ffi-linux-platform
+  # flutter_midi_command:
+  #   git:
+  #     url: https://github.com/maks/FlutterMidiCommand
+  #     ref: dart-ffi-linux-platform
+  flutter_midi_command: ^0.4.2
   flutter_riverpod: ^1.0.3
   freezed_annotation: ^1.1.0
   google_fonts: ^2.3.1

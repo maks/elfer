@@ -226,21 +226,17 @@ packages:
   flutter_midi_command:
     dependency: "direct main"
     description:
-      path: "."
-      ref: dart-ffi-linux-platform
-      resolved-ref: "5fef3452e9b2c67cb8cf943000b334f24a063485"
-      url: "https://github.com/maks/FlutterMidiCommand"
-    source: git
-    version: "0.4.2"
+      name: flutter_midi_command
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.5"
   flutter_midi_command_linux:
     dependency: transitive
     description:
-      path: "."
-      ref: use-midi-package
-      resolved-ref: f32fdeea584b67ebde2cd6480bc1d23d4e8e541b
-      url: "https://github.com/maks/flutter_midi_command_linux"
-    source: git
-    version: "0.2.0"
+      name: flutter_midi_command_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   flutter_midi_command_platform_interface:
     dependency: transitive
     description:
@@ -379,13 +375,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-  midi:
-    dependency: transitive
-    description:
-      name: midi
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4"
   mime:
     dependency: transitive
     description:
