@@ -41,7 +41,7 @@ class PartView extends ConsumerWidget {
               ),
               Text(
                 '[${part.oscillator}]',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.bodyText1?.copyWith(
                       color: Colors.white,
                     ),
               ),
@@ -53,6 +53,7 @@ class PartView extends ConsumerWidget {
                 (i, s) => StepView(
                   step: s,
                   selected: (i == state.selectedStepOffset) && _isSelected(state, partOffset),
+                  full: false,
                 ),
               )
               .toList()

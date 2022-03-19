@@ -69,97 +69,93 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
   @override
   Widget build(context) {
     final patternNumberFormatted = (widget.pattern.indexNumber + 1).toString().padLeft(3, '0');
-    final firstStep = ref.watch(trackerViewModelProvider).stepPage * stepsPerPage;
+    final viewModel = ref.watch(trackerViewModelProvider.notifier);
     final state = ref.watch(trackerViewModelProvider);
+    final firstStep = state.stepPage * stepsPerPage;
 
-    final partStartIndex = state.partPage * partsPerPage;
-    final partEndIndex = (state.partPage + 1) * partsPerPage;
+    final partStartIndex = state.partPage * viewModel.partsPerPage;
+    final partEndIndex = (state.partPage + 1) * viewModel.partsPerPage;
 
     _nameTextController.text = widget.pattern.name;
 
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Pattern:',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: widget.editing ? Colors.amber : Colors.grey,
-                      ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    patternNumberFormatted,
-                    style: body1Amber(context),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Pattern:',
+              style: Theme.of(context).textTheme.headline6?.copyWith(
+                    color: widget.editing ? Colors.amber : Colors.grey,
                   ),
-                ),
-                SizedBox(
-                  width: 250,
-                  child: TextField(
-                    controller: _nameTextController,
-                    onChanged: (val) {
-                      widget.pattern.name = val;
-                    },
-                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.lightBlue),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                patternNumberFormatted,
+                style: body1Amber(context),
+              ),
+            ),
+            SizedBox(
+              width: 250,
+              height: 24,
+              child: TextField(
+                controller: _nameTextController,
+                onChanged: (val) {
+                  widget.pattern.name = val;
+                },
+                style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.lightBlue),
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 32),
+          child: PatternDataView(
+            beat: widget.pattern.tempo,
+            swing: widget.pattern.swing,
+            scale: widget.pattern.scale,
+          ),
+        ),
+        KeyboardListener(
+          autofocus: true,
+          focusNode: _focusNode,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // step number label column
+              Column(
+                children: [
+                  Container(
+                    height: 34, //offset height for 2 header rows: part number & instrument number
                   ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0, bottom: 8),
-            child: PatternDataView(
-              beat: widget.pattern.tempo,
-              swing: widget.pattern.swing,
-              scale: widget.pattern.scale,
-            ),
-          ),
-          KeyboardListener(
-            autofocus: true,
-            focusNode: _focusNode,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // step number label column
-                Column(
-                  children: [
-                    Container(
-                      height: 28,
+                  ...List.generate(E2Part.maxSteps, (i) => i)
+                      .getRange(firstStep, firstStep + 16)
+                      .map(
+                        (idx) => StepContainer(
+                          text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),
+                          color: _getStepTextColor(state, idx),
+                          backgroundColor: Colors.black, //TODO: set based on selection state
+                        ),
+                      )
+                      .toList()
+                ],
+              ),
+              ...widget.pattern.parts
+                  .getRange(partStartIndex, partEndIndex)
+                  .mapIndexed(
+                    (index, p) => PartView(
+                      part: p,
+                      firstStep: firstStep,
+                      partOffset: index % viewModel.partsPerPage,
                     ),
-                    ...List.generate(E2Part.maxSteps, (i) => i)
-                        .getRange(firstStep, firstStep + 16)
-                        .map(
-                          (idx) => StepContainer(
-                            text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),
-                            color: _getStepTextColor(state, idx),
-                            backgroundColor: Colors.black, //TODO: set based on selection state
-                          ),
-                        )
-                        .toList()
-                  ],
-                ),
-                ...widget.pattern.parts
-                    .getRange(partStartIndex, partEndIndex)
-                    .mapIndexed(
-                      (index, p) => PartView(
-                        part: p,
-                        firstStep: firstStep,
-                        partOffset: index % partsPerPage,
-                      ),
-                    )
-                    .toList(),
-              ],
-            ),
+                  )
+                  .toList(),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

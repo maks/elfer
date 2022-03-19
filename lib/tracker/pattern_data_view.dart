@@ -16,24 +16,25 @@ class PatternDataView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final labelStyle = Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.white);
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Text('Bpm:'),
+        Text('Bpm:', style: labelStyle),
         Text(
           '$beat',
           style: body1Amber(context),
         ),
         const SizedBox(width: 16),
-        const Text('Swing:'),
+        Text('Swing:', style: labelStyle),
         const SizedBox(width: 16),
         Text(
           '$swing',
           style: body1Amber(context),
         ),
         const SizedBox(width: 16),
-        const Text('Scale:'),
+        Text('Scale:', style: labelStyle),
         Text(
           scale,
           style: body1Amber(context),

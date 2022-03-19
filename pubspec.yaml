@@ -39,6 +39,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    # test data for now
+    - assets/e2pattern.dat  
+
 ffigen:
   name: "elecmidi"
   output: "lib/tracker/e2_data/elecmidi_generated.dart"

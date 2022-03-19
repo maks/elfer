@@ -6,7 +6,9 @@ import 'e2_data/e2_step.dart';
 class StepView extends StatelessWidget {
   final E2Step step;
   final bool selected;
-  const StepView({Key? key, required this.step, required this.selected}) : super(key: key);
+  final bool full;
+
+  const StepView({Key? key, required this.step, required this.selected, required this.full}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class StepView extends StatelessWidget {
     final velocityText = step.velocity == 0 ? '--' : '${step.velocity}';
     final gateText = step.gateTime == 0 ? '--' : '${step.gateTime}';
 
-    return noteText;
+    return full ? '$noteText $velocityText $gateText' : noteText;
   }
 
   Color get bgColor {
@@ -51,11 +53,11 @@ class StepContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(8.0),
-      padding: const EdgeInsets.all(6.0),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        style: Theme.of(context).textTheme.bodyText1?.copyWith(
               color: color,
               backgroundColor: backgroundColor,
             ),

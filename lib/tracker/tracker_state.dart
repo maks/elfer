@@ -16,5 +16,6 @@ class TrackerState with _$TrackerState {
     required E2Control currentControl,
     required int editVersion,
     required bool editing,
+    required bool fullStepView,
   }) = _TrackerState;
 }

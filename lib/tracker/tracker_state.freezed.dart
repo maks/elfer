@@ -26,7 +26,8 @@ class _$TrackerStateTearOff {
       required int selectedStepOffset,
       required E2Control currentControl,
       required int editVersion,
-      required bool editing}) {
+      required bool editing,
+      required bool fullStepView}) {
     return _TrackerState(
       stepPage: stepPage,
       partPage: partPage,
@@ -36,6 +37,7 @@ class _$TrackerStateTearOff {
       currentControl: currentControl,
       editVersion: editVersion,
       editing: editing,
+      fullStepView: fullStepView,
     );
   }
 }
@@ -53,6 +55,7 @@ mixin _$TrackerState {
   E2Control get currentControl => throw _privateConstructorUsedError;
   int get editVersion => throw _privateConstructorUsedError;
   bool get editing => throw _privateConstructorUsedError;
+  bool get fullStepView => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TrackerStateCopyWith<TrackerState> get copyWith =>
@@ -72,7 +75,8 @@ abstract class $TrackerStateCopyWith<$Res> {
       int selectedStepOffset,
       E2Control currentControl,
       int editVersion,
-      bool editing});
+      bool editing,
+      bool fullStepView});
 }
 
 /// @nodoc
@@ -93,6 +97,7 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
     Object? currentControl = freezed,
     Object? editVersion = freezed,
     Object? editing = freezed,
+    Object? fullStepView = freezed,
   }) {
     return _then(_value.copyWith(
       stepPage: stepPage == freezed
@@ -127,6 +132,10 @@ class _$TrackerStateCopyWithImpl<$Res> implements $TrackerStateCopyWith<$Res> {
           ? _value.editing
           : editing // ignore: cast_nullable_to_non_nullable
               as bool,
+      fullStepView: fullStepView == freezed
+          ? _value.fullStepView
+          : fullStepView // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -146,7 +155,8 @@ abstract class _$TrackerStateCopyWith<$Res>
       int selectedStepOffset,
       E2Control currentControl,
       int editVersion,
-      bool editing});
+      bool editing,
+      bool fullStepView});
 }
 
 /// @nodoc
@@ -169,6 +179,7 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
     Object? currentControl = freezed,
     Object? editVersion = freezed,
     Object? editing = freezed,
+    Object? fullStepView = freezed,
   }) {
     return _then(_TrackerState(
       stepPage: stepPage == freezed
@@ -203,6 +214,10 @@ class __$TrackerStateCopyWithImpl<$Res> extends _$TrackerStateCopyWithImpl<$Res>
           ? _value.editing
           : editing // ignore: cast_nullable_to_non_nullable
               as bool,
+      fullStepView: fullStepView == freezed
+          ? _value.fullStepView
+          : fullStepView // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -218,7 +233,8 @@ class _$_TrackerState implements _TrackerState {
       required this.selectedStepOffset,
       required this.currentControl,
       required this.editVersion,
-      required this.editing});
+      required this.editing,
+      required this.fullStepView});
 
   @override
   final int stepPage;
@@ -236,10 +252,12 @@ class _$_TrackerState implements _TrackerState {
   final int editVersion;
   @override
   final bool editing;
+  @override
+  final bool fullStepView;
 
   @override
   String toString() {
-    return 'TrackerState(stepPage: $stepPage, partPage: $partPage, pattern: $pattern, selectedPartOffset: $selectedPartOffset, selectedStepOffset: $selectedStepOffset, currentControl: $currentControl, editVersion: $editVersion, editing: $editing)';
+    return 'TrackerState(stepPage: $stepPage, partPage: $partPage, pattern: $pattern, selectedPartOffset: $selectedPartOffset, selectedStepOffset: $selectedStepOffset, currentControl: $currentControl, editVersion: $editVersion, editing: $editing, fullStepView: $fullStepView)';
   }
 
   @override
@@ -258,7 +276,9 @@ class _$_TrackerState implements _TrackerState {
                 .equals(other.currentControl, currentControl) &&
             const DeepCollectionEquality()
                 .equals(other.editVersion, editVersion) &&
-            const DeepCollectionEquality().equals(other.editing, editing));
+            const DeepCollectionEquality().equals(other.editing, editing) &&
+            const DeepCollectionEquality()
+                .equals(other.fullStepView, fullStepView));
   }
 
   @override
@@ -271,7 +291,8 @@ class _$_TrackerState implements _TrackerState {
       const DeepCollectionEquality().hash(selectedStepOffset),
       const DeepCollectionEquality().hash(currentControl),
       const DeepCollectionEquality().hash(editVersion),
-      const DeepCollectionEquality().hash(editing));
+      const DeepCollectionEquality().hash(editing),
+      const DeepCollectionEquality().hash(fullStepView));
 
   @JsonKey(ignore: true)
   @override
@@ -288,7 +309,8 @@ abstract class _TrackerState implements TrackerState {
       required int selectedStepOffset,
       required E2Control currentControl,
       required int editVersion,
-      required bool editing}) = _$_TrackerState;
+      required bool editing,
+      required bool fullStepView}) = _$_TrackerState;
 
   @override
   int get stepPage;
@@ -306,6 +328,8 @@ abstract class _TrackerState implements TrackerState {
   int get editVersion;
   @override
   bool get editing;
+  @override
+  bool get fullStepView;
   @override
   @JsonKey(ignore: true)
   _$TrackerStateCopyWith<_TrackerState> get copyWith =>
