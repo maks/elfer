@@ -131,7 +131,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
                     height: 34, //offset height for 2 header rows: part number & instrument number
                   ),
                   ...List.generate(E2Part.maxSteps, (i) => i)
-                      .getRange(firstStep, firstStep + 16)
+                      .getRange(firstStep, firstStep + stepsPerPage)
                       .map(
                         (idx) => StepContainer(
                           text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),

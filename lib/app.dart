@@ -79,10 +79,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                       child: const Text('Load Test'),
                       onPressed: () async {
                         await ref.read(trackerViewModelProvider.notifier).loadStash();
-                        log('LOADED stashed pattern');
-
-                        final size = MediaQuery.of(context).size;
-                        log('SCR: ${size.width}x${size.height}');
+                        log('LOADED stashed pattern .');
                       },
                     ),
                     MaterialButton(
@@ -109,6 +106,8 @@ class _MyAppState extends ConsumerState<MyApp> {
               StreamBuilder<String>(
                 stream: _e2Device.messages,
                 builder: (context, snapshot) {
+                  final size = MediaQuery.of(context).size;
+                  log('SCR: ${size.width}x${size.height}');
                   return snapshot.hasData
                       ? Padding(
                           padding: const EdgeInsets.only(left: 4),

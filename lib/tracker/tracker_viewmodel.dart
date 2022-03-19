@@ -11,9 +11,11 @@ import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
 
+// hack for now
+const is7inTablet = false;
 const partsCount = 16;
 const stepsCount = 64;
-const stepsPerPage = 16;
+const stepsPerPage = is7inTablet ? 8 : 16;
 
 const c4MidiOnE2 = 60 + 1; //E2 midi note C4 is 61 not 60 for some reason?
 

@@ -6,7 +6,6 @@ import 'elecmidi_generated.dart';
 
 class E2Part {
   static const maxSteps = 64;
-  static const stepsPerPage = 16;
 
   final PartType _partData;
   final String _name;

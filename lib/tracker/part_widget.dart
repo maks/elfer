@@ -6,6 +6,7 @@ import 'e2_data/e2_part.dart';
 import 'providers.dart';
 import 'step_view.dart';
 import 'tracker_state.dart';
+import 'tracker_viewmodel.dart';
 
 class PartView extends ConsumerWidget {
   final E2Part part;
@@ -48,7 +49,7 @@ class PartView extends ConsumerWidget {
             ],
           ),
           ...part.steps
-              .getRange(firstStep, firstStep + E2Part.stepsPerPage)
+              .getRange(firstStep, firstStep + stepsPerPage)
               .mapIndexed(
                 (i, s) => StepView(
                   step: s,

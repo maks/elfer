@@ -149,11 +149,13 @@ class E2Device {
             log('decode check...');
             checkData(patternData);
             log("decode ✔️");
-            _currentPatternStreamController.add(E2Pattern(
-              patternData,
-              decoded.length,
-              _currentPatternIndex,
-            ));
+            _currentPatternStreamController.add(
+              E2Pattern(
+                patternData,
+                decoded.length,
+                _currentPatternIndex,
+              ),
+            );
           } else {
             log('not a pattern data message');
           }
