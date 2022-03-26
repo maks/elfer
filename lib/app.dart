@@ -48,7 +48,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: ThemeData(
         brightness: Brightness.dark,
         textTheme: GoogleFonts.shareTechMonoTextTheme()
-            .copyWith(bodyText1: GoogleFonts.shareTechMono().copyWith(fontSize: 19)),
+            .copyWith(bodyText1: GoogleFonts.shareTechMono().copyWith(fontSize: 20)),
       ),
       home: Scaffold(
         body: SafeArea(
@@ -101,7 +101,6 @@ class _MyAppState extends ConsumerState<MyApp> {
                 PatternWidget(
                   pattern: viewState.pattern!,
                   e2Device: _e2Device,
-                  editing: viewState.editing,
                 ),
               StreamBuilder<String>(
                 stream: _e2Device.messages,

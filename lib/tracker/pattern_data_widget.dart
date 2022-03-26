@@ -1,42 +1,34 @@
 import 'package:flutter/material.dart';
 
+import 'e2_data/e2_pattern.dart';
 import 'theme.dart';
 
-class PatternDataView extends StatelessWidget {
-  final double beat;
-  final int swing;
-  final String scale;
-
-  const PatternDataView({
-    Key? key,
-    required this.beat,
-    required this.swing,
-    required this.scale,
-  }) : super(key: key);
+class PatternData extends StatelessWidget {
+  final E2Pattern pattern;
+  const PatternData({Key? key, required this.pattern}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final labelStyle = Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.white);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+
+    return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text('Bpm:', style: labelStyle),
+        Text('BPM:', style: labelStyle),
         Text(
-          '$beat',
+          '${pattern.tempo}',
           style: body1Amber(context),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(height: 16),
         Text('Swing:', style: labelStyle),
-        const SizedBox(width: 16),
         Text(
-          '$swing',
+          '${pattern.swing}',
           style: body1Amber(context),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(height: 16),
         Text('Scale:', style: labelStyle),
         Text(
-          scale,
+          pattern.scale,
           style: body1Amber(context),
         ),
       ],
