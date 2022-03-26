@@ -18,10 +18,15 @@ This is very much a WORK-IN-PROGRESS, not too much works right now, except for r
 * [x] Send edited pattern back to E2
 * [x] Stash/Load current pattern with app
 * [x] display step on/off, velocity & gate in tracker UI
+* [ ] load blank init pattern
+* [ ] save/load patterns to local files
 * [ ] Edit step on-off, velocity & gate in tracker UI
 * [ ] Send pattern to E2 current pattern, not save to pattern slot on E2
 * [ ] Edit pattern parts, osc, ifx etc in Tracker UI
-* [ ] Edit instrument patchs (samples?) in Tracker UI
+* [ ] Edit instrument patchs in Tracker UI
+* [ ] read/write e2 all-samples file
+* [ ] sample editor
+* [ ] load/send samples to E2, once [hacktribe supports this over Midi](https://github.com/bangcorrupt/hacktribe/discussions/65)
 * [ ] Playback pattern(s) from Tracker state (without sending to E2)
 * more?
 
