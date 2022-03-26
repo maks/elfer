@@ -228,10 +228,10 @@ packages:
     description:
       path: "."
       ref: dart-ffi-linux-platform
-      resolved-ref: "5fef3452e9b2c67cb8cf943000b334f24a063485"
+      resolved-ref: e2ce027b28ff209fa3e33bdd417a6cf870a7d05b
       url: "https://github.com/maks/FlutterMidiCommand"
     source: git
-    version: "0.4.2"
+    version: "0.4.5"
   flutter_midi_command_linux:
     dependency: transitive
     description:
