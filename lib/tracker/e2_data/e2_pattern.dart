@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import '../../midi/e2_data.dart';
 import '../../midi/e2_device.dart';
+import '../tracker_viewmodel.dart';
 import 'e2_part.dart';
 import 'elecmidi_generated.dart';
 
@@ -28,7 +29,7 @@ class E2Pattern {
 
   List<E2Part> get parts {
     final result = <E2Part>[];
-    for (var i = 0; i < E2Part.stepsPerPage; i++) {
+    for (var i = 0; i < partsCount; i++) {
       result.add(E2Part(_patternData.ref.part1[i], '$i'));
     }
     return result;

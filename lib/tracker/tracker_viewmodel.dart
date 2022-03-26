@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:flutter/services.dart' show rootBundle;
+
 import 'package:bonsai/bonsai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../midi/e2_data.dart';
@@ -9,12 +11,11 @@ import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
 
+// hack for now
+const isSmallTablet = true;
 const partsCount = 16;
 const stepsCount = 64;
-const stepsPerPage = 16;
-// TODO: make this config setting or set based on device screen size
-const partsPerPage = 8;
-const int partsPageCount = partsCount ~/ partsPerPage;
+const stepsPerPage = isSmallTablet ? 8 : 16;
 
 const c4MidiOnE2 = 60 + 1; //E2 midi note C4 is 61 not 60 for some reason?
 
@@ -33,6 +34,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
             currentControl: E2Control.none,
             selectedPartOffset: 0,
             selectedStepOffset: 0,
+            fullStepView: true,
           ),
         ) {
     patternStream.forEach((p) {
@@ -45,6 +47,10 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
       );
     });
   }
+
+  int get partsPerPage => isSmallTablet ? 8 : 16;
+
+  int get partsPageCount => partsCount ~/ partsPerPage;
 
   E2Part? get selectedPart => state.pattern?.parts[partIndex];
 
@@ -208,8 +214,10 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
   }
 
   Future<void> loadStash() async {
-    final f = File('/tmp/e2pattern.dat');
-    final data = await f.readAsBytes();
+    // final f = File('/tmp/e2pattern.dat');
+    // final data = await f.readAsBytes();
+
+    final data = (await rootBundle.load('assets/e2pattern.dat')).buffer.asUint8List();
 
     final loadedPattern = E2Pattern(
       patternPointerFromData(data),

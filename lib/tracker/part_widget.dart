@@ -2,10 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../extensions.dart';
 import 'e2_data/e2_part.dart';
 import 'providers.dart';
 import 'step_view.dart';
 import 'tracker_state.dart';
+import 'tracker_viewmodel.dart';
 
 class PartView extends ConsumerWidget {
   final E2Part part;
@@ -33,7 +35,7 @@ class PartView extends ConsumerWidget {
             children: [
               // Part name header
               Text(
-                int.parse(part.name).toRadixString(16).toUpperCase(),
+                int.parse(part.name).toHex(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1?.copyWith(
                       color: _getHeaderTextColor(_isSelected(state, partOffset)),
@@ -41,18 +43,19 @@ class PartView extends ConsumerWidget {
               ),
               Text(
                 '[${part.oscillator}]',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.bodyText1?.copyWith(
                       color: Colors.white,
                     ),
               ),
             ],
           ),
           ...part.steps
-              .getRange(firstStep, firstStep + E2Part.stepsPerPage)
+              .getRange(firstStep, firstStep + stepsPerPage)
               .mapIndexed(
                 (i, s) => StepView(
                   step: s,
                   selected: (i == state.selectedStepOffset) && _isSelected(state, partOffset),
+                  full: state.fullStepView,
                 ),
               )
               .toList()
