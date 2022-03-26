@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../extensions.dart';
 import '../midi/e2_device.dart';
 import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
@@ -96,7 +97,7 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
                       .getRange(firstStep, firstStep + stepsPerPage)
                       .map(
                         (idx) => StepContainer(
-                          text: idx.toRadixString(16).padLeft(2, '0').toUpperCase(),
+                          text: idx.toHex().padLeft(2, '0'),
                           color: _getStepTextColor(state, idx),
                           backgroundColor: Colors.black, //TODO: set based on selection state
                         ),
@@ -114,8 +115,6 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
                     ),
                   )
                   .toList(),
-              const SizedBox(width: 16),
-              PatternData(pattern: widget.pattern),
             ],
           ),
         ),

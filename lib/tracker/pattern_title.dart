@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'e2_data/e2_pattern.dart';
+import 'pattern_data_widget.dart';
 import 'providers.dart';
 import 'theme.dart';
 
@@ -60,6 +61,8 @@ class _PatternDataViewState extends ConsumerState<PatternTitle> {
             style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.lightBlue),
           ),
         ),
+        const SizedBox(width: 8),
+        PatternData(pattern: widget.pattern),
       ],
     );
   }

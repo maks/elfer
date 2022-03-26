@@ -34,7 +34,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
             currentControl: E2Control.none,
             selectedPartOffset: 0,
             selectedStepOffset: 0,
-            fullStepView: false,
+            fullStepView: true,
           ),
         ) {
     patternStream.forEach((p) {
@@ -48,11 +48,7 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     });
   }
 
-  int get partsPerPage => state.fullStepView
-      ? 4
-      : isSmallTablet
-          ? 8
-          : 16;
+  int get partsPerPage => isSmallTablet ? 8 : 16;
 
   int get partsPageCount => partsCount ~/ partsPerPage;
 

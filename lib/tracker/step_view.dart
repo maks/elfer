@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tonic/tonic.dart';
 
+import '../extensions.dart';
 import 'e2_data/e2_step.dart';
 
 class StepView extends StatelessWidget {
@@ -23,10 +24,10 @@ class StepView extends StatelessWidget {
     final accidentalOrDash = p.accidentalsString.isNotEmpty ? p.accidentalsString.replaceAll('♯', '#') : ('-');
     final pitchText = '${p.letterName}$accidentalOrDash${p.octave - 1}';
     final noteText = step.notes[0] == 0 ? '---' : pitchText;
-    final velocityText = step.velocity == 0 ? '--' : '${step.velocity}';
-    final gateText = step.gateTime == 0 ? '--' : '${step.gateTime}';
+    final velocityText = step.velocity == 0 ? '--' : step.velocity.toHex();
+    final gateText = step.gateTime == 0 ? '--' : (step.gateTime >= 127 ? 'TI' : step.gateTime.toHex());
 
-    return full ? '$noteText $velocityText $gateText' : noteText;
+    return full ? '$noteText.$velocityText.$gateText' : noteText;
   }
 
   Color get bgColor {
@@ -53,8 +54,8 @@ class StepContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodyText1?.copyWith(
