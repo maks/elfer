@@ -48,7 +48,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: ThemeData(
         brightness: Brightness.dark,
         textTheme: GoogleFonts.shareTechMonoTextTheme()
-            .copyWith(bodyText1: GoogleFonts.shareTechMono().copyWith(fontSize: 20)),
+            .copyWith(bodyText1: GoogleFonts.shareTechMono().copyWith(fontSize: 19)),
       ),
       home: Scaffold(
         body: SafeArea(

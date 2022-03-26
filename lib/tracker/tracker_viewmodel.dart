@@ -12,10 +12,10 @@ import 'e2_data/e2_pattern.dart';
 import 'tracker_state.dart';
 
 // hack for now
-const is7inTablet = false;
+const isSmallTablet = true;
 const partsCount = 16;
 const stepsCount = 64;
-const stepsPerPage = is7inTablet ? 8 : 16;
+const stepsPerPage = isSmallTablet ? 8 : 16;
 
 const c4MidiOnE2 = 60 + 1; //E2 midi note C4 is 61 not 60 for some reason?
 
@@ -48,7 +48,11 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     });
   }
 
-  int get partsPerPage => state.fullStepView ? 4 : 16;
+  int get partsPerPage => state.fullStepView
+      ? 4
+      : isSmallTablet
+          ? 8
+          : 16;
 
   int get partsPageCount => partsCount ~/ partsPerPage;
 

@@ -127,9 +127,10 @@ class _PatternWidgetState extends ConsumerState<PatternWidget> {
               // step number label column
               Column(
                 children: [
-                  Container(
-                    height: 34, //offset height for 2 header rows: part number & instrument number
-                  ),
+                  // the sizedbox and 2 text offset to match each part header
+                  const SizedBox(height: 2),
+                  Text(' ', style: Theme.of(context).textTheme.bodyText1),
+                  Text(' ', style: Theme.of(context).textTheme.bodyText1),
                   ...List.generate(E2Part.maxSteps, (i) => i)
                       .getRange(firstStep, firstStep + stepsPerPage)
                       .map(
