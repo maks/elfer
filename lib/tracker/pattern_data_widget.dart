@@ -23,7 +23,7 @@ class PatternData extends StatelessWidget {
         const SizedBox(width: 16),
         Text('Swing:', style: labelStyle),
         Text(
-          '${pattern.swing.toHex()}',
+          pattern.swing.toHex(),
           style: body1Amber(context),
         ),
         const SizedBox(width: 16),

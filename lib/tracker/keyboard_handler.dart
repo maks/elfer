@@ -17,7 +17,7 @@ Future<bool> handleKey(
   final viewState = ref.read(trackerViewModelProvider);
   final pattern = viewState.pattern;
   if (event is RawKeyDownEvent) {
-    // Log.d('key', '${event.logicalKey} shift:${event.isShiftPressed}');
+    Log.d('key', '${event.logicalKey} shift:${event.isShiftPressed}');
     if (event.logicalKey == LogicalKeyboardKey.tab) {
       return true;
     }
@@ -38,15 +38,15 @@ Future<bool> handleKey(
       final pat = pattern;
       if (pat != null) {
         viewModel.stashPattern(pat);
-        Log.d('_handleKey', 'Stashed pat');
+        Log.d('_handleKey', 'Stashed pattern');
       } else {
         Log.d('_handleKey', 'no pattern to stash');
       }
-    } else if (event.logicalKey == LogicalKeyboardKey.keyP) {
-      // "l" to load stashed pattern
+    } else if (event.logicalKey == LogicalKeyboardKey.keyP && event.isShiftPressed) {
+      // shift+P to load init pattern
       final pat = pattern;
       if (pat != null) {
-        await viewModel.loadStash();
+        await viewModel.loadInitPattern();
         Log.d('_handleKey', 'Loaded stashed pat');
       } else {
         Log.d('_handleKey', 'no pattern to stash');

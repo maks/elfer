@@ -62,6 +62,8 @@ class E2Device {
       log('Searching for E2 Device...');
       _messagesStreamController.add('Searching for E2 Device...');
       send(e2.searchDeviceMessage);
+      log('sending Reset controllers===');
+      send(Uint8List.fromList([0xB0, 0x79, 0]));
     } else {
       log('no E2 device to connect to');
       _messagesStreamController.add('no E2 device to connect to: ');

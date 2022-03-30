@@ -9,7 +9,6 @@ import 'e2_data/e2_part.dart';
 import 'e2_data/e2_pattern.dart';
 import 'keyboard_handler.dart';
 import 'part_widget.dart';
-import 'pattern_data_widget.dart';
 import 'pattern_title.dart';
 import 'providers.dart';
 import 'step_view.dart';

@@ -42,7 +42,7 @@ flutter:
 
   assets:
     # test data for now
-    - assets/e2pattern.dat  
+    - assets/
 
 ffigen:
   name: "elecmidi"

@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'dart:math' as math;
-
-import 'package:flutter/services.dart' show rootBundle;
+import 'dart:typed_data';
 
 import 'package:bonsai/bonsai.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../midi/e2_data.dart';
 import 'e2_controls_handler.dart';
 import 'e2_data/e2_part.dart';
@@ -213,12 +214,18 @@ class TrackerViewModel extends StateNotifier<TrackerState> {
     log('stashed pattern to:${f.path}');
   }
 
-  Future<void> loadStash() async {
-    // final f = File('/tmp/e2pattern.dat');
-    // final data = await f.readAsBytes();
+  Future<void> loadPattern(String path) async {
+    final f = File(path);
+    final data = await f.readAsBytes();
+    _loadPatternData(data);
+  }
 
+  Future<void> loadInitPattern() async {
     final data = (await rootBundle.load('assets/e2pattern.dat')).buffer.asUint8List();
+    _loadPatternData(data);
+  }
 
+  Future<void> _loadPatternData(Uint8List data) async {
     final loadedPattern = E2Pattern(
       patternPointerFromData(data),
       data.length,

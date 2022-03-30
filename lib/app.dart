@@ -76,10 +76,10 @@ class _MyAppState extends ConsumerState<MyApp> {
                       },
                     ),
                     MaterialButton(
-                      child: const Text('Load Test'),
+                      child: const Text('InitPattern'),
                       onPressed: () async {
-                        await ref.read(trackerViewModelProvider.notifier).loadStash();
-                        log('LOADED stashed pattern .');
+                        await ref.read(trackerViewModelProvider.notifier).loadInitPattern();
+                        log('LOADED Init pattern .');
                       },
                     ),
                     MaterialButton(
